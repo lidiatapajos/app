@@ -1,0 +1,705 @@
+/* === RESET BASE === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #fcefee, #f9dede);
+  color: #333;
+  padding-top: 70px; /* para não cobrir o conteúdo */
+}
+
+/* --- NAVBAR ESTILIZADA --- */
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+  color: white;
+  padding: 18px 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  margin-bottom: 40px;
+  border-bottom: 3px solid #8b0000;
+  top: 0px;
+}
+
+.navbar .logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  gap: 10px;
+}
+
+.navbar .logo span {
+  font-weight: bold;
+}
+
+.navbar .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar .nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.navbar .nav-links a:hover {
+  color: #ffdd57;
+}
+
+/* --- ÍCONE DE PERFIL CIRCULAR --- */
+.profile-icon {
+  width: 38px;
+  height: 38px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.profile-icon i {
+  font-size: 1.2rem;
+}
+
+.profile-icon:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- BOTÃO SAIR --- */
+.logout-btn {
+  padding: 8px 14px;
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: white;
+  color: #d32f2f;
+}
+
+/* --- CONTAINER --- */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.total-container {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  color: #b71c1c;
+}
+
+/* === DASHBOARD GRID === */
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+}
+
+/* === CARD ESTILIZADO === */
+.card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 360px;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card h2 {
+  font-size: 1.6rem;
+  color: #d32f2f;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1rem;
+  color: #555;
+}
+
+
+/* === RESPONSIVO === */
+@media screen and (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+    align-items: center;
+  }
+  .card {
+    max-width: 90%;
+    margin-bottom: 20px;
+    width: 90%;
+  }
+  .card h2 {
+    font-size: 1.4rem;
+  }
+  .card p {
+    font-size: 0.95rem;
+  }
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 20px;
+  }
+  .navbar .nav-links {
+    margin-top: 10px;
+  }
+  .navbar .nav-links a {
+    margin-left: 0;
+    margin-right: 20px;
+  }
+  .navbar .nav-links a:last-child {
+    margin-right: 0;
+  }
+  .navbar .logo {
+    margin-bottom: 10px;
+  }
+  .navbar {
+    position: fixed;
+    background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+
+
+  .total-container {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .container {
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 95vw;
+  }
+  
+  .container button {
+    font-size: 16px;
+    padding: 10px 15px;
+  }
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 70px;
+  }
+  .marca-dagua img {
+    max-width: 100%;
+    opacity: 0.7;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 20px;
+    font-size: 0.9rem;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .card h2 {
+    font-size: 1.3rem;
+  }
+
+  .card p {
+    font-size: 0.95rem;
+  }
+  .total-container {
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 25px;
+  }
+  .navbar {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .navbar .nav-links {
+    margin-top: 10px;
+  }
+  .navbar .nav-links a {
+    margin-left: 0;
+    margin-right: 20px;
+  }
+  .navbar .nav-links a:last-child {
+    margin-right: 0;
+  }
+  .navbar .logo {
+    margin-bottom: 10px;
+  }
+  .navbar {
+    position: fixed;
+    background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+  .container {
+    padding: 15px;
+    border-radius: 10px;
+    max-width: 95vw;
+  }
+
+  .container button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 60px;
+  }
+  .marca-dagua img {
+    max-width: 100%;
+    opacity: 0.7;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  } 
+
+}
+
+
+/* === RESPONSIVIDADE PESADA === */
+
+/* Smartphones pequenos (até 320px) */
+@media screen and (max-width: 360px) {
+  .container {
+    padding: 1.2rem 1rem;
+    border-radius: 8px;
+    max-width: 95vw;
+  }
+
+
+  p {
+    font-size: 1rem;
+
+  }
+  .card {
+    padding: 15px;
+    font-size: 0.9rem;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .card h2 {
+    font-size: 1.2rem;
+  }
+  .card p {
+    font-size: 0.9rem;
+  }
+  .total-container {
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  .navbar {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .navbar .nav-links {
+    margin-top: 10px;
+  }
+
+  .navbar .nav-links a {
+    margin-left: 0;
+    margin-right: 20px;
+  }
+  .navbar .nav-links a:last-child {
+    margin-right: 0;
+  }
+  .navbar .logo {
+    margin-bottom: 10px;
+  }
+  .navbar {
+    position: fixed;
+     background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+  .container {
+    padding: 12px;
+    border-radius: 8px;
+    max-width: 95vw;
+  }
+  
+  .container button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 50px;
+  } 
+  .marca-dagua img {
+    max-width: 100%;
+    opacity: 0.7;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  } 
+}
+
+/* Tablets / iPads */
+@media screen and (min-width: 600px) {
+  .container {
+    max-width: 600px;
+    padding: 3rem;
+
+  }
+  
+  .card {
+    padding: 25px;
+    font-size: 1rem;
+    max-width: 100%;
+    width: 100%;
+  } 
+  .card h2 {
+    font-size: 1.5rem;
+  }
+  .card p {
+    font-size: 1rem;
+  }
+  .total-container {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+  .navbar {
+    padding: 15px;
+    flex-direction: row;
+    align-items: center;
+  }
+  .navbar .nav-links {
+    margin-top: 0;
+  }
+  .navbar .nav-links a {
+    margin-left: 20px;
+    margin-right: 0;
+  }
+  .navbar .nav-links a:last-child {
+    margin-right: 0;
+  }
+  .navbar .logo {
+    margin-bottom: 0;
+  }
+  .navbar {
+    position: fixed;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+  .container {
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 95vw;
+  }
+  
+  .container button {
+    font-size: 16px;
+    padding: 10px 15px;
+  }
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 80px;
+  }
+  .marca-dagua img {
+    max-width: 100%;
+    opacity: 0.7;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  }
+  
+}
+
+/* Notebooks e telas maiores */
+@media screen and (min-width: 1024px) {
+  .container {
+    max-width: 800px;
+    padding: 4rem;
+
+  }
+  
+  .card {
+    padding: 30px;
+    font-size: 1.1rem;
+    max-width: 100%;
+    width: 100%;
+  }
+  .card h2 {
+    font-size: 1.8rem;
+  }
+  .card p {
+    font-size: 1.1rem;
+  }
+  .total-container {
+    font-size: 1.3rem;
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 35px;
+  }
+  .navbar {
+    padding: 20px;
+    flex-direction: row;
+    align-items: center;
+    position: fixed;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+  .navbar .nav-links {
+    margin-top: 0;
+  }
+  .navbar .nav-links a {
+    margin-left: 20px;
+    margin-right: 0;
+  }
+  .navbar .nav-links a:last-child {
+    margin-right: 0;
+  }
+  .navbar .logo {
+    margin-bottom: 0;
+  }
+  .container {
+    padding: 25px;
+    border-radius: 14px;
+    max-width: 95vw;
+  }
+  
+  .container button {
+    font-size: 18px;
+    padding: 12px 18px;
+  }
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 100px;
+  }
+  .marca-dagua img {
+    max-width: 100%;
+    opacity: 0.7;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  }
+}
+@media screen and (min-width: 1280px) {
+  .container {
+    max-width: 960px;
+    padding: 5rem;
+  }
+  
+}
+@media screen and (min-width: 1440px) {
+  .container {
+    max-width: 1200px;
+    padding: 6rem;
+  }
+  .navbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .navbar .nav-links {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  .navbar .nav-links a {
+    font-size: 1.1rem;
+  }
+  .navbar .logo {
+    font-size: 1.5rem;
+  }
+  .navbar {
+    position: fixed;
+    background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+  .container {
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 95vw;
+  }
+  .container button {
+    font-size: 20px;
+    padding: 14px 20px;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  .container {
+    max-width: 1400px;
+    padding: 7rem;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+    padding: 8rem;
+  }
+}
+@media screen and (min-width: 2560px) {
+  .container {
+    max-width: 2000px;
+    padding: 10rem;
+    
+  }
+  .navbar {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+  
+}
+@media screen and (min-width: 3840px) {
+  .container {
+    max-width: 3000px;
+    padding: 12rem;
+  }
+  .navbar {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+  .navbar .nav-links {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  .navbar .nav-links a {
+    font-size: 1.1rem;
+  }
+  .navbar .logo {
+    font-size: 1.5rem;
+  }
+  .navbar {
+    position: fixed;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+ 
+  .container button {
+    font-size: 1.2rem;
+    padding: 15px 20px;
+  } 
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 150px;
+  }
+  .marca-dagua img {
+    max-width: 100%;
+    opacity: 0.7;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  }
+  input[type="text"] {
+    padding: 12px;
+    font-size: 1rem;
+  }
+  button {
+    padding: 12px;
+    font-size: 1rem;
+  }
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 120px;
+  }
+  
+  
+}
+
+@media screen and (max-width: 500px) {
+  .container {
+    padding: 1.5rem;
+    border-radius: 8px;
+    max-width: 95vw;
+  }
+
+  .navbar {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+  .navbar .nav-links {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+  }
+  .navbar .nav-links a {
+    font-size: 0.9rem;
+  }
+  .navbar .logo {
+    font-size: 1.2rem;
+  }
+  .navbar {
+    position: fixed;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+    backdrop-filter: blur(10px);
+  }
+ 
+  .container button {
+    font-size: 1rem;
+    padding: 10px 15px;
+  }
+  .marca-dagua {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    max-width: 80px;
+  }
+  .marca-dagua img {
+    max-width: 100%;
+    opacity: 0.7;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+  }
+
+  input[type="text"] {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+  
+}

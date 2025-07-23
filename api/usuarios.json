@@ -1,0 +1,53 @@
+[
+ 
+  {
+    "cpf": "07036102284",
+    "nome": "Admin",
+    "boletos": [],
+    "configBoletos": {
+
+    }
+  },
+
+
+  {
+    "cpf": "03087924245",
+    "type": "user",
+    "boletos": []
+  },
+  {
+    "cpf": "09452305240",
+    "type": "user",
+    "boletos": []
+  },
+  {
+    "cpf": "05413083270",
+    "type": "user",
+    "boletos": []
+  },
+  {
+    "cpf": "06314329221",
+    "type": "user",
+    "boletos": []
+  },
+  {
+    "cpf": "79700136272",
+    "type": "user",
+    "boletos": []
+  },
+  {
+    "cpf": "64236536234",
+    "type": "user",
+    "boletos": []
+  },
+  {
+    "cpf": "01234567806",
+    "type": "user",
+    "boletos": []
+  },
+  {
+    "cpf": "23456789007",
+    "type": "user",
+    "boletos": []
+  }
+]

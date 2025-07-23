@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comprovantes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --vermelho: #d32f2f;
+      --vermelho-claro: #e57373;
+      --cinza-bg: #f8f9fa;
+      --cinza-card: #fff;
+      --cinza-texto: #333;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: var(--cinza-bg);
+      color: var(--cinza-texto);
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: white;
+      border-bottom: 1px solid #ddd;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--vermelho);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .voltar {
+      font-size: 1.2rem;
+      color: var(--vermelho);
+      text-decoration: none;
+    }
+
+    .voltar:hover {
+      color: var(--vermelho-claro);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: var(--vermelho);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li.comprovante {
+      background: var(--cinza-card);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--vermelho);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.2s;
+    }
+
+    li.comprovante:hover {
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .info p {
+      margin: 4px 0;
+    }
+
+    .info p strong {
+      color: var(--vermelho);
+    }
+
+    .actions button {
+      background: var(--vermelho);
+      border: none;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .actions button:hover {
+      background: var(--vermelho-claro);
+    }
+
+    @media (max-width: 600px) {
+      li.comprovante {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .actions {
+        width: 100%;
+        margin-top: 10px;
+        text-align: right;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="home.html" class="voltar" title="Voltar">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <div class="logo">
+        <i class="fas fa-file-alt"></i> Comprovantes
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Comprovantes de Pagamento</h1>
+    <ul id="comprovantes-lista"></ul>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const comprovantes = [
+        { descricao: "Internet", valor: "99,90", data: "05/07/2025" },
+        { descricao: "Água", valor: "80,00", data: "02/07/2025" }
+      ];
+
+      const lista = document.getElementById("comprovantes-lista");
+
+      comprovantes.forEach(comp => {
+        const li = document.createElement("li");
+        li.className = "comprovante";
+
+        const info = document.createElement("div");
+        info.className = "info";
+        info.innerHTML = `
+          <p><strong>${comp.descricao}</strong></p>
+          <p>Pago em: ${comp.data}</p>
+          <p>Valor: R$ ${comp.valor}</p>
+        `;
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        const btn = document.createElement("button");
+        btn.innerHTML = '<i class="fas fa-download"></i> PDF';
+        btn.onclick = () => gerarComprovantePDF(comp);
+        actions.appendChild(btn);
+
+        li.appendChild(info);
+        li.appendChild(actions);
+        lista.appendChild(li);
+      });
+    });
+
+    async function gerarComprovantePDF(comp) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.text("Comprovante de Pagamento", 20, 20);
+
+      doc.setFontSize(12);
+      doc.text(`Descrição: ${comp.descricao}`, 20, 40);
+      doc.text(`Valor: R$ ${comp.valor}`, 20, 50);
+      doc.text(`Data de pagamento: ${comp.data}`, 20, 60);
+      doc.text("Este comprovante confirma que o pagamento foi realizado com sucesso.", 20, 80, { maxWidth: 170 });
+
+      doc.save(`comprovante_${comp.descricao}.pdf`);
+    }
+  </script>
+
+</body>
+</html>

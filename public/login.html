@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#1976d2" />
+  <title>Login</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+  Icons+Round" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons+Sharp" />
+  <link rel="stylesheet" href="login.css" />
+  <link rel="icon" href="img/escola.png" type="image/png" />
+
+  <!-- PWA: registra service worker -->
+  <script>
+    if ('serviceWorked' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorked.register('service-worked.js').catch(err => {
+          console.error('Service Worked falhou:', err);
+        });
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <div class="marca-dagua">
+    <img src="img/escola.png" alt="Marca d'água" />
+  </div>
+
+  <div class="container">
+    <h1>Login</h1>
+    <input 
+      type="text" 
+      id="cpf" 
+      placeholder="Digite seu CPF" 
+      inputmode="numeric" 
+      pattern="\d{11}" 
+      maxlength="14"     >
+    <button onclick="login()">Entrar</button>
+    <p id="mensagem"></p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

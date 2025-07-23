@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boletos Pendentes</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background: linear-gradient(to right, #f3f6fb, #e6edf5);
+        padding: 0;
+      }
+
+      .navbar {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(90deg, #d32f2f, #b71c1c);
+        color: white;
+        padding: 16px 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .navbar .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .navbar .nav-links a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .navbar .nav-links a:hover {
+        color: #ffdd57;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #b71c1c;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li.boleto {
+        background: #ffffff;
+        margin-bottom: 15px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .info {
+        flex: 1;
+      }
+
+      .info p {
+        margin-bottom: 6px;
+        font-size: 1rem;
+      }
+
+      .info p strong {
+        color: #007bff;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-left: 20px;
+      }
+
+      .btn-pagar {
+        background: #28a745;
+        color: white;
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: background 0.2s;
+      }
+
+      .btn-pagar:hover {
+        background: #218838;
+      }
+
+      #mensagem-boletos {
+        display: none;
+        margin-top: 40px;
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        padding: 16px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        text-align: center;
+      }
+      .payment-box {
+        display: none;
+        margin-top: 15px;
+        background: #f4f8ff;
+        padding: 15px;
+        border-left: 4px solid #007bff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .payment-box.active {
+        display: block;
+      }
+
+      .payment-box p {
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+      }
+
+      .pix-section img {
+        width: 140px;
+        height: 140px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+
+      .pix-key {
+        font-family: monospace;
+        background: #fff;
+        padding: 8px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-bottom: 12px;
+      }
+
+      .btn-close {
+        background: transparent;
+        border: none;
+        color: #888;
+        float: right;
+        cursor: pointer;
+      }
+
+      @media screen and (max-width: 600px) {
+        .actions {
+          width: 100%;
+          margin-top: 10px;
+          margin-left: 0;
+        }
+
+        li.boleto {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .btn-pagar {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="logo">💳 BoletosApp</div>
+      <nav class="nav-links">
+        <a href="home.html"><i class="fas fa-home"></i></a>
+        <a href="login.html" onclick="localStorage.clear()" title="Sair">Sair</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <h1>Boletos Pendentes</h1>
+      <ul id="lista-boletos"></ul>
+      <p id="mensagem-boletos" style="display: none">Você não tem boletos pendentes.</p>
+    </main>
+
+    <script>
+      const cpf = localStorage.getItem("cpf");
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!cpf) {
+          alert("CPF não encontrado. Redirecionando para login.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        fetch(`http://localhost:3000/boletos/${cpf}`)
+          .then((res) => res.json())
+          .then((boletos) => {
+            const lista = document.getElementById("lista-boletos");
+            const msg = document.getElementById("mensagem-boletos");
+
+            if (!Array.isArray(boletos) || boletos.length === 0) {
+              msg.style.display = "block";
+              return;
+            }
+
+            boletos.forEach((boleto, index) => {
+              const li = document.createElement("li");
+              li.classList.add("boleto");
+
+              const info = document.createElement("div");
+              info.classList.add("info");
+              info.innerHTML = `
+                <p><strong>${boleto.descricao}</strong></p>
+                <p>Vencimento: ${boleto.vencimento}</p>
+                <p>Valor: R$ ${boleto.valor}</p>
+              `;
+
+              const actions = document.createElement("div");
+              actions.classList.add("actions");
+              const btn = document.createElement("button");
+              btn.classList.add("btn-pagar");
+              btn.innerText = "Pagar";
+              btn.onclick = () => abrirPagamento(index, boleto);
+
+              const paymentBox = document.createElement("div");
+              paymentBox.classList.add("payment-box");
+              paymentBox.id = `pagamento-${index}`;
+
+              actions.appendChild(btn);
+              li.appendChild(info);
+              li.appendChild(actions);
+              li.appendChild(paymentBox);
+              lista.appendChild(li);
+            });
+          })
+          .catch((err) => {
+            console.error("Erro ao carregar boletos:", err);
+            document.getElementById("mensagem-boletos").textContent =
+              "Parece que você ainda não possui boletos pendentes.";
+            document.getElementById("mensagem-boletos").style.display = "block";
+          });
+      });
+
+      function abrirPagamento(index, boleto) {
+        const box = document.getElementById(`pagamento-${index}`);
+        if (box.innerHTML.trim() !== "") {
+          box.classList.toggle("active");
+          return;
+        }
+
+        const valor = boleto.valor.replace(",", ".");
+
+        fetch(
+          `http://localhost:3000/pix?chave=contato@boletos.com&valor=${valor}&nome=Cliente%20App&cidade=Sao%20Paulo`
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            box.innerHTML = `
+              <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(
+                boleto
+              ).replace(/"/g, "&quot;")})">✖</button>
+              <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar seu boleto.</p>
+              <div class="pix-section">
+                <img src="${data.qr}" alt="QR Code PIX" />
+                <p class="pix-key">Chave PIX: contato@boletos.com</p>
+                <p class="pix-key"><strong>BR Code:</strong> <small>${data.brcode}</small></p>
+              </div>
+            `;
+            box.classList.add("active");
+          });
+      }
+    </script>
+  </body>
+</html>

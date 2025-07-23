@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#c62828" />
+  <title>Boletos App</title>
+  
+  <!-- Ícones Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Estilo da Home -->
+  <link rel="stylesheet" href="home.css" />
+  
+  <!-- Manifesto PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <!-- PWA -->
+  </head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">💳 <span>BoletosApp</span></div>
+    <nav class="nav-links">
+      <a href="editar-contato.html" title="Perfil"><i class="fas fa-user"></i></a>
+      <a href="login.html" title="Sair" onclick="localStorage.clear()">Sair</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <p class="total-container">Total a pagar: <strong><span id="total">R$ 0,00</span></strong></p>
+
+    <div class="dashboard">
+      <a href="boletos.html" class="card">
+        <h2>Boletos Pendentes</h2>
+        <p>Veja todos os seus boletos que ainda não foram pagos.</p>
+      </a>
+
+      <a href="editar-contato.html" class="card">
+        <h2>Editar Contato</h2>
+        <p>Atualize seu email ou telefone de contato.</p>
+      </a>
+
+      <a href="comprovantes.html" class="card">
+        <h2>Comprovantes</h2>
+        <p>Visualize comprovantes dos boletos já pagos.</p>
+      </a>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="home.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

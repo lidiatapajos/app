@@ -1,0 +1,239 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #333;
+  padding-top: 70px;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #b71c1c;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.logo img {
+  height: 40px;
+}
+
+.logout-btn {
+  background-color: white;
+  color: #b71c1c;
+  border: none;
+  padding: 8px 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.config-container {
+  max-width: 480px;
+  margin: 40px auto;
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.config-container h1 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  color: #b71c1c;
+  text-align: center;
+}
+
+form label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+form input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+form button {
+  margin-top: 24px;
+  width: 100%;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+form button:hover {
+  background-color: #b71c1c;
+}
+
+@media screen and (max-width: 480px) {
+  .config-container {
+    margin: 20px 16px;
+    padding: 20px;
+  }
+
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+    height: auto;
+    padding: 16px;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
+    .logo img {
+        height: 36px;
+    }
+    form button {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    .config-container h1 {
+        font-size: 1.2rem;
+    }
+    .config-container h1 {
+        margin-bottom: 16px;
+    }
+    form input {
+        font-size: 0.9rem;
+    }
+    form label {
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+  .navbar {
+    padding: 12px;
+  }
+
+  .config-container {
+    margin: 20px;
+    padding: 16px;
+  }
+
+  form button {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  form input {
+    font-size: 0.9rem;
+  }
+   
+    .config-container h1 {
+        font-size: 1.2rem;
+        text-align: center;
+        margin-bottom: 16px;
+    }
+    form label {
+        font-size: 0.9rem;
+        margin-top: 12px;
+        margin-bottom: 4px;
+
+    }
+    .logo img {
+        height: 36px;
+    }
+    .logout-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        background-color: #f5f5f5;
+        color: rgb(255, 0, 0);
+        box-shadow: 0 2px 6px rgba(255, 0, 0, 0.2);
+        padding: 16px;
+
+    }
+    .navbar img {
+        height: 36px;
+        width: auto;
+        object-fit: contain;
+        vertical-align: middle;
+    }
+}
+@media screen and (max-width: 1024px) {
+  .navbar {
+    padding: 16px;
+  }
+
+  .config-container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+  }
+
+  form button {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  form input {
+    font-size: 1rem;
+  }
+  
+  .logo img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      vertical-align: middle;
+  }
+  
+    .config-container h1 {
+        margin-top: 20px;
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    form label {
+        font-size: 1rem;
+        margin-top: 16px;
+        margin-bottom: 8px;
+    }
+    .logout-btn {
+        width: 20%;
+        padding: 12px;
+        font-size: 1rem;
+    }
+    .navbar {   
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f5f5f5;
+        color: rgb(255, 0, 0);
+        box-shadow: 0 2px 6px rgba(255, 0, 0, 0.2);
+    }
+}
