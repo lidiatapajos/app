@@ -5,6 +5,15 @@ const path = require('path');
 const fs = require('fs');
 const { cpf: cpfValidator } = require('cpf-cnpj-validator');
 const { PixQRCode } = require('pix-qrcode');
+const admin = require('firebase-admin');
+const serviceAccount = require('./firebase-config.json'); // caminho do seu JSON
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -59,8 +68,8 @@ app.post('/usuarios', (req, res) => {
   res.json({ sucesso: true, mensagem: 'Usuário criado com sucesso' });
 });
 
-// 🟢 Gerar BRCode e QR Pix
-function gerarBRCodePixPix(chavePix, valor, descricao) {
+// 🧾 Função: Gerar código Pix
+function gerarBRCodePix(chavePix, valor, descricao) {
   return PixQRCode({
     version: '01',
     key: chavePix,
@@ -71,8 +80,8 @@ function gerarBRCodePixPix(chavePix, valor, descricao) {
   }).payload;
 }
 
-// 🔵 Buscar boletos
-app.get('/boletos/:cpf', (req, res) => {
+// 🔵 Buscar cobranças (ex-boletos)
+app.get('/usuarios/:cpf/cobrancas', (req, res) => {
   const cpf = req.params.cpf;
   const usuarios = lerUsuarios();
   const usuario = usuarios.find(u => u.cpf.replace(/\D/g, '') === cpf);
@@ -84,8 +93,8 @@ app.get('/boletos/:cpf', (req, res) => {
   res.json(usuario.boletos);
 });
 
-// 🟠 Criar boleto
-app.post('/usuarios/:cpf/boletos', (req, res) => {
+// 🟢 Criar cobrança Pix
+app.post('/usuarios/:cpf/cobrancas', (req, res) => {
   const { cpf } = req.params;
   const { descricao, vencimento, valor } = req.body;
 
@@ -97,9 +106,9 @@ app.post('/usuarios/:cpf/boletos', (req, res) => {
   }
 
   const chavePix = '79683428215';
-  const qrCodePix = gerarBRCodePixPix(chavePix, valor, descricao);
+  const qrCodePix = gerarBRCodePix(chavePix, valor, descricao);
 
-  const novoBoleto = {
+  const novaCobranca = {
     descricao,
     vencimento,
     valor,
@@ -112,14 +121,14 @@ app.post('/usuarios/:cpf/boletos', (req, res) => {
     usuarios[usuarioIndex].boletos = [];
   }
 
-  usuarios[usuarioIndex].boletos.push(novoBoleto);
+  usuarios[usuarioIndex].boletos.push(novaCobranca);
   salvarUsuarios(usuarios);
 
-  res.json({ sucesso: true, mensagem: 'Boleto criado com sucesso', boleto: novoBoleto });
+  res.json({ sucesso: true, mensagem: 'Cobrança criada com sucesso', cobranca: novaCobranca });
 });
 
-// 🟠 Atualizar boleto
-app.patch('/usuarios/:cpf/boletos/:index', (req, res) => {
+// 🟡 Atualizar cobrança
+app.patch('/usuarios/:cpf/cobrancas/:index', (req, res) => {
   const { cpf, index } = req.params;
   const i = parseInt(index);
   const { pago, descricao, vencimento, valor } = req.body;
@@ -131,24 +140,24 @@ app.patch('/usuarios/:cpf/boletos/:index', (req, res) => {
     return res.status(404).json({ erro: 'Usuário não encontrado' });
   }
 
-  const boletos = usuarios[usuarioIndex].boletos || [];
+  const cobrancas = usuarios[usuarioIndex].boletos || [];
 
-  if (!Array.isArray(boletos) || i < 0 || i >= boletos.length) {
-    return res.status(400).json({ erro: 'Índice do boleto inválido' });
+  if (!Array.isArray(cobrancas) || i < 0 || i >= cobrancas.length) {
+    return res.status(400).json({ erro: 'Índice inválido' });
   }
 
-  const boleto = boletos[i];
-  if (pago !== undefined) boleto.pago = pago === true;
-  if (descricao !== undefined) boleto.descricao = descricao;
-  if (vencimento !== undefined) boleto.vencimento = vencimento;
-  if (valor !== undefined) boleto.valor = valor;
+  const cobranca = cobrancas[i];
+  if (pago !== undefined) cobranca.pago = pago === true;
+  if (descricao !== undefined) cobranca.descricao = descricao;
+  if (vencimento !== undefined) cobranca.vencimento = vencimento;
+  if (valor !== undefined) cobranca.valor = valor;
 
   salvarUsuarios(usuarios);
-  res.json({ sucesso: true, mensagem: 'Boleto atualizado com sucesso' });
+  res.json({ sucesso: true, mensagem: 'Cobrança atualizada com sucesso' });
 });
 
-// 🟠 Excluir boleto
-app.delete('/usuarios/:cpf/boletos/:index', (req, res) => {
+// 🔴 Excluir cobrança
+app.delete('/usuarios/:cpf/cobrancas/:index', (req, res) => {
   const { cpf, index } = req.params;
   const i = parseInt(index);
 
@@ -158,16 +167,16 @@ app.delete('/usuarios/:cpf/boletos/:index', (req, res) => {
   if (usuarioIndex === -1) return res.status(404).json({ erro: 'Usuário não encontrado' });
 
   if (!Array.isArray(usuarios[usuarioIndex].boletos) || i < 0 || i >= usuarios[usuarioIndex].boletos.length) {
-    return res.status(400).json({ erro: 'Índice do boleto inválido' });
+    return res.status(400).json({ erro: 'Índice inválido' });
   }
 
   usuarios[usuarioIndex].boletos.splice(i, 1);
   salvarUsuarios(usuarios);
 
-  res.json({ sucesso: true, mensagem: 'Boleto excluído com sucesso' });
+  res.json({ sucesso: true, mensagem: 'Cobrança excluída com sucesso' });
 });
 
-// ======= Iniciar Servidor =======
+// 🔁 Iniciar Servidor
 app.listen(PORT, () => {
   console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
 });

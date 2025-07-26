@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Boletos Pendentes</title>
+    <title>Cobranças Pendentes</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <link rel="icon" href="img/icon-512.png" type="image/png" />
+    <link rel="manifest" href="manifest.json" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
       * {
@@ -194,17 +196,17 @@
   </head>
   <body>
     <header class="navbar">
-      <div class="logo">💳 BoletosApp</div>
+      <div class="logo">Passinhos</div>
       <nav class="nav-links">
         <a href="home.html"><i class="fas fa-home"></i></a>
-        <a href="login.html" onclick="localStorage.clear()" title="Sair">Sair</a>
+        <a href="index.html" onclick="localStorage.clear()" title="Sair">Sair</a>
       </nav>
     </header>
 
     <main class="container">
-      <h1>Boletos Pendentes</h1>
+      <h1>Cobranças Pendentes</h1>
       <ul id="lista-boletos"></ul>
-      <p id="mensagem-boletos" style="display: none">Você não tem boletos pendentes.</p>
+      <p id="mensagem-boletos" style="display: none">Você não tem cobranças pendentes.</p>
     </main>
 
     <script>
@@ -213,7 +215,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         if (!cpf) {
           alert("CPF não encontrado. Redirecionando para login.");
-          window.location.href = "login.html";
+          window.location.href = "index.html";
           return;
         }
 
@@ -259,9 +261,9 @@
             });
           })
           .catch((err) => {
-            console.error("Erro ao carregar boletos:", err);
+            console.error("Erro ao carregar cobranças:", err);
             document.getElementById("mensagem-boletos").textContent =
-              "Parece que você ainda não possui boletos pendentes.";
+              "Parece que você ainda não possui cobranças pendentes.";
             document.getElementById("mensagem-boletos").style.display = "block";
           });
       });
@@ -284,7 +286,7 @@
               <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(
                 boleto
               ).replace(/"/g, "&quot;")})">✖</button>
-              <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar seu boleto.</p>
+              <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
               <div class="pix-section">
                 <img src="${data.qr}" alt="QR Code PIX" />
                 <p class="pix-key">Chave PIX: contato@boletos.com</p>

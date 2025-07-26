@@ -11,7 +11,7 @@ window.addEventListener("load", async () => {
   }
 
   try {
-    const res = await fetch(`${API_URL}/mock/usuarios/${cpfAdm}`);
+    const res = await fetch(`${API_URL}/usuarios/${cpfAdm}`);
     const dadosAdm = await res.json();
     const config = dadosAdm.configBoletos || null;
     console.log("Configuração atual de boletos:", config);
@@ -52,7 +52,7 @@ async function gerarCobrancasPixAutomaticas() {
   const mesAtual = hoje.getMonth();
   const anoAtual = hoje.getFullYear();
 
-  const res = await fetch(`${API_URL}/mock/usuarios`);
+  const res = await fetch(`${API_URL}/usuarios`);
   if (!res.ok) {
     console.error('Erro ao buscar usuários:', res.status);
     return;
@@ -217,7 +217,7 @@ function copiarPix(chave) {
 
 function logout() {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "index.html";
 }
 
 async function marcarComoPago(cpf, index) {
@@ -229,7 +229,7 @@ async function marcarComoPago(cpf, index) {
   await carregarUsuarios();
 }
 
-async function excluirBoleto(cpf, index) {
+/*async function excluirBoleto(cpf, index) {
   if (!confirm("Excluir boleto?")) return;
   await fetch(`${API_URL}/usuarios/${cpf}/boletos/${index}`, {
     method: "DELETE",
@@ -264,7 +264,7 @@ async function adicionarBoleto(cpf) {
   });
   await carregarUsuarios();
 }
-
+*/
 async function adicionarUsuario() {
   const cpf = prompt("CPF do novo usuário:");
   const nome = prompt("Nome do usuário:");

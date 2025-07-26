@@ -1,20 +1,23 @@
 const CACHE_NAME = 'boletos-app-v1';
 const urlsToCache = [
   './',
-  './login.html',
-  './login.css',
-  './home.html',
-  './home.css',
-  './app.js',
-  './adm.html',
-  './adm.css',
-  './adm.js',
-  './boletos.html',
-  './configurar-boletos.html',
-  './configurar-boletos.js',
-  './manifest.json',
-  './escola.png',
-  // Inclua outros arquivos relevantes, como favicon ou ícones se existirem
+  './public/index.html',
+  './public/home.html',
+  './public/editar-contato.html',
+  './public/adm.html',
+  ';/public/comprovantes.html',
+  './public/configurar-boletos.html',
+  './public/css/adm.css',
+  './public/css/home.css',
+  './public/css/login.css',
+  './public/css/editar-contato.css',
+  './public/app.js',
+  './public/home.js',
+  './public/adm.js',
+  './public/manifest.json',
+  './public/img/icon-192.png',
+  './public/img/icon-512.png',
+  
 ];
 
 // Instalando o service worker

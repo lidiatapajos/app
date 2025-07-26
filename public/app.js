@@ -6,7 +6,7 @@ async function login() {
   const cpfAdm = '07036102284';
 
   try {
-    const res = await fetch(`${API_URL}/mock/usuarios/${cpf}`);
+    const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     const result = await res.json();
 
     if (!result || result.erro) {
@@ -107,4 +107,11 @@ function escapeHtml(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(reg => console.log('Service Worker registrado:', reg))
+    .catch(err => console.error('Erro ao registrar o SW:', err));
 }
