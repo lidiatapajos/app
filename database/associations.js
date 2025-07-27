@@ -1,5 +1,6 @@
 const FilhoTb = require('../database/Filho.js');
 const Responsavel_tb = require("../database/Responsavel.js");
+const AdminTb = require('../database/Admin.js');
 const sequelize = require("./index.js");
 
 Responsavel_tb.hasMany(FilhoTb, { onDelete: 'CASCADE' });
@@ -14,4 +15,4 @@ FilhoTb.belongsTo(Responsavel_tb);
   }
 })();
 
-module.exports = { Responsavel_tb, FilhoTb };
+module.exports = { Responsavel_tb, FilhoTb, AdminTb };
