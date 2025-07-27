@@ -266,10 +266,10 @@ async function adicionarBoleto(cpf) {
 }
 
 async function adicionarUsuario() {
+  console.log("vai ate aqui")
   const cpf = prompt("CPF do novo usuário:");
   const nome = prompt("Nome do usuário:");
   if (!cpf || !nome) return;
-
   await fetch(`${API_URL}/usuarios`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

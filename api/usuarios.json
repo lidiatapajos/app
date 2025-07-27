@@ -1,15 +1,10 @@
 [
- 
   {
     "cpf": "07036102284",
     "nome": "Admin",
     "boletos": [],
-    "configBoletos": {
-
-    }
+    "configBoletos": {}
   },
-
-
   {
     "cpf": "03087924245",
     "type": "user",
@@ -50,4 +45,5 @@
     "type": "user",
     "boletos": []
   }
+  
 ]

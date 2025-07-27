@@ -12,8 +12,10 @@
     "cpf-cnpj-validator": "^1.0.3",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
+    "mysql2": "^3.14.2",
     "path": "^0.12.7",
     "pix-qrcode": "^1.0.0",
-    "require": "^2.4.20"
+    "require": "^0.4.4",
+    "sequelize": "^6.37.7"
   }
 }

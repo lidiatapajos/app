@@ -6,7 +6,7 @@ async function login() {
   const cpfAdm = '07036102284';
 
   try {
-    const res = await fetch(`${API_URL}/mock/usuarios/${cpf}`);
+    const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     const result = await res.json();
 
     if (!result || result.erro) {
