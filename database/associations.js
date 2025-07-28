@@ -2,6 +2,7 @@ const FilhoTb = require('../database/Filho.js');
 const Responsavel_tb = require("../database/Responsavel.js");
 const AdminTb = require('../database/Admin.js');
 const ContaBancoTb = require('../database/ContaBanco.js')
+const BoletoTb = require('../database/Boleto.js')
 const sequelize = require("./index.js");
 
 // Associação entre a tabela responsavel e tabela filho
@@ -21,4 +22,4 @@ ContaBancoTb.belongsTo(AdminTb);
   }
 })();
 
-module.exports = { Responsavel_tb, FilhoTb, AdminTb, ContaBancoTb };
+module.exports = { Responsavel_tb, FilhoTb, AdminTb, ContaBancoTb, BoletoTb};
