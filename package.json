@@ -1,5 +1,5 @@
 {
-  "name": "pwa-login-api",
+  "name": "pwa-passinhos",
   "version": "1.0.0",
   "description": "API local para login PWA",
   "main": "server.js",
