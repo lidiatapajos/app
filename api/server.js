@@ -1,3 +1,6 @@
+// const Responsavel = require('../models/User')
+// import Responsavel_tb from '../database/Responsavel';
+const Responsavel = require('../models/Responsavel.js')
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -25,25 +28,42 @@ app.use((req, res, next) => {
 });
 
 // 🔵 Buscar todos os usuários
-app.get('/usuarios', (req, res) => { });
+  app.get('/usuarios', async (req, res) => {
+  const responsavel = new Responsavel()
+  const todos_responsaveis = await responsavel.Selecionar_Todos_Responsaveis()
+  res.json(todos_responsaveis);
+});
 
 // 🔵 Buscar usuário por CPF
-app.get('/usuarios/:cpf', (req, res) => { });
+app.get('/usuarios/:cpf', async (req, res) => {
+  const cpf = req.params.cpf;
+  
+  const usuarios = new Responsavel();
+  const usuario_especifico = await usuarios.Selecionar_Responsavel_Especifico(cpf);
+  
+  if (!usuario_especifico) return res.status(404).json({ erro: 'Usuário não encontrado' });
+  res.json(usuario_especifico);
+
+});
 
 // 🟢 Criar novo usuário
 app.post('/usuarios', (req, res) => {
-  const { cpf, nome, boletos = [] } = req.body;
+  
+  const { cpf, nome, email, telefone, nome_filho, boletos = [] } = req.body;
 
-  if (!cpfValidator.isValid(cpf)) {
-    return res.status(400).json({ erro: 'CPF inválido' });
-  }
+  // if (!cpfValidator.isValid(cpf)) {
+  //   return res.status(400).json({ erro: `CPF inválido ${cpf}`});
+  // }
 
-  if (usuarios.find(u => u.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, ''))) {
-    return res.status(400).json({ erro: 'Usuário já existe' });
-  }
+  // if (usuarios.find(u => u.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, ''))) {
+  //   return res.status(400).json({ erro: 'Usuário já existe' });
+  // }
 
-  usuarios.push({ cpf, nome, boletos });
-  res.json({ sucesso: true, mensagem: 'Usuário criado com sucesso' });
+  const responsavel = new Responsavel()
+  responsavel.Criar_responsavel(nome, cpf, email, telefone, nome_filho)
+
+  res.status(201).json({mesagem: "Responsavel criado com sucesso"})
+
 });
 
 
