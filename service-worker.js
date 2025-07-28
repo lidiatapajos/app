@@ -1,24 +1,28 @@
-const CACHE_NAME = 'boletos-app-v1';
+const CACHE_NAME = 'PassPay-cache-v1';
 const urlsToCache = [
   './',
-  './public/index.html',
-  './public/home.html',
-  './public/editar-contato.html',
-  './public/adm.html',
-  ';/public/comprovantes.html',
-  './public/configurar-boletos.html',
+  './view/index.html',
+  './view/home.html',
+  './view/editar-contato.html',
+  './view/adm.html',
+  './view/comprovantes.html',
+  './view/configurar-boletos.html',
+  './view/manifest.json',
+  './api/server.js',
   './public/css/adm.css',
   './public/css/home.css',
   './public/css/login.css',
-  './public/css/editar-contato.css',
-  './public/app.js',
-  './public/home.js',
+  './public/app.min.js',
+  './public/utils.js',
+  './public/utils/tutorial.js',
+  './publicc/adm.min.js',
+  './public/home.min.js',
   './public/adm.js',
-  './public/manifest.json',
   './public/img/icon-192.png',
   './public/img/icon-512.png',
-  
 ];
+
+
 
 // Instalando o service worker
 self.addEventListener('install', event => {

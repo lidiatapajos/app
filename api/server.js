@@ -5,16 +5,6 @@ const path = require('path');
 const fs = require('fs');
 const { cpf: cpfValidator } = require('cpf-cnpj-validator');
 const { PixQRCode } = require('pix-qrcode');
-const admin = require('firebase-admin');
-const serviceAccount = require('./firebase-config.json'); // caminho do seu JSON
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
-const db = admin.firestore();
-
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -26,34 +16,23 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 const usuariosPath = path.join(__dirname, 'usuarios.json');
 
-function lerUsuarios() {
-  return JSON.parse(fs.readFileSync(usuariosPath, 'utf8'));
-}
-
-function salvarUsuarios(usuarios) {
-  fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2), 'utf8');
-}
+app.use((req, res, next) => {
+  const cpf = req.headers['x-cpf']; // Exemplo: CPF enviado no header
+  if (cpf !== '07036102284') {
+    return res.status(403).json({ erro: 'Acesso negado' });
+  }
+  next();
+});
 
 // 🔵 Buscar todos os usuários
-app.get('/usuarios', (req, res) => {
-  const usuarios = lerUsuarios();
-  res.json(usuarios);
-});
+app.get('/usuarios', (req, res) => { });
 
 // 🔵 Buscar usuário por CPF
-app.get('/usuarios/:cpf', (req, res) => {
-  const cpf = req.params.cpf;
-  const usuarios = lerUsuarios();
-  const usuario = usuarios.find(u => u.cpf.replace(/\D/g, '') === cpf);
-
-  if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado' });
-  res.json(usuario);
-});
+app.get('/usuarios/:cpf', (req, res) => { });
 
 // 🟢 Criar novo usuário
 app.post('/usuarios', (req, res) => {
   const { cpf, nome, boletos = [] } = req.body;
-  let usuarios = lerUsuarios();
 
   if (!cpfValidator.isValid(cpf)) {
     return res.status(400).json({ erro: 'CPF inválido' });
@@ -64,30 +43,16 @@ app.post('/usuarios', (req, res) => {
   }
 
   usuarios.push({ cpf, nome, boletos });
-  salvarUsuarios(usuarios);
   res.json({ sucesso: true, mensagem: 'Usuário criado com sucesso' });
 });
 
-// 🧾 Função: Gerar código Pix
-function gerarBRCodePix(chavePix, valor, descricao) {
-  return PixQRCode({
-    version: '01',
-    key: chavePix,
-    name: 'Pagamento Mensalidade',
-    city: 'Sao Paulo',
-    value: valor,
-    description: descricao
-  }).payload;
-}
 
 // 🔵 Buscar cobranças (ex-boletos)
 app.get('/usuarios/:cpf/cobrancas', (req, res) => {
   const cpf = req.params.cpf;
-  const usuarios = lerUsuarios();
   const usuario = usuarios.find(u => u.cpf.replace(/\D/g, '') === cpf);
 
   if (!usuario || !usuario.boletos) {
-    return res.status(404).json([]);
   }
 
   res.json(usuario.boletos);
@@ -97,8 +62,6 @@ app.get('/usuarios/:cpf/cobrancas', (req, res) => {
 app.post('/usuarios/:cpf/cobrancas', (req, res) => {
   const { cpf } = req.params;
   const { descricao, vencimento, valor } = req.body;
-
-  let usuarios = lerUsuarios();
   const usuarioIndex = usuarios.findIndex(u => u.cpf.replace(/\D/g, '') === cpf);
 
   if (usuarioIndex === -1) {
@@ -122,7 +85,6 @@ app.post('/usuarios/:cpf/cobrancas', (req, res) => {
   }
 
   usuarios[usuarioIndex].boletos.push(novaCobranca);
-  salvarUsuarios(usuarios);
 
   res.json({ sucesso: true, mensagem: 'Cobrança criada com sucesso', cobranca: novaCobranca });
 });
@@ -132,8 +94,6 @@ app.patch('/usuarios/:cpf/cobrancas/:index', (req, res) => {
   const { cpf, index } = req.params;
   const i = parseInt(index);
   const { pago, descricao, vencimento, valor } = req.body;
-
-  let usuarios = lerUsuarios();
   const usuarioIndex = usuarios.findIndex(u => u.cpf.replace(/\D/g, '') === cpf);
 
   if (usuarioIndex === -1) {
@@ -152,7 +112,6 @@ app.patch('/usuarios/:cpf/cobrancas/:index', (req, res) => {
   if (vencimento !== undefined) cobranca.vencimento = vencimento;
   if (valor !== undefined) cobranca.valor = valor;
 
-  salvarUsuarios(usuarios);
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada com sucesso' });
 });
 
@@ -160,8 +119,6 @@ app.patch('/usuarios/:cpf/cobrancas/:index', (req, res) => {
 app.delete('/usuarios/:cpf/cobrancas/:index', (req, res) => {
   const { cpf, index } = req.params;
   const i = parseInt(index);
-
-  let usuarios = lerUsuarios();
   const usuarioIndex = usuarios.findIndex(u => u.cpf.replace(/\D/g, '') === cpf);
 
   if (usuarioIndex === -1) return res.status(404).json({ erro: 'Usuário não encontrado' });
@@ -171,12 +128,13 @@ app.delete('/usuarios/:cpf/cobrancas/:index', (req, res) => {
   }
 
   usuarios[usuarioIndex].boletos.splice(i, 1);
-  salvarUsuarios(usuarios);
+
 
   res.json({ sucesso: true, mensagem: 'Cobrança excluída com sucesso' });
 });
 
 // 🔁 Iniciar Servidor
+
 app.listen(PORT, () => {
-  console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:3000';
-const cpfAdm = '07036102284'; // sem pontuação
+const API_URL = 'https://app-70zj.onrender.com';
+const cpfAdm = localStorage.getItem('cpfAdm');
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('config-form');

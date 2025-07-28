@@ -1,5 +1,5 @@
+ const API_URL = 'https://app-70zj.onrender.com';
 document.addEventListener("DOMContentLoaded", async () => {
-  const API_URL = 'http://localhost:3000';
   const cpf = localStorage.getItem('cpf');
   const totalSpan = document.getElementById("total");
   const totalContainer = document.querySelector(".total-container");

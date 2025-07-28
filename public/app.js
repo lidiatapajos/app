@@ -1,9 +1,9 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://app-70zj.onrender.com';
 
 async function login() {
   const cpf = document.getElementById('cpf').value;
   const mensagem = document.getElementById('mensagem');
-  const cpfAdm = '07036102284';
+const cpfAdm = localStorage.getItem('cpfAdm');
 
   try {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
@@ -115,3 +115,4 @@ if ('serviceWorker' in navigator) {
     .then(reg => console.log('Service Worker registrado:', reg))
     .catch(err => console.error('Erro ao registrar o SW:', err));
 }
+
