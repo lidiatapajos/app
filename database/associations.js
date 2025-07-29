@@ -14,10 +14,10 @@ AdminTb.hasMany(ContaBancoTb,{onDelete: 'CASCADE'})
 ContaBancoTb.belongsTo(AdminTb);
 
 // associação entre responsavel e boleto
-BoletoTb.belongsTo(Responsavel_tb, {foreignKey:'sacado_id'})
+BoletoTb.belongsTo(Responsavel_tb, {as: 'sacado', foreignKey:'sacado_id'})
 Responsavel_tb.hasMany(BoletoTb, {foreignKey:'sacado_id'})
 
-// associação emtre admin e boleto
+// associação entre admin e boleto
 BoletoTb.belongsTo(AdminTb, { as: 'cedente', foreignKey: 'cedente_id' });
 AdminTb.hasMany(BoletoTb, { as: 'boletosCedente', foreignKey: 'cedente_id' });
 
@@ -33,4 +33,4 @@ AdminTb.hasMany(BoletoTb, { as: 'boletosAgencia', foreignKey: 'agencia_id' });
   }
 })();
 
-module.exports = { Responsavel_tb, FilhoTb, AdminTb, ContaBancoTb, BoletoTb };
+module.exports = { Responsavel_tb, FilhoTb, AdminTb, ContaBancoTb, BoletoTb};
