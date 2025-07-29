@@ -16,7 +16,7 @@ class Boleto{
             dia_liberacao:dia_liberaco,
             dia_vencimento:dia_vencimento,
             status:status,
-            agencia:cedente_id,
+            agencia_id:cedente_id,
         })
     }
     
@@ -95,3 +95,5 @@ class Boleto{
     
 
 }
+
+module.exports = Boleto;
