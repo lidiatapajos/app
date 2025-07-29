@@ -1,5 +1,5 @@
-const sequelize = require('./index')
-const DataTypes = require('sequelize')
+const sequelize = require("./index.js")
+const {DataTypes} = require("sequelize")
 
 
 const BoletoTb = sequelize.define("Boleto",{
@@ -12,4 +12,4 @@ const BoletoTb = sequelize.define("Boleto",{
     }
 )
 
-module.exports = BoletoTb
+module.exports = BoletoTb;
