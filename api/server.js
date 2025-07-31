@@ -78,6 +78,14 @@ app.post('/usuarios', async (req, res) => {
   res.status(201).json({ mensagem: 'Responsável criado com sucesso', data });
 });
 
+// excluir usuario
+async function excluirUsuario(cpf) {
+  if (!confirm("Excluir este usuário e todos os boletos?")) return;
+
+  await fetch(`${API_URL}/usuarios/${cpf}`, { method: "DELETE" });
+  await carregarUsuarios();
+}
+
 // 🔵 Buscar cobranças 
 app.get('/usuarios/:cpf/boletos', async (req, res) => {
   const cpf = req.params.cpf;

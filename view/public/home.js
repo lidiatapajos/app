@@ -34,3 +34,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     totalContainer.innerHTML = `<p style="color: red;">Erro ao carregar boletos.</p>`;
   }
 });
+
+function copiarPix(chave) {
+  navigator.clipboard.writeText(chave).then(() => {
+    alert("Chave Pix copiada!");
+  }).catch(() => {
+    alert("Erro ao copiar chave Pix.");
+  });
+}
