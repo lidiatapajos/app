@@ -9,16 +9,10 @@ const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-require('dotenv').config();
 
-const SUPABASE_URL = 'https://mriyckqgacainraogeif.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
-
-if (!SUPABASE_KEY) {
-  console.warn('⚠️ Atenção: SUPABASE_KEY está vazia. Verifique suas variáveis de ambiente.');
-}
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co';
+const supabaseKey = process.env.SUPABASE_KEY || 'SUA_CHAVE_DE_TESTE_AQUI'; // garantir que não quebre
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Middlewares
 app.use(express.json());
@@ -26,9 +20,9 @@ app.use(cors({
   origin: 'https://primeirospassosdigital.netlify.app'
 }));
 
+
 // Corrigido: pasta 'view/public'
 app.use(express.static(path.join(__dirname, '../view/public')));
-
 
 // Rota simples
 app.get('/', (req, res) => {

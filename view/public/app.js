@@ -1,9 +1,21 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
 
 async function login() {
-  const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+  const cpfInput = document.getElementById('cpf');
   const mensagem = document.getElementById('mensagem');
-  const cpfAdm = localStorage.getItem('cpfAdm');
+  const cpfAdm = '07036102284';  // CPF do admin fixo, só números sem pontuação
+
+
+  const cpf = cpfInput.value.replace(/\D/g, '');
+
+  if (!cpf) {
+    mensagem.textContent = 'Por favor, informe um CPF válido.';
+    mensagem.style.color = 'red';
+    return;
+  }
+
+  mensagem.textContent = 'Verificando...';
+  mensagem.style.color = 'black';
 
   try {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
@@ -19,7 +31,10 @@ async function login() {
     mensagem.style.color = 'green';
     localStorage.setItem('cpf', cpf);
 
-    window.location.href = (cpf === cpfAdm) ? 'adm.html' : 'home.html';
+    // Redirecionar depois de um pequeno delay para a mensagem ser vista
+    setTimeout(() => {
+      window.location.href = (cpf === cpfAdm) ? 'adm.html' : 'home.html';
+    }, 500);
 
   } catch (error) {
     console.error(error);
@@ -27,6 +42,7 @@ async function login() {
     mensagem.style.color = 'red';
   }
 }
+
 
 
 
