@@ -4,7 +4,7 @@ async function login() {
   const cpfInput = document.getElementById('cpf');
   const mensagem = document.getElementById('mensagem');
 
-  const cpf = cpfInput.value.replace(/\D/g, '');
+  const cpf = cpfInput.value.replace(/\D/g, ''); //limpa a formatação do que for digitado
 
   if (!cpf) {
     mensagem.textContent = 'Por favor, informe um CPF válido.';
