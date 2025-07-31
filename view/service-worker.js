@@ -24,7 +24,6 @@ const urlsToCache = [
   'public/css/login.css',
   'public/app.min.js',
   'public/adm.min.js',
-  'public/home.min.js',
   'public/adm.js',
   'public/img/icon-192.png',
   'public/img/icon-512.png',
