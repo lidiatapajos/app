@@ -46,7 +46,6 @@ async function login() {
 
 
 
-
 window.addEventListener('load', () => {
   const section = document.querySelector('.boleto');
   const cpf = localStorage.getItem('cpf');

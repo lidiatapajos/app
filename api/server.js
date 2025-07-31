@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/usuarios/:cpf', async (req, res) => {
-  const cpf = cpfInput.value.replace(/\D/g, '');
+  const cpf = req.params.cpf.replace(/\D/g, '');
   console.log("🔍 Buscando CPF:", cpf);
 
   // Primeiro, tenta encontrar em "admins"
