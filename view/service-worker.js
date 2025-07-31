@@ -1,4 +1,15 @@
 const CACHE_NAME = 'PassPay-cache-v1';
+caches.open(CACHE_NAME).then(async cache => {
+  for (const url of urlsToCache) {
+    try {
+      await cache.add(url);
+      console.log('✅ Cache OK:', url);
+    } catch (e) {
+      console.error('❌ Falha no cache:', url, e);
+    }
+  }
+});
+
 const urlsToCache = [
   '/',
   'index.html',
@@ -19,6 +30,8 @@ const urlsToCache = [
   'public/adm.js',
   'public/img/icon-192.png',
   'public/img/icon-512.png',
+  'screenshots/home.png',
+  'screenshots/tela-login.png'
 ];
 
 
