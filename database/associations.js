@@ -1,9 +1,36 @@
 const FilhoTb = require('../database/Filho.js');
 const Responsavel_tb = require("../database/Responsavel.js");
+const AdminTb = require('../database/Admin.js');
+const ContaBancoTb = require('../database/ContaBanco.js')
+const BoletoTb = require('../database/Boleto.js')
+const PagamentoTb = require('../database/Pagamento.js')
 const sequelize = require("./index.js");
 
+// Associação entre a tabela responsavel e tabela filho
 Responsavel_tb.hasMany(FilhoTb, { onDelete: 'CASCADE' });
 FilhoTb.belongsTo(Responsavel_tb);
+
+// Associação entre a tabela admin e tabela conta bancária
+AdminTb.hasMany(ContaBancoTb,{onDelete: 'CASCADE'});
+ContaBancoTb.belongsTo(AdminTb);
+
+// associação entre responsavel e boleto
+BoletoTb.belongsTo(Responsavel_tb, {as: 'sacado', foreignKey:'sacado_id'});
+Responsavel_tb.hasMany(BoletoTb, {foreignKey:'sacado_id'});
+
+// associação entre admin e boleto
+BoletoTb.belongsTo(AdminTb, { as: 'cedente', foreignKey: 'cedente_id' });
+AdminTb.hasMany(BoletoTb, { as: 'boletosCedente', foreignKey: 'cedente_id' });
+
+BoletoTb.belongsTo(AdminTb, { as: 'agencia', foreignKey: 'agencia_id' });
+AdminTb.hasMany(BoletoTb, { as: 'boletosAgencia', foreignKey: 'agencia_id' });
+
+// associação entre as tabelas boleto e pagamento
+PagamentoTb.belongsTo(BoletoTb, {as: 'boleto', foreignKey:'boleto_id'});
+BoletoTb.hasOne(PagamentoTb, {as: 'boletosPagamento', foreignKey:'boleto_id'});
+
+
+
 
 (async () => {
   try {
@@ -14,4 +41,4 @@ FilhoTb.belongsTo(Responsavel_tb);
   }
 })();
 
-module.exports = { Responsavel_tb, FilhoTb };
+module.exports = { Responsavel_tb, FilhoTb, AdminTb, ContaBancoTb, BoletoTb, PagamentoTb};

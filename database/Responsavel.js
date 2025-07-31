@@ -1,7 +1,5 @@
-// const Sequelize = require('sequelize')
-// const DataTypes = Sequelize.DataTypes
-const sequelize = require("./index.js")
-const DataTypes = require("sequelize")
+const {DataTypes} = require("sequelize")
+const sequelize = require("./index")
 
 const Responsavel_tb = sequelize.define('Responsavel',{
     nome:{type: DataTypes.STRING, allowNull: false} ,
@@ -14,8 +12,3 @@ const Responsavel_tb = sequelize.define('Responsavel',{
 });
 
 module.exports = Responsavel_tb;
-
-
-
-
-   

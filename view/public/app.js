@@ -1,12 +1,14 @@
-const API_URL = 'https://app-70zj.onrender.com';
+const API_URL = 'http://localhost:3000'; // ou sua URL na produção
+
 
 async function login() {
   const cpf = document.getElementById('cpf').value;
   const mensagem = document.getElementById('mensagem');
-const cpfAdm = localStorage.getItem('cpfAdm');
+  const cpfAdm = localStorage.getItem('cpfAdm');
 
+  
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}`);
+    const res = await fetch(`${API_URL}/usuarios/:cpf`);
     const result = await res.json();
 
     if (!result || result.erro) {
@@ -28,29 +30,30 @@ const cpfAdm = localStorage.getItem('cpfAdm');
   }
 }
 
-// Ao carregar a página do usuário
+
+
 window.addEventListener('load', () => {
-  const section = document.querySelector('.boletos');
+  const section = document.querySelector('.boleto');
   const cpf = localStorage.getItem('cpf');
 
   if (section && cpf) {
-    fetch(`${API_URL}/boletos/${cpf}`)
+    fetch(`${API_URL}/usuarios/${cpf}/boleto`) // <-- corrigido aqui
       .then(res => {
         if (!res.ok) throw new Error('Erro ao carregar cobranças');
         return res.json();
       })
-      .then(cobrancas => {
+      .then(boletos => {
         const lista = section.querySelector('ul');
         lista.innerHTML = '';
 
-        cobrancas.forEach(async (cobranca) => {
-          if (cobranca.pago) return;
+        boletos.forEach(boleto => {
+          if (boleto.pago) return;
 
           const li = document.createElement('li');
           li.innerHTML = `
-            <strong>${escapeHtml(cobranca.descricao)}</strong>: 
-            Vencimento: ${escapeHtml(cobranca.vencimento)} - 
-            Valor: R$ ${escapeHtml(cobranca.valor)}
+            <strong>${escapeHtml(boleto.descricao)}</strong>: 
+            Vencimento: ${escapeHtml(boleto.vencimento)} - 
+            Valor: R$ ${escapeHtml(String(boleto.valor))}
             <button>Gerar Pix</button>
           `;
 
@@ -58,16 +61,16 @@ window.addEventListener('load', () => {
           btn.addEventListener('click', async () => {
             try {
               const params = new URLSearchParams({
-                chave: 'suachavepix@exemplo.com',
-                valor: cobranca.valor,
-                nome: 'Associação',
-                cidade: 'Cidade XYZ'
+                chave: '79683428215', // chave Pix correta
+                valor: boleto.valor,
+                nome: 'Meu primeiro passos digital',
+                cidade: 'Cidade Soure'
               });
 
               const res = await fetch(`${API_URL}/pix?${params}`);
               const { qr } = await res.json();
 
-              window.open(qr, '_blank'); // Abre QR Code em nova aba
+              window.open(qr, '_blank');
 
             } catch (err) {
               alert('Erro ao gerar Pix.');
@@ -78,7 +81,7 @@ window.addEventListener('load', () => {
           lista.appendChild(li);
         });
 
-        atualizarTotalPagar(cobrancas);
+        atualizarTotalPagar(boletos);
       })
       .catch(error => {
         section.innerHTML = '<p>Erro ao carregar cobranças.</p>';
@@ -87,8 +90,11 @@ window.addEventListener('load', () => {
   }
 });
 
-function atualizarTotalPagar(cobrancas) {
-  const total = cobrancas.reduce((acc, c) => {
+
+
+
+function atualizarTotalPagar(boletos) {
+  const total = boletos.reduce((acc, c) => {
     if (!c.pago) {
       const valor = parseFloat(c.valor.replace(',', '.')) || 0;
       return acc + valor;
@@ -101,13 +107,16 @@ function atualizarTotalPagar(cobrancas) {
     totalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
   }
 }
-
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+    .replace(/\//g, '&#x2F;');
 }
+
 
 
 if ('serviceWorker' in navigator) {

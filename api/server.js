@@ -10,22 +10,35 @@ const { cpf: cpfValidator } = require('cpf-cnpj-validator');
 const { PixQRCode } = require('pix-qrcode');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const sequelize = require('../database/index.js');
+
 
 // Middlewares
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../public')));
+
+
+
+// Corrigido: pasta 'view/public'
+app.use(express.static(path.join(__dirname, '../view/public')));
+
 
 const usuariosPath = path.join(__dirname, 'usuarios.json');
 
-app.use((req, res, next) => {
+app.get('/', (req, res) => {
+  res.send('API online!');
+});
+
+
+
+/*app.use((req, res, next) => {
   const cpf = req.headers['x-cpf']; // Exemplo: CPF enviado no header
   if (cpf !== '07036102284') {
     return res.status(403).json({ erro: 'Acesso negado' });
   }
   next();
-});
+});*/
 
 // 🔵 Buscar todos os usuários
   app.get('/usuarios', async (req, res) => {
@@ -67,94 +80,76 @@ app.post('/usuarios', (req, res) => {
 });
 
 
-// 🔵 Buscar cobranças (ex-boletos)
-app.get('/usuarios/:cpf/cobrancas', (req, res) => {
+// 🔵 Buscar cobranças 
+const Boleto = require('../database/Boleto.js'); // ou onde estiver seu arquivo
+
+app.get('/usuarios/:cpf/Boletos', async (req, res) => {
   const cpf = req.params.cpf;
-  const usuario = usuarios.find(u => u.cpf.replace(/\D/g, '') === cpf);
 
-  if (!usuario || !usuario.boletos) {
-  }
+  const usuario = await Responsavel.findOne({
+    where: { cpf },
+    include: [Boleto]
+  });
 
-  res.json(usuario.boletos);
+  if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado' });
+
+  res.json(usuario.boletos); // Sequelize coloca como plural se não configurar
 });
 
+
 // 🟢 Criar cobrança Pix
-app.post('/usuarios/:cpf/cobrancas', (req, res) => {
+app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const { cpf } = req.params;
   const { descricao, vencimento, valor } = req.body;
-  const usuarioIndex = usuarios.findIndex(u => u.cpf.replace(/\D/g, '') === cpf);
-
-  if (usuarioIndex === -1) {
-    return res.status(404).json({ erro: 'Usuário não encontrado' });
-  }
-
   const chavePix = '79683428215';
+
+  const usuario = await Responsavel.findOne({ where: { cpf } });
+  if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado' });
+
   const qrCodePix = gerarBRCodePix(chavePix, valor, descricao);
 
-  const novaCobranca = {
+  const nova = await Boleto.create({
+    responsavelCpf: cpf,
     descricao,
     vencimento,
     valor,
-    pago: false,
     chavePix,
     qrCodePix
-  };
+  });
 
-  if (!usuarios[usuarioIndex].boletos) {
-    usuarios[usuarioIndex].boletos = [];
-  }
-
-  usuarios[usuarioIndex].boletos.push(novaCobranca);
-
-  res.json({ sucesso: true, mensagem: 'Cobrança criada com sucesso', cobranca: novaCobranca });
+  res.json({ sucesso: true, boleto: nova });
 });
+
 
 // 🟡 Atualizar cobrança
-app.patch('/usuarios/:cpf/cobrancas/:index', (req, res) => {
-  const { cpf, index } = req.params;
-  const i = parseInt(index);
-  const { pago, descricao, vencimento, valor } = req.body;
-  const usuarioIndex = usuarios.findIndex(u => u.cpf.replace(/\D/g, '') === cpf);
+app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
+  const { cpf, id } = req.params;
+  const updates = req.body;
 
-  if (usuarioIndex === -1) {
-    return res.status(404).json({ erro: 'Usuário não encontrado' });
-  }
+  const Boleto = await Boleto.findOne({ where: { id, responsavelCpf: cpf } });
+  if (!Boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
 
-  const cobrancas = usuarios[usuarioIndex].boletos || [];
+  await Boleto.update(updates);
 
-  if (!Array.isArray(cobrancas) || i < 0 || i >= cobrancas.length) {
-    return res.status(400).json({ erro: 'Índice inválido' });
-  }
-
-  const cobranca = cobrancas[i];
-  if (pago !== undefined) cobranca.pago = pago === true;
-  if (descricao !== undefined) cobranca.descricao = descricao;
-  if (vencimento !== undefined) cobranca.vencimento = vencimento;
-  if (valor !== undefined) cobranca.valor = valor;
-
-  res.json({ sucesso: true, mensagem: 'Cobrança atualizada com sucesso' });
+  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca });
 });
 
+
+
 // 🔴 Excluir cobrança
-app.delete('/usuarios/:cpf/cobrancas/:index', (req, res) => {
-  const { cpf, index } = req.params;
-  const i = parseInt(index);
-  const usuarioIndex = usuarios.findIndex(u => u.cpf.replace(/\D/g, '') === cpf);
+app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
+  const { cpf, id } = req.params;
 
-  if (usuarioIndex === -1) return res.status(404).json({ erro: 'Usuário não encontrado' });
+  const boleto = await boleto.findOne({ where: { id, responsavelCpf: cpf } });
+  if (!boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
 
-  if (!Array.isArray(usuarios[usuarioIndex].boletos) || i < 0 || i >= usuarios[usuarioIndex].boletos.length) {
-    return res.status(400).json({ erro: 'Índice inválido' });
-  }
+  await boleto.destroy();
 
-  usuarios[usuarioIndex].boletos.splice(i, 1);
-
-
-  res.json({ sucesso: true, mensagem: 'Cobrança excluída com sucesso' });
+  res.json({ sucesso: true, mensagem: 'Cobrança removida' });
 });
 
 // 🔁 Iniciar Servidor
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log('Servidor rodando na porta 3000');
 });
