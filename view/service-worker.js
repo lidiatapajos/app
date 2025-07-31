@@ -1,15 +1,4 @@
 const CACHE_NAME = 'PassPay-cache-v1';
-caches.open(CACHE_NAME).then(async cache => {
-  for (const url of urlsToCache) {
-    try {
-      await cache.add(url);
-      console.log('✅ Cache OK:', url);
-    } catch (e) {
-      console.error('❌ Falha no cache:', url, e);
-    }
-  }
-});
-
 const urlsToCache = [
   '/',
   'index.html',
