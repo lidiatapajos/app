@@ -3,8 +3,6 @@ const API_URL = 'https://primeiros-passos-digital.onrender.com';
 async function login() {
   const cpfInput = document.getElementById('cpf');
   const mensagem = document.getElementById('mensagem');
-  const cpfAdm = '07036102284';  // CPF do admin fixo, só números sem pontuação
-
 
   const cpf = cpfInput.value.replace(/\D/g, '');
 
@@ -31,9 +29,10 @@ async function login() {
     mensagem.style.color = 'green';
     localStorage.setItem('cpf', cpf);
 
-    // Redirecionar depois de um pequeno delay para a mensagem ser vista
+    const isAdmin = result.type === 'adm';  // espera que o backend retorne essa info
+
     setTimeout(() => {
-      window.location.href = (cpf === cpfAdm) ? 'adm.html' : 'home.html';
+      window.location.href = isAdmin ? 'adm.html' : 'home.html';
     }, 500);
 
   } catch (error) {
@@ -42,6 +41,7 @@ async function login() {
     mensagem.style.color = 'red';
   }
 }
+
 
 
 
