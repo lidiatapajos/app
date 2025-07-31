@@ -11,8 +11,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 require('dotenv').config();
 
-const { createClient } = require('@supabase/supabase-js');
-
 const SUPABASE_URL = 'https://mriyckqgacainraogeif.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
