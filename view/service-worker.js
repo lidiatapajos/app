@@ -12,28 +12,25 @@ caches.open(CACHE_NAME).then(async cache => {
 
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/adm.html',
-  '/boletos.html',
-  '/comprovantes.html',
-  '/configurar-boletos.html',
-  '/editar-contato.html',
-  '/home.html',
-  '/manifest.json',
-  '/css/adm.css',
-  '/css/home.css',
-  '/css/login.css',
-  '/app.js',
-  '/app.min.js',
-  '/adm.js',
-  '/adm.min.js',
-  '/home.js',
-  '/configurar-boletos.js',
-  '/configurar-boletos.min.js',
-  '/screenshots/home.png',
-  '/screenshots/tela-login.png',
+  'index.html',
+  'home.html',
+  'editar-contato.html',
+  'adm.html',
+  'comprovantes.html',
+  'configurar-boletos.html',
+  'manifest.json',
+  'public/css/adm.css',
+  'public/css/home.css',
+  'public/css/login.css',
+  'public/app.min.js',
+  'public/adm.min.js',
+  'public/home.min.js',
+  'public/adm.js',
+  'public/img/icon-192.png',
+  'public/img/icon-512.png',
+  'public/screenshots/home.png',
+  'public/screenshots/tela-login.png'
 ];
-
 
 
 
