@@ -1,14 +1,12 @@
-const API_URL = 'http://localhost:3000'; // ou sua URL na produção
-
+const API_URL = 'https://primeiros-passos-digital.onrender.com';
 
 async function login() {
   const cpf = document.getElementById('cpf').value;
   const mensagem = document.getElementById('mensagem');
   const cpfAdm = localStorage.getItem('cpfAdm');
 
-  
   try {
-    const res = await fetch(`${API_URL}/usuarios/:cpf`);
+    const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     const result = await res.json();
 
     if (!result || result.erro) {
@@ -29,6 +27,7 @@ async function login() {
     mensagem.style.color = 'red';
   }
 }
+
 
 
 

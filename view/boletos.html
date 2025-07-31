@@ -8,10 +8,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="icon" href="../public/img/icon-192.png" type="image/png" />
-    <link rel="manifest" href="../view/manifest.json
-
-on" />
+    <link rel="icon" href="public/img/icon-192.png" type="image/png" />
+    <link rel="manifest" href="manifest.json" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
       * {
@@ -221,7 +219,7 @@ on" />
           return;
         }
 
-        fetch(`http://localhost:3000/boletos/${cpf}`)
+        fetch(`https://primeiros-passos-digital.onrender.com/boletos/${cpf}`)
           .then((res) => res.json())
           .then((boletos) => {
             const lista = document.getElementById("lista-boletos");
@@ -280,7 +278,7 @@ on" />
         const valor = boleto.valor.replace(",", ".");
 
         fetch(
-          `http://localhost:3000/pix?chave=contato@boletos.com&valor=${valor}&nome=Cliente%20App&cidade=Sao%20Paulo`
+          `https://primeiros-passos-digital.onrender.com/pix?chave=contato@boletos.com&valor=${valor}&nome=Cliente%20App&cidade=Sao%20Paulo`
         )
           .then((res) => res.json())
           .then((data) => {
