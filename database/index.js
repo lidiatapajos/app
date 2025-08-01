@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
   'postgres',            // nome do banco
   'postgres',            // usuário
-  'Passinhos2025',      // senha do Supabase (coloca sua real)
+  'Passinhos2025',      // senha 
   {
     host: 'mriyckqgacainraogeif.supabase.co',
     dialect: 'postgres',
