@@ -29,21 +29,35 @@ app.get('/', (req, res) => {
   res.send('API online!');
 });
 
-// 🔵 Buscar todos os usuários
-app.get('/usuarios', async (req, res) => {
-  console.log('Testando', req)
-  const { data, error } = await supabase.from('responsavel').select('*');
-  if (error) return res.status(500).json({ erro: error.message });
+app.get('/usuarios/:cpf', async (req, res) => {
+  const cpf = req.params.cpf.replace(/\D/g, '');
+
+  // Tenta buscar em responsaveis
+  let { data, error } = await supabase
+    .from('responsaveis')
+    .select('*')
+    .eq('cpf', cpf)
+    .single();
+
+  // Se não achou, tenta buscar em admins
+  if (error) {
+    const adminResult = await supabase
+      .from('admins')
+      .select('*')
+      .eq('cpf', cpf)
+      .single();
+
+    data = adminResult.data;
+    error = adminResult.error;
+  }
+
+  if (error || !data) {
+    return res.status(404).json({ erro: 'Usuário não encontrado' });
+  }
+
   res.json(data);
 });
 
-// 🔵 Buscar usuário por CPF
-app.get('/usuarios/:cpf', async (req, res) => {
-  const cpf = req.params.cpf.replace(/\D/g, ''); 
-  const { data, error } = await supabase.from('responsavel').select('*').eq('cpf', cpf).single();
-  if (error) return res.status(404).json({ erro: 'Usuário não encontrado' });
-  res.json(data);
-});
 
 // 🟢 Criar novo usuário
 app.post('/usuarios', async (req, res) => {
