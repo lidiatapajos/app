@@ -13,16 +13,20 @@ const PORT = process.env.PORT || 3000;
 const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co';
 const supabaseKey = process.env.SUPABASE_KEY || 'SUA_CHAVE_DE_TESTE_AQUI'; // garantir que não quebre
 const supabase = createClient(supabaseUrl, supabaseKey);
+if (!process.env.SUPABASE_KEY) {
+  console.error('❌ SUPABASE_KEY não configurada!');
+  process.exit(1);
+}
 
 // Middlewares
 app.use(express.json());
 app.use(cors({
   origin: 'https://primeirospassosdigital.netlify.app'
 }));
-app.use(bodyParser.json());
 
 // Corrigido: pasta 'view/public'
 app.use(express.static(path.join(__dirname, '../view/public')));
+
 
 // Rota simples
 app.get('/', (req, res) => {
@@ -31,28 +35,30 @@ app.get('/', (req, res) => {
 
 app.get('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf.replace(/\D/g, '');
+  console.log("🔍 Buscando CPF:", cpf);
 
-  // Tenta buscar em responsaveis
+  // Primeiro, tenta encontrar em "admins"
   let { data, error } = await supabase
-    .from('responsaveis')
+    .from('admins')
     .select('*')
     .eq('cpf', cpf)
     .single();
 
-  // Se não achou, tenta buscar em admins
-  if (error) {
-    const adminResult = await supabase
-      .from('admins')
+  // Se não achou, tenta em "responsaveis"
+  if (error || !data) {
+    const respResult = await supabase
+      .from('responsaveis')
       .select('*')
       .eq('cpf', cpf)
       .single();
 
-    data = adminResult.data;
-    error = adminResult.error;
+    data = respResult.data;
+    error = respResult.error;
   }
 
+  // Se ainda não achou, retorna erro
   if (error || !data) {
-    return res.status(404).json({ erro: 'Usuário não encontrado' });
+    return res.status(404).json({ erro: 'CPF não encontrado em nenhum lugar.' });
   }
 
   res.json(data);
