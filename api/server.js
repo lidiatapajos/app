@@ -45,7 +45,7 @@ app.get('/usuarios/:cpf', async (req, res) => {
 
   // Se não achou admin, tenta na tabela usuarios
   let { data: userData, error: userError } = await supabase
-    .from('usuarios')
+    .from('responsaveis')
     .select('*')
     .eq('cpf', cpf)
     .single();
