@@ -11,11 +11,16 @@ const { PixQRCode } = require('pix-qrcode');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const sequelize = require('../database/index.js');
-
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://primeirospassosdigital.netlify.app' // ou '*' para testes
+}));
 app.use(bodyParser.json());
 
 
@@ -41,112 +46,127 @@ app.get('/', (req, res) => {
 });*/
 
 // 🔵 Buscar todos os usuários
-  app.get('/usuarios', async (req, res) => {
-  const responsavel = new Responsavel()
-  const todos_responsaveis = await responsavel.Selecionar_Todos_Responsaveis()
-  res.json(todos_responsaveis);
-});
-
+app.get('/usuarios', async (req, res) => {
+  const { data, error } = await supabase.from('responsavel').select('*')
+  if (error) return res.status(500).json({ erro: error.message })
+  res.json(data)
+})
 // 🔵 Buscar usuário por CPF
 app.get('/usuarios/:cpf', async (req, res) => {
-  const cpf = req.params.cpf;
-  
-  const usuarios = new Responsavel();
-  const usuario_especifico = await usuarios.Selecionar_Responsavel_Especifico(cpf);
-  
-  if (!usuario_especifico) return res.status(404).json({ erro: 'Usuário não encontrado' });
-  res.json(usuario_especifico);
-
-});
+  const cpf = req.params.cpf
+  const { data, error } = await supabase.from('responsavel').select('*').eq('cpf', cpf).single()
+  if (error) return res.status(404).json({ erro: 'Usuário não encontrado' })
+  res.json(data)
+})
 
 // 🟢 Criar novo usuário
-app.post('/usuarios', (req, res) => {
-  
-  const { cpf, nome, email, telefone, nome_filho, boletos = [] } = req.body;
+app.post('/usuarios', async (req, res) => {
+  const { cpf, nome, email, telefone, nome_filho, boletos = [] } = req.body
 
-  // if (!cpfValidator.isValid(cpf)) {
-  //   return res.status(400).json({ erro: `CPF inválido ${cpf}`});
-  // }
+  if (!cpfValidator.isValid(cpf)) {
+    return res.status(400).json({ erro: `CPF inválido: ${cpf}` })
+  }
 
-  // if (usuarios.find(u => u.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, ''))) {
-  //   return res.status(400).json({ erro: 'Usuário já existe' });
-  // }
+   // Verificar se já existe
+  const { data: exists } = await supabase.from('responsavel').select('cpf').eq('cpf', cpf).single()
+  if (exists) return res.status(400).json({ erro: 'Usuário já existe' })
 
-  const responsavel = new Responsavel()
-  responsavel.Criar_responsavel(nome, cpf, email, telefone, nome_filho)
+  const { data, error } = await supabase.from('responsavel').insert([{ cpf, nome, email, telefone }])
+  if (error) return res.status(500).json({ erro: error.message })
 
-  res.status(201).json({mesagem: "Responsavel criado com sucesso"})
-
-});
+  res.status(201).json({ mensagem: 'Responsável criado com sucesso', data })
+})
 
 
 // 🔵 Buscar cobranças 
-const Boleto = require('../database/Boleto.js'); // ou onde estiver seu arquivo
+app.get('/usuarios/:cpf/boletos', async (req, res) => {
+  const cpf = req.params.cpf
 
-app.get('/usuarios/:cpf/Boletos', async (req, res) => {
-  const cpf = req.params.cpf;
+  const { data, error } = await supabase
+    .from('boletos')
+    .select('*')
+    .eq('responsavelCpf', cpf)
 
-  const usuario = await Responsavel.findOne({
-    where: { cpf },
-    include: [Boleto]
-  });
+  if (error) return res.status(404).json({ erro: 'Cobranças não encontradas' })
 
-  if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado' });
-
-  res.json(usuario.boletos); // Sequelize coloca como plural se não configurar
-});
+  res.json(data)
+})
 
 
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
-  const { cpf } = req.params;
-  const { descricao, vencimento, valor } = req.body;
-  const chavePix = '79683428215';
+  const cpf = req.params.cpf
+  const { descricao, vencimento, valor } = req.body
+  const chavePix = '79683428215'
 
-  const usuario = await Responsavel.findOne({ where: { cpf } });
-  if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado' });
+  // Verifica se o responsável existe
+  const { data: responsavel } = await supabase.from('responsavel').select('cpf').eq('cpf', cpf).single()
+  if (!responsavel) return res.status(404).json({ erro: 'Usuário não encontrado' })
 
-  const qrCodePix = gerarBRCodePix(chavePix, valor, descricao);
-
-  const nova = await Boleto.create({
+  const { data, error } = await supabase.from('boletos').insert([{
     responsavelCpf: cpf,
     descricao,
     vencimento,
     valor,
     chavePix,
-    qrCodePix
-  });
+    status: 'gerado'
+  }])
 
-  res.json({ sucesso: true, boleto: nova });
-});
+  if (error) return res.status(500).json({ erro: error.message })
+
+  res.status(201).json({ sucesso: true, boleto: data[0] })
+})
 
 
 // 🟡 Atualizar cobrança
 app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
-  const { cpf, id } = req.params;
-  const updates = req.body;
+  const { cpf, id } = req.params
+  const updates = req.body
 
-  const Boleto = await Boleto.findOne({ where: { id, responsavelCpf: cpf } });
-  if (!Boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
+  const { data: boleto, error: findError } = await supabase
+    .from('boletos')
+    .select('*')
+    .eq('id', id)
+    .eq('responsavelCpf', cpf)
+    .single()
 
-  await Boleto.update(updates);
+  if (findError) return res.status(404).json({ erro: 'Cobrança não encontrada' })
 
-  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca });
-});
+  const { data, error } = await supabase
+    .from('boletos')
+    .update(updates)
+    .eq('id', id)
+    .eq('responsavelCpf', cpf)
 
+  if (error) return res.status(500).json({ erro: error.message })
+
+  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] })
+})
 
 
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
-  const { cpf, id } = req.params;
+  const { cpf, id } = req.params
 
-  const boleto = await boleto.findOne({ where: { id, responsavelCpf: cpf } });
-  if (!boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
+  const { data: boleto, error: findError } = await supabase
+    .from('boletos')
+    .select('*')
+    .eq('id', id)
+    .eq('responsavelCpf', cpf)
+    .single()
 
-  await boleto.destroy();
+  if (findError) return res.status(404).json({ erro: 'Cobrança não encontrada' })
 
-  res.json({ sucesso: true, mensagem: 'Cobrança removida' });
-});
+  const { error } = await supabase
+    .from('boletos')
+    .delete()
+    .eq('id', id)
+    .eq('responsavelCpf', cpf)
+
+  if (error) return res.status(500).json({ erro: error.message })
+
+  res.json({ sucesso: true, mensagem: 'Cobrança removida' })
+})
 
 // 🔁 Iniciar Servidor
 

@@ -13,26 +13,26 @@
   "description": "Aplicativo para gerenciamento de boletos escolares da escola de reforço Primeiros Passos",
   "icons": [
     {
-      "src": "../public/img/icon-192.png",
+      "src": "public/img/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "../public/img/icon-512.png",
+      "src": "public/img/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "screenshots": [
     {
-      "src": "../public/screenshots/tela-login.png",
+      "src": "public/screenshots/tela-login.png",
       "sizes": "387x867",
       "type": "image/png",
       "form-factor": "mobile",
       "label": "Tela de login"
     },
     {
-      "src": "../public/screenshots/home.png",
+      "src": "public/screenshots/home.png",
       "sizes": "392x869",
       "type": "image/png",
       "form_factor": "wide",
