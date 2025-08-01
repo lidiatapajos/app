@@ -31,6 +31,7 @@ app.get('/', (req, res) => {
 
 // 🔵 Buscar todos os usuários
 app.get('/usuarios', async (req, res) => {
+  console.log('Testando', req)
   const { data, error } = await supabase.from('responsavel').select('*');
   if (error) return res.status(500).json({ erro: error.message });
   res.json(data);
