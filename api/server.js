@@ -10,8 +10,8 @@ const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co';
-const supabaseKey = process.env.SUPABASE_KEY || 'SUA_CHAVE_DE_TESTE_AQUI'; // garantir que não quebre
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Middlewares
@@ -44,10 +44,12 @@ console.log('Data admins:', data);
 if (error || !data) {
   console.log('Tentando na tabela responsaveis...');
   const respResult = await supabase
-    .from('responsaveis')
-    .select('*')
-    .eq('cpf', cpf)
-    .single();
+  .from('responsaveis')
+  .select('*')
+  .eq('cpf', cpf)
+  .limit(1)  // <- aqui!
+  .maybeSingle(); // <- ou pode tirar o .single() e tratar como array
+
 
   console.log('Erro responsaveis:', respResult.error);
   console.log('Data responsaveis:', respResult.data);

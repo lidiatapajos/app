@@ -1,5 +1,4 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yaXlja3FnYWNhaW5yYW9nZWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5MTQzODQsImV4cCI6MjA2OTQ5MDM4NH0.vFwF-gtvH_LTMrN5DJUPYNjxn_EvO7LgDBZwogoRqgI';
 const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co'
 const supabaseKey = process.env.SUPABASE_KEY
 const supabase = createClient(supabaseUrl, supabaseKey)
@@ -33,7 +32,7 @@ async function login() {
     mensagem.style.color = 'green';
     localStorage.setItem('cpf', cpf);
 
-    const isAdmin = result.type === 'adm';  // espera que o backend retorne essa info
+    const isAdmin = result.type === 'admin';  // espera que o backend retorne essa info
 
     setTimeout(() => {
       window.location.href = isAdmin ? 'adm.html' : 'home.html';
