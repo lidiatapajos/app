@@ -28,37 +28,41 @@ app.use(express.static(path.join(__dirname, '../view/public')));
 app.get('/', (req, res) => {
   res.send('API online!');
 });
-
 app.get('/usuarios/:cpf', async (req, res) => {
-  const cpf = req.params.cpf.replace(/\D/g,'');
+  const cpf = req.params.cpf.replace(/\D/g, '');
   console.log("🔍 Buscando CPF:", cpf);
 
-  // Primeiro, tenta encontrar em "admins"
   let { data, error } = await supabase
     .from('admins')
     .select('*')
     .eq('cpf', cpf)
     .single();
 
-  // Se não achou, tenta em "responsaveis"
-  if (error || !data) {
-    const respResult = await supabase
-      .from('responsaveis')
-      .select('*')
-      .eq('cpf', cpf)
-      .single();
+ console.log('Erro admins:', error);
+console.log('Data admins:', data);
 
-    data = respResult.data;
-    error = respResult.error;
-  }
+if (error || !data) {
+  console.log('Tentando na tabela responsaveis...');
+  const respResult = await supabase
+    .from('responsaveis')
+    .select('*')
+    .eq('cpf', cpf)
+    .single();
 
-  // Se ainda não achou, retorna erro
-  if (error || !data) {
-    return res.status(404).json({ erro: 'CPF não encontrado em nenhum lugar.' });
+  console.log('Erro responsaveis:', respResult.error);
+  console.log('Data responsaveis:', respResult.data);
+
+
+    if (respResult.error || !respResult.data) {
+      return res.status(404).json({ erro: 'CPF não encontrado em nenhum lugar.' });
+    } else {
+      return res.json(respResult.data);
+    }
   }
 
   res.json(data);
 });
+
 
 
 // 🟢 Criar novo usuário

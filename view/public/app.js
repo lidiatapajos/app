@@ -1,4 +1,7 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
+const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 async function login() {
   const cpfInput = document.getElementById('cpf');
