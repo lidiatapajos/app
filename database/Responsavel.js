@@ -11,4 +11,4 @@ const Responsavel_tb = sequelize.define('Responsavel',{
     freezeTableName:true,
 });
 
-export default Responsavel_tb;
+module.exports = Responsavel_tb;

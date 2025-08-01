@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node api/server.js"
   },
-  "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^2.53.0",
     "bcrypt": "^6.0.0",
