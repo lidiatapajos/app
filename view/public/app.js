@@ -1,7 +1,7 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
 
 async function login() {
-  const cpf = document.getElementById('cpf').value;
+  const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
   const mensagem = document.getElementById('mensagem');
   const cpfAdm = localStorage.getItem('cpfAdm');
 

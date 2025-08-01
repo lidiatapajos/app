@@ -38,7 +38,7 @@ app.get('/usuarios', async (req, res) => {
 
 // 🔵 Buscar usuário por CPF
 app.get('/usuarios/:cpf', async (req, res) => {
-  const cpf = req.params.cpf;
+  const cpf = req.params.cpf.replace(/\D/g, ''); 
   const { data, error } = await supabase.from('responsavel').select('*').eq('cpf', cpf).single();
   if (error) return res.status(404).json({ erro: 'Usuário não encontrado' });
   res.json(data);
