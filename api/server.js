@@ -28,44 +28,34 @@ app.use(cors({
 app.use(express.static(path.join(__dirname, '../view/public')));
 
 // Rota simples
-app.get('/', (req, res) => {
-  res.send('API online!');
-});
 app.get('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf.replace(/\D/g, '');
   console.log("🔍 Buscando CPF:", cpf);
 
-  let { data, error } = await supabase
+  // Tenta achar na tabela admins
+  let { data: adminData, error: adminError } = await supabase
     .from('admins')
     .select('*')
     .eq('cpf', cpf)
     .single();
 
- console.log('Erro admins:', error);
-console.log('Data admins:', data);
-
-if (error || !data) {
-  console.log('Tentando na tabela responsaveis...');
-  const respResult = await supabase
-  .from('responsaveis')
-  .select('*')
-  .eq('cpf', cpf)
-  .limit(1)  // <- aqui!
-  .maybeSingle(); // <- ou pode tirar o .single() e tratar como array
-
-
-  console.log('Erro responsaveis:', respResult.error);
-  console.log('Data responsaveis:', respResult.data);
-
-
-    if (respResult.error || !respResult.data) {
-      return res.status(404).json({ erro: 'CPF não encontrado em nenhum lugar.' });
-    } else {
-      return res.json(respResult.data);
-    }
+  if (!adminError && adminData) {
+    return res.json({ erro: false, data: adminData, type: 'admin' });
   }
 
-  res.json(data);
+  // Se não achou admin, tenta na tabela usuarios
+  let { data: userData, error: userError } = await supabase
+    .from('usuarios')
+    .select('*')
+    .eq('cpf', cpf)
+    .single();
+
+  if (userError || !userData) {
+    return res.json({ erro: true, mensagem: 'CPF não encontrado.' });
+  }
+
+  // Achou usuário normal
+  return res.json({ erro: false, data: userData, type: 'user' });
 });
 
 
