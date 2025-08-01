@@ -1,10 +1,10 @@
 // const Responsavel = require('../models/User')
 // import Responsavel_tb from '../database/Responsavel';
-const Responsavel = require('../models/Responsavel.js')
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const path = require('path');
+import Responsavel from '../models/Responsavel.js';
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import path from 'path';
 const fs = require('fs');
 const { cpf: cpfValidator } = require('cpf-cnpj-validator');
 const { PixQRCode } = require('pix-qrcode');
