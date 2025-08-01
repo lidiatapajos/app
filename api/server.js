@@ -9,14 +9,19 @@ const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+require('dotenv').config();
 
-const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co';
-const supabaseKey = process.env.SUPABASE_KEY || 'SUA_CHAVE_DE_TESTE_AQUI'; // garantir que não quebre
-const supabase = createClient(supabaseUrl, supabaseKey);
-if (!process.env.SUPABASE_KEY) {
-  console.error('❌ SUPABASE_KEY não configurada!');
-  process.exit(1);
+const express = require('express');
+const { createClient } = require('@supabase/supabase-js');
+
+const SUPABASE_URL = 'https://mriyckqgacainraogeif.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+
+if (!SUPABASE_KEY) {
+  console.warn('⚠️ Atenção: SUPABASE_KEY está vazia. Verifique suas variáveis de ambiente.');
 }
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Middlewares
 app.use(express.json());
