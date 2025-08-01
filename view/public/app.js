@@ -31,10 +31,10 @@ async function login() {
 
     mensagem.textContent = 'Login realizado com sucesso!';
     mensagem.style.color = 'green';
-    localStorage.setItem('cpf', cpf);
+    
 
      localStorage.setItem('cpf', cpf);
-  localStorage.setItem('userType', result.type);
+     localStorage.setItem('userType', result.type);
 
     const isAdmin = result.type === 'admin';  // espera que o backend retorne essa info
 
