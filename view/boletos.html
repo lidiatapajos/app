@@ -38,12 +38,16 @@
       .navbar .logo {
         font-size: 1.5rem;
         font-weight: bold;
+        flex: 1;
+        text-align: center;
       }
 
       .navbar .nav-links {
         display: flex;
         align-items: center;
         gap: 20px;
+        min-width: 80px;
+        justify-content: center;
       }
 
       .navbar .nav-links a {
@@ -196,17 +200,21 @@
   </head>
   <body>
     <header class="navbar">
-      <div class="logo">Primeiros Passos Digital</div>
+      <a href="home.html" title="Voltar"><i class="fas fa-arrow-left"></i></a>
       <nav class="nav-links">
-        <a href="home.html"><i class="fas fa-home"></i></a>
-        <a href="index.html" onclick="localStorage.clear()" title="Sair">Sair</a>
+        <div class="logo">Primeiros Passos Digital</div>
+        <a href="index.html" onclick="localStorage.clear()" title="Sair"
+          >Sair</a
+        >
       </nav>
     </header>
 
     <main class="container">
       <h1>Cobranças Pendentes</h1>
       <ul id="lista-boletos"></ul>
-      <p id="mensagem-boletos" style="display: none">Você não tem cobranças pendentes.</p>
+      <p id="mensagem-boletos" style="display: none">
+        Você não tem cobranças pendentes.
+      </p>
     </main>
 
     <script src="public/boletos.js"></script>
