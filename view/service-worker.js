@@ -15,6 +15,7 @@ const urlsToCache = [
   'public/app.min.js',
   'public/adm.min.js',
   'public/adm.js',
+  'public/boletos.js',
   'public/img/icon-192.png',
   'public/img/icon-512.png',
   'public/screenshots/home.png',
