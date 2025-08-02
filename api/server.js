@@ -27,6 +27,20 @@ app.use(cors({
 // Corrigido: pasta 'view/public'
 app.use(express.static(path.join(__dirname, '../view/public')));
 
+// 🔵 Rota para listar todos os usuários (responsáveis)
+app.get('/usuarios', async (req, res) => {
+  const { data, error } = await supabase
+    .from('responsaveis')
+    .select('*');
+
+  if (error) {
+    console.error("Erro ao buscar usuários:", error.message);
+    return res.status(500).json({ erro: true, mensagem: 'Erro ao buscar usuários.' });
+  }
+
+  res.json(data); // aqui você envia a lista para o frontend
+});
+
 // Rota simples
 app.get('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf.replace(/\D/g, '');
