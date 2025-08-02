@@ -115,7 +115,18 @@ async function excluirUsuario(cpf) {
   await carregarUsuarios();
 }
 
-async function configurarBoletos() {}
+async function configurarBoletos() {
+  const config = localStorage.getItem('configBoletos');
+  if (!config) {
+    const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
+    if (desejaConfigurar) {
+      window.location.href = 'configurar-boletos.html';
+    } else {
+      const padrao = { diaLiberacao: 4, diaVencimento: 28 };
+      localStorage.setItem('configBoletos', JSON.stringify(padrao));
+    }
+  }
+}
 
 function logout() {
   localStorage.clear();
@@ -193,20 +204,6 @@ async function editarBoletoPrompt(cpf, id) {
 
   await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ descricao, vencimento, valor })
-  });
-  await carregarUsuarios();
-}
-
-async function adicionarBoleto(cpf) {
-  const descricao = prompt("Descrição do boleto:");
-  const vencimento = prompt("Vencimento (dd/mm/aaaa):");
-  const valor = prompt("Valor:");
-  if (!descricao || !vencimento || !valor) return;
-
-  await fetch(`${API_URL}/usuarios/${cpf}/boletos`, {
-    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ descricao, vencimento, valor })
   });
