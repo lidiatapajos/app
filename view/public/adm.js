@@ -13,9 +13,9 @@ window.addEventListener("load", async () => {
   try {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-  const { data } = await res.json();
-const config = data?.configBoletos || null;
-console.log("Configuração atual de boletos:", config);
+    const { data } = await res.json();
+    const config = data?.configBoletos || null;
+    console.log("Configuração atual de boletos:", config);
 
 
     console.log("Configuração atual de boletos:", config);
@@ -23,10 +23,10 @@ console.log("Configuração atual de boletos:", config);
     console.log("Chamando carregarUsuarios...");
 
     await configurarBoletos();
-    console.log("🚀 Vai chamar carregarUsuarios");
+    console.log("Vai chamar carregarUsuarios");
 
     await carregarUsuarios();
-    console.log("🔥 Função carregarUsuarios foi chamada");
+    console.log("Função carregarUsuarios foi chamada");
 
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
@@ -97,7 +97,7 @@ async function carregarUsuarios() {
     console.error("Erro ao carregar usuários:", err);
   }
 }
-
+// não tá funcionando
 async function adicionarCobrancaPix(cpf) {
   const descricao = prompt("Descrição da cobrança:");
   const vencimento = prompt("Vencimento (dd/mm/aaaa):");
@@ -117,13 +117,15 @@ async function adicionarCobrancaPix(cpf) {
     console.error("Erro ao adicionar cobrança Pix:", err);
   }
 }
-
+ 
+// não testei por medo kk
 async function excluirUsuario(cpf) {
   if (!confirm("Excluir este usuário e todos os boletos?")) return;
   await fetch(`${API_URL}/usuarios/${cpf}`, { method: "DELETE" });
   await carregarUsuarios();
 }
 
+// funciona mas não tá enviando pro banco de dados
 async function configurarBoletos() {
   const config = localStorage.getItem('configBoletos');
   if (!config) {
@@ -147,7 +149,7 @@ function copiarPix(chave) {
     .then(() => alert("Chave Pix copiada!"))
     .catch(() => alert("Erro ao copiar chave Pix."));
 }
-
+// não tá funcionando
 function iniciarTutorialAdm() {
   const jaViu = localStorage.getItem("tutorialAdmVisto");
   if (jaViu) return;
@@ -188,6 +190,7 @@ function iniciarTutorialAdm() {
 
 iniciarTutorialAdm();
 
+//não tem como testar
 async function marcarComoPago(cpf, id) {
   await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
     method: "PATCH",
@@ -196,7 +199,7 @@ async function marcarComoPago(cpf, id) {
   });
   await carregarUsuarios();
 }
-
+// não tem como testar
 async function excluirBoleto(cpf, id) {
   if (!confirm("Excluir boleto?")) return;
   await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
@@ -205,6 +208,7 @@ async function excluirBoleto(cpf, id) {
   await carregarUsuarios();
 }
 
+// não funciona
 async function editarBoletoPrompt(cpf, id) {
   const descricao = prompt("Nova descrição:");
   const vencimento = prompt("Novo vencimento (dd/mm/aaaa):");
@@ -219,6 +223,7 @@ async function editarBoletoPrompt(cpf, id) {
   await carregarUsuarios();
 }
 
+//não envia pro banco de dados
 async function adicionarUsuario() {
   const cpf = prompt("CPF do novo usuário:");
   const nome = prompt("Nome do usuário:");

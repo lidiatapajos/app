@@ -54,11 +54,11 @@ async function login() {
 
 
 window.addEventListener('load', () => {
-  const section = document.querySelector('.boleto');
+  const section = document.querySelector('.boletos');
   const cpf = localStorage.getItem('cpf');
 
   if (section && cpf) {
-    fetch(`${API_URL}/usuarios/${cpf}/boleto`) // <-- corrigido aqui
+    fetch(`${API_URL}/usuarios/${cpf}/boletos`) // <-- corrigido aqui
       .then(res => {
         if (!res.ok) throw new Error('Erro ao carregar cobranças');
         return res.json();
