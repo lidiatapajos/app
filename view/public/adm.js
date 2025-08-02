@@ -13,12 +13,21 @@ window.addEventListener("load", async () => {
   try {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-    const { data: dadosAdm } = await res.json();
-    const config = dadosAdm.configBoletos || null;
+  const { data } = await res.json();
+const config = data?.configBoletos || null;
+console.log("Configuração atual de boletos:", config);
+
+
     console.log("Configuração atual de boletos:", config);
 
+    console.log("Chamando carregarUsuarios...");
+
     await configurarBoletos();
+    console.log("🚀 Vai chamar carregarUsuarios");
+
     await carregarUsuarios();
+    console.log("🔥 Função carregarUsuarios foi chamada");
+
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
     console.warn("Verifique se o servidor está rodando e a rota está correta.");
