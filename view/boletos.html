@@ -196,7 +196,7 @@
   </head>
   <body>
     <header class="navbar">
-      <div class="logo">Passinhos</div>
+      <div class="logo">Primeiros Passos Digital</div>
       <nav class="nav-links">
         <a href="home.html"><i class="fas fa-home"></i></a>
         <a href="index.html" onclick="localStorage.clear()" title="Sair">Sair</a>
@@ -210,9 +210,11 @@
     </main>
 
     <script>
-      const cpf = localStorage.getItem("cpf");
+      
 
       document.addEventListener("DOMContentLoaded", () => {
+      const cpf = localStorage.getItem("cpf");
+
         if (!cpf) {
           alert("CPF não encontrado. Redirecionando para login.");
           window.location.href = "index.html";
@@ -289,7 +291,7 @@
               <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
               <div class="pix-section">
                 <img src="${data.qr}" alt="QR Code PIX" />
-                <p class="pix-key">Chave PIX: contato@boletos.com</p>
+                <p class="pix-key">Chave PIX: </p>
                 <p class="pix-key"><strong>BR Code:</strong> <small>${data.brcode}</small></p>
               </div>
             `;

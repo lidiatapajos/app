@@ -11,6 +11,7 @@ const urlsToCache = [
   'public/css/adm.css',
   'public/css/home.css',
   'public/css/login.css',
+  'public/css/configurar-boletos.css',
   'public/app.min.js',
   'public/adm.min.js',
   'public/adm.js',
