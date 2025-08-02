@@ -1,11 +1,8 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
-let cpfAdm = null;
 
-// Função principal para executar no carregamento da página
 window.addEventListener("load", async () => {
   const cpf = localStorage.getItem('cpf')?.replace(/\D/g, "");
   const userType = localStorage.getItem('userType');
-  const cpfAdm = cpf;
 
   if (userType !== 'admin') {
     alert('Acesso negado.');
@@ -13,20 +10,15 @@ window.addEventListener("load", async () => {
     return;
   }
 
-
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpfAdm}`);
+    const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-    const dadosAdm = await res.json();
+    const { data: dadosAdm } = await res.json();
     const config = dadosAdm.configBoletos || null;
     console.log("Configuração atual de boletos:", config);
 
-    // Agora chama as funções que devem rodar ao carregar
     await configurarBoletos();
-    await gerarCobrancasPixAutomaticas();
     await carregarUsuarios();
-
-
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
     console.warn("Verifique se o servidor está rodando e a rota está correta.");
@@ -41,12 +33,11 @@ async function carregarUsuarios() {
 
   try {
     const res = await fetch(`${API_URL}/usuarios`);
-    const usuarios = await res.json();
     if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-
+    const usuarios = await res.json();
 
     usuarios
-      .filter(u => u.cpf && u.cpf !== cpfAdm)
+      .filter(u => u.cpf && u.cpf !== localStorage.getItem('cpf'))
       .forEach(usuario => {
         const div = document.createElement("div");
         div.className = "usuario";
@@ -62,26 +53,25 @@ async function carregarUsuarios() {
           </p>
         `;
 
-        if (usuario.cobrancas?.length) {
-          usuario.cobrancas.forEach((cobranca, i) => {
+        if (usuario.boletos?.length) {
+          usuario.boletos.forEach((boleto) => {
             const c = document.createElement("div");
-            c.className = "boleto"; // estilo antigo dos boletos
+            c.className = "boleto";
             c.innerHTML = `
               <div class="boleto-info">
-                <strong>${cobranca.descricao}</strong><br>
-                Vencimento: ${cobranca.vencimento} | Valor: R$ ${cobranca.valor}
-                <br>
-                <span><strong>Pix:</strong> ${cobranca.chavePix}</span><br>
-                <button onclick="copiarPix('${cobranca.chavePix}')">Copiar chave Pix</button>
+                <strong>${boleto.descricao}</strong><br>
+                Vencimento: ${boleto.vencimento} | Valor: R$ ${boleto.valor}<br>
+                <span><strong>Pix:</strong> ${boleto.chavePix}</span><br>
+                <button onclick="copiarPix('${boleto.chavePix}')">Copiar chave Pix</button>
               </div>
               <div class="boleto-acoes">
-                <button onclick="editarCobrancaPix('${usuario.cpf}', ${i})" title="Editar">
+                <button onclick="editarBoletoPrompt('${usuario.cpf}', '${boleto.id}')" title="Editar">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button onclick="marcarCobrancaComoPaga('${usuario.cpf}', ${i})" title="Marcar como paga">
+                <button onclick="marcarComoPago('${usuario.cpf}', '${boleto.id}')" title="Marcar como paga">
                   <i class="fas fa-check-circle"></i>
                 </button>
-                <button onclick="excluirCobranca('${usuario.cpf}', ${i})" title="Excluir cobrança">
+                <button onclick="excluirBoleto('${usuario.cpf}', '${boleto.id}')" title="Excluir cobrança">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
@@ -94,7 +84,6 @@ async function carregarUsuarios() {
 
         container.appendChild(div);
       });
-
   } catch (err) {
     console.error("Erro ao carregar usuários:", err);
   }
@@ -104,17 +93,15 @@ async function adicionarCobrancaPix(cpf) {
   const descricao = prompt("Descrição da cobrança:");
   const vencimento = prompt("Vencimento (dd/mm/aaaa):");
   const valor = prompt("Valor:");
-  const chavePix = "79683428215"; // fixa
-
+  const chavePix = "79683428215";
   if (!descricao || !vencimento || !valor) return;
 
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/cobrancas`, {
+    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ descricao, vencimento, valor, chavePix }),
     });
-
     if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
     await carregarUsuarios();
   } catch (err) {
@@ -122,64 +109,17 @@ async function adicionarCobrancaPix(cpf) {
   }
 }
 
-async function excluirCobranca(cpf, index) {
-  if (!confirm("Excluir cobrança Pix?")) return;
-
-  try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/cobrancas/${index}`, {
-      method: "DELETE",
-    });
-
-    if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-    await carregarUsuarios();
-  } catch (err) {
-    console.error("Erro ao excluir cobrança:", err);
-  }
+async function excluirUsuario(cpf) {
+  if (!confirm("Excluir este usuário e todos os boletos?")) return;
+  await fetch(`${API_URL}/usuarios/${cpf}`, { method: "DELETE" });
+  await carregarUsuarios();
 }
 
-async function marcarCobrancaComoPaga(cpf, index) {
-  try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/cobrancas/${index}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pago: true }),
-    });
+async function configurarBoletos() {}
 
-    if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-    await carregarUsuarios();
-  } catch (err) {
-    console.error("Erro ao marcar cobrança como paga:", err);
-  }
-}
-
-async function editarCobrancaPix(cpf, index) {
-  const descricao = prompt("Nova descrição:");
-  const vencimento = prompt("Novo vencimento (dd/mm/aaaa):");
-  const valor = prompt("Novo valor:");
-  if (!descricao || !vencimento || !valor) return;
-
-  try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/cobrancas/${index}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ descricao, vencimento, valor }),
-    });
-
-    if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-    await carregarUsuarios();
-  } catch (err) {
-    console.error("Erro ao editar cobrança Pix:", err);
-  }
-}
-function gerarBRCodePix(chavePix, valor, descricao) {
-  return PixQRCode({
-    version: '01',
-    key: chavePix,
-    name: 'Pagamento Mensalidade',
-    city: 'Soure',
-    value: valor,
-    description: descricao
-  }).payload;
+function logout() {
+  localStorage.clear();
+  window.location.href = "/index.html";
 }
 
 function copiarPix(chave) {
@@ -225,45 +165,36 @@ function iniciarTutorialAdm() {
 
   observer.observe(document.body, { childList: true, subtree: true });
 }
+
 iniciarTutorialAdm();
 
-async function configurarBoletos() {
-
-}
-
-
-function logout() {
-  localStorage.clear();
-  window.location.href = "/index.html";
-}
-
-async function marcarComoPago(cpf, index) {
-  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${index}`, {
+async function marcarComoPago(cpf, id) {
+  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pago: true }),
+    body: JSON.stringify({ pago: true })
   });
   await carregarUsuarios();
 }
 
-async function excluirBoleto(cpf, index) {
+async function excluirBoleto(cpf, id) {
   if (!confirm("Excluir boleto?")) return;
-  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${index}`, {
-    method: "DELETE",
+  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
+    method: "DELETE"
   });
   await carregarUsuarios();
 }
 
-async function editarBoletoPrompt(cpf, index) {
+async function editarBoletoPrompt(cpf, id) {
   const descricao = prompt("Nova descrição:");
   const vencimento = prompt("Novo vencimento (dd/mm/aaaa):");
   const valor = prompt("Novo valor:");
   if (!descricao || !vencimento || !valor) return;
 
-  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${index}`, {
+  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ descricao, vencimento, valor }),
+    body: JSON.stringify({ descricao, vencimento, valor })
   });
   await carregarUsuarios();
 }
@@ -277,28 +208,20 @@ async function adicionarBoleto(cpf) {
   await fetch(`${API_URL}/usuarios/${cpf}/boletos`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ descricao, vencimento, valor }),
+    body: JSON.stringify({ descricao, vencimento, valor })
   });
   await carregarUsuarios();
 }
 
 async function adicionarUsuario() {
-  console.log("vai ate aqui")
   const cpf = prompt("CPF do novo usuário:");
   const nome = prompt("Nome do usuário:");
   if (!cpf || !nome) return;
+
   await fetch(`${API_URL}/usuarios`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ cpf, nome, boletos: [] }),
+    body: JSON.stringify({ cpf, nome, boletos: [] })
   });
   await carregarUsuarios();
 }
-
-async function excluirUsuario(cpf) {
-  if (!confirm("Excluir este usuário e todos os boletos?")) return;
-
-  await fetch(`${API_URL}/usuarios/${cpf}`, { method: "DELETE" });
-  await carregarUsuarios();
-}
-
