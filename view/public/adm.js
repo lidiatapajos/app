@@ -3,15 +3,13 @@ let cpfAdm = null;
 
 // Função principal para executar no carregamento da página
 window.addEventListener("load", async () => {
- const cpf = localStorage.getItem('cpf')?.replace(/\D/g,"");
- const userType = localStorage.getItem('userType');
- const cpfAdm = cpf;
-  console.log('cpf:', cpf);
-  console.log('userType:', userType);
+  const cpf = localStorage.getItem('cpf')?.replace(/\D/g, "");
+  const userType = localStorage.getItem('userType');
+  const cpfAdm = cpf;
 
   if (userType !== 'admin') {
     alert('Acesso negado.');
-    window.location.href = '/index.html'; 
+    window.location.href = '/index.html';
     return;
   }
 
@@ -27,7 +25,7 @@ window.addEventListener("load", async () => {
     await configurarBoletos();
     await gerarCobrancasPixAutomaticas();
     await carregarUsuarios();
-    
+
 
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
@@ -43,8 +41,9 @@ async function carregarUsuarios() {
 
   try {
     const res = await fetch(`${API_URL}/usuarios`);
-    if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
     const usuarios = await res.json();
+    if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
+
 
     usuarios
       .filter(u => u.cpf && u.cpf !== cpfAdm)
@@ -229,7 +228,7 @@ function iniciarTutorialAdm() {
 iniciarTutorialAdm();
 
 async function configurarBoletos() {
- 
+
 }
 
 

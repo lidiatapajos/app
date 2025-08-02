@@ -1,4 +1,3 @@
- // carrega as variáveis do .env
 
 const express = require('express');
 const cors = require('cors');
@@ -8,27 +7,21 @@ const fs = require('fs');
 const { cpf: cpfValidator } = require('cpf-cnpj-validator');
 const { PixQRCode } = require('pix-qrcode');
 const { createClient } = require('@supabase/supabase-js');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yaXlja3FnYWNhaW5yYW9nZWlmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzkxNDM4NCwiZXhwIjoyMDY5NDkwMzg0fQ.aP5bLKZYLMBec-rRaNYPfcJkLw1NhibgznhBduRP9DU';
 const supabase = createClient(supabaseUrl, supabaseKey);
-
-
 // Middlewares
 app.use(express.json());
 app.use(cors({
   origin: 'https://primeirospassosdigital.netlify.app'
 }));
 
-
 // Corrigido: pasta 'view/public'
 app.use(express.static(path.join(__dirname, '../view/public')));
-
-// 🔵 Rota para listar todos os usuários (responsáveis)
 app.get('/usuarios', async (req, res) => {
+    console.log("🔄 Rota /usuarios acessada");
   const { data, error } = await supabase
     .from('responsaveis')
     .select('*');
@@ -38,7 +31,7 @@ app.get('/usuarios', async (req, res) => {
     return res.status(500).json({ erro: true, mensagem: 'Erro ao buscar usuários.' });
   }
 
-  res.json(data); // aqui você envia a lista para o frontend
+  res.json(data);
 });
 
 // Rota simples
