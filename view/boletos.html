@@ -12,6 +12,11 @@
     <link rel="manifest" href="manifest.json" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+      :root {
+        --vermelho: #b71c1c;
+        --vermelho-claro: #e53935;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -21,43 +26,34 @@
       body {
         font-family: "Segoe UI", Tahoma, sans-serif;
         background: linear-gradient(to right, #f3f6fb, #e6edf5);
-        padding: 0;
       }
 
-      .navbar {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: linear-gradient(90deg, #d32f2f, #b71c1c);
-        color: white;
-        padding: 16px 30px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      .navbar .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
-        flex: 1;
-        text-align: center;
-      }
-
-      .navbar .nav-links {
+      header {
+        background-color: white;
+        border-bottom: 1px solid #ddd;
+        padding: 16px 24px;
         display: flex;
         align-items: center;
-        gap: 20px;
-        min-width: 80px;
-        justify-content: center;
+        gap: 12px;
       }
 
-      .navbar .nav-links a {
-        color: white;
+      .voltar {
+        font-size: 1.4rem;
+        color: var(--vermelho);
         text-decoration: none;
-        transition: color 0.2s ease;
       }
 
-      .navbar .nav-links a:hover {
-        color: #ffdd57;
+      .voltar:hover {
+        color: var(--vermelho-claro);
+      }
+
+      .logo {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--vermelho);
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
       .container {
@@ -136,6 +132,7 @@
         font-size: 1.1rem;
         text-align: center;
       }
+
       .payment-box {
         display: none;
         margin-top: 15px;
@@ -195,18 +192,27 @@
           width: 100%;
           text-align: center;
         }
+
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .logo {
+          font-size: 1rem;
+        }
       }
     </style>
   </head>
   <body>
-    <header class="navbar">
-      <a href="home.html" title="Voltar"><i class="fas fa-arrow-left"></i></a>
-      <nav class="nav-links">
-        <div class="logo">Primeiros Passos Digital</div>
-        <a href="index.html" onclick="localStorage.clear()" title="Sair"
-          >Sair</a
-        >
-      </nav>
+    <header>
+      <a href="home.html" class="voltar" title="Voltar">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <div class="logo">
+        <i class="fas fa-file-invoice"></i> Primeiros Passos Digital
+      </div>
     </header>
 
     <main class="container">
