@@ -1,5 +1,5 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
-
+let cpfAdm = null;
 
 // Função principal para executar no carregamento da página
 window.addEventListener("load", async () => {
@@ -27,7 +27,7 @@ window.addEventListener("load", async () => {
     await configurarBoletos();
     await gerarCobrancasPixAutomaticas();
     await carregarUsuarios();
-    await iniciarTutorialAdm();
+    
 
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
@@ -229,7 +229,7 @@ function iniciarTutorialAdm() {
 iniciarTutorialAdm();
 
 async function configurarBoletos() {
-  // lógica para configurar boletos aqui
+ 
 }
 
 
