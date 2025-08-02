@@ -98,7 +98,7 @@ async function carregarUsuarios() {
   }
 }
 // não tá funcionando
-/*async function adicionarCobrancaPix(cpf) {
+async function adicionarCobrancaPix(cpf) {
   const descricao = prompt("Descrição da cobrança:");
   const vencimento = prompt("Vencimento (dd/mm/aaaa):");
   const valor = prompt("Valor:");
@@ -117,7 +117,7 @@ async function carregarUsuarios() {
     console.error("Erro ao adicionar cobrança Pix:", err);
   }
 }
- */
+ 
 // não testei por medo kk
 async function excluirUsuario(cpf) {
   if (!confirm("Excluir este usuário e todos os boletos?")) return;
