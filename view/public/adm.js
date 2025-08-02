@@ -3,14 +3,15 @@ const API_URL = 'https://primeiros-passos-digital.onrender.com';
 
 // Função principal para executar no carregamento da página
 window.addEventListener("load", async () => {
- const cpf = localStorage.getItem('cpf')?.replace(/\D/g, "");
-const userType = localStorage.getItem('userType');
+ const cpf = localStorage.getItem('cpf')?.replace(/\D/g,"");
+ const userType = localStorage.getItem('userType');
+ const cpfAdm = cpf;
   console.log('cpf:', cpf);
   console.log('userType:', userType);
 
   if (userType !== 'admin') {
     alert('Acesso negado.');
-    window.location.href = 'index.html'; 
+    window.location.href = '/index.html'; 
     return;
   }
 
@@ -234,7 +235,7 @@ async function configurarBoletos() {
 
 function logout() {
   localStorage.clear();
-  window.location.href = "index.html";
+  window.location.href = "/index.html";
 }
 
 async function marcarComoPago(cpf, index) {
