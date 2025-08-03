@@ -4,11 +4,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const totalSpan = document.getElementById("total");
   const totalContainer = document.querySelector(".total-container");
  const form = document.getElementById("form-contato");
-  if (!form) {
-    console.warn("form-contato não encontrado");
-    return;
-  }
-  console.log("Form existe?", document.getElementById("form-contato"));
 
   const msg = document.getElementById("mensagem");  
 
@@ -44,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
    form.addEventListener("submit", async (e) => {
     e.preventDefault();
+      console.log('Submit do form acionado');
 
     const email = document.getElementById("email").value.trim();
     const telefone = document.getElementById("telefone").value.trim();
@@ -56,6 +52,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: JSON.stringify({ email, telefone })
       });
+console.log('Status da resposta:', resposta.status);
+const textoResposta = await resposta.text();
+console.log('Resposta raw:', textoResposta);
 
       const data = await resposta.json();
 

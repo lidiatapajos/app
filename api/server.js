@@ -381,6 +381,7 @@ app.post('/configuracao-boletos', async (req, res) => {
 // ACABOU A ARÉA DE BOLETOS 
 
 app.patch('/usuarios/:cpf', async (req, res) => {
+  console.log('PATCH chegou aqui!');
   const cpf = req.params.cpf;
   const { email, telefone } = req.body;
 
@@ -388,6 +389,7 @@ app.patch('/usuarios/:cpf', async (req, res) => {
     .from('responsaveis')
     .update({ email, telefone })
     .eq('cpf', cpf);
+
 
   if (error) {
     return res.status(500).json({ error: error.message });
