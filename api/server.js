@@ -121,7 +121,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const cpf = req.params.cpf;
   const { descricao, vencimento, valor } = req.body;
-  const chavePix = '79683428215';
+  const chavePix = '79683428215'; // chave fixa, não será salva no banco
 
   console.log("Recebendo POST para criar cobrança");
   console.log("CPF recebido:", cpf, "Body:", req.body);
@@ -140,26 +140,29 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
 
   console.log("Responsável encontrado com ID:", responsavel.id);
 
-  // Tentar criar o boleto
+  // Criar o boleto
   const { data, error } = await supabase.from('boletos').insert([{
     sacado_id: responsavel.id,
     descricao,
     vencimento,
     valor,
-    chavePix,
     status: 'gerado'
-  }]);
+  }]).select(); 
 
   if (error) {
     console.error("Erro ao criar boleto:", error);
     return res.status(500).json({ erro: error.message });
   }
 
-  console.log("Boleto criado com sucesso:", data[0]);
+  const boletoComChavePix = {
+    ...data[0],
+    chavePix 
+  };
 
-  res.status(201).json({ sucesso: true, boleto: data[0] });
+  console.log("Boleto criado com sucesso:", boletoComChavePix);
+
+  res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
 });
-
 
 // 🟡 Atualizar cobrança
 app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
