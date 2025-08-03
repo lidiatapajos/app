@@ -26,6 +26,8 @@ window.addEventListener("load", async () => {
         alert("Erro ao salvar configuração padrão. Contate o suporte.");
       } else {
         alert("Configuração padrão aplicada com sucesso!");
+        // RELOAD pra atualizar o estado e evitar loop
+        window.location.reload();
       }
     }
   }
@@ -71,6 +73,7 @@ async function salvarConfiguracaoNoBackend(config) {
     return false;
   }
 }
+
 
 
 async function carregarUsuarios() {
