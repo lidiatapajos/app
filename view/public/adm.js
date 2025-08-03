@@ -245,16 +245,18 @@ async function cadastrarUsuario() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nome, cpf, email, telefone }),
     });
+const resultado = await response.json(); // pega o corpo da resposta
+  console.log("Resposta da API:", resultado);
 
-    if (response.ok) {
-      alert("Usuário cadastrado com sucesso!");
-      window.location.href = "adm.html"; // ou qualquer página de retorno
-    } else {
-      alert("Erro ao cadastrar usuário.");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Erro de conexão com o servidor.");
+  if (response.ok) {
+    alert("Usuário cadastrado com sucesso!");
+    window.location.href = "adm.html";
+  } else {
+    alert("Erro ao cadastrar usuário: " + (resultado?.erro || "Erro desconhecido"));
   }
+} catch (err) {
+  console.error("Erro de conexão:", err);
+  alert("Erro de conexão com o servidor.");
 }
 
+}

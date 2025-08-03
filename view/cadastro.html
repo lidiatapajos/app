@@ -66,6 +66,17 @@
     button:hover {
       background-color: #0056b3;
     }
+    .form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* espaçamento uniforme entre os campos */
+}
+
+.form-container form > div {
+  display: flex;
+  flex-direction: column;
+}
+
    /* 1. Celular muito pequeno (tipo iPhone SE em pé) */
 @media (max-width: 320px) {
   .form-container {
