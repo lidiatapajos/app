@@ -7,6 +7,7 @@ const urlsToCache = [
   'adm.html',
   'comprovantes.html',
   'configurar-boletos.html',
+  'cadastro.html',
   'manifest.json',
   'public/css/adm.css',
   'public/css/home.css',
