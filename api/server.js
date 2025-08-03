@@ -121,96 +121,66 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
 
 // 🟢 Criar cobrança Pix
-app.post('/usuarios/:cpf/boletos', async (req, res) => {
-  const cpf = req.params.cpf;  
-  const { descricao, vencimento, valor } = req.body;
-  const chavePix = '79683428215';
- console.log("Recebendo POST para criar cobrança");
-console.log("CPF recebido:", cpf, "Body:", req.body);
+app.post('/boletos', async (req, res) => {
+  const { cpf, descricao, vencimento, valor, chavePix } = req.body;
 
-// Busca responsável
-const { data: responsavel, error: responsavelError } = await supabase
-  .from('responsaveis')
-  .select('id')
-  .eq('cpf', cpf)
-  .single();
+  try {
+    // 1. Buscar responsável pelo CPF
+    const { data: responsaveis, error: respError } = await supabase
+      .from('responsaveis')
+      .select('id, admin_id')
+      .eq('cpf', cpf)
+      .single();
 
-if (responsavelError || !responsavel) {
-  console.error("Responsável não encontrado", responsavelError);
-  return res.status(404).json({ erro: 'Responsável não encontrado' });
-}
+    if (respError || !responsaveis) {
+      return res.status(400).json({ erro: 'Responsável não encontrado' });
+    }
 
-console.log("Responsável encontrado com ID:", responsavel.id);
+    const responsavelId = responsaveis.id;
+    const adminId = responsaveis.admin_id;
 
+    // 2. Buscar conta bancária do admin
+    const { data: conta, error: contaError } = await supabase
+      .from('contabancos')
+      .select('id')
+      .eq('admin_id', adminId)
+      .single();
 
+    if (contaError || !conta) {
+      return res.status(400).json({ erro: 'Conta bancária do admin não encontrada' });
+    }
 
+    const contaBancariaId = conta.id;
 
-const cedente_id = responsavel.id;
-console.log("Responsável encontrado com ID:", cedente_id);
+    // 3. Inserir o boleto com todos os dados
+    const dataLiberacao = new Date().toISOString().split('T')[0]; // hoje
+    const vencimentoFormatado = vencimento.split('/').reverse().join('-'); // de DD/MM/YYYY pra YYYY-MM-DD
 
-// continua com a criação da cobrança usando o cedente_id
+    const { error: boletoError } = await supabase
+      .from('boletos')
+      .insert([
+        {
+          valor: parseFloat(valor),
+          data_liberacao: dataLiberacao,
+          vencimento: vencimentoFormatado,
+          status: 'gerado',
+          responsavel_id: responsavelId,
+          admin_id: adminId,
+          agencia_id: contaBancariaId,
+          descricao,
+          chave_pix: chavePix,
+        },
+      ]);
 
+    if (boletoError) {
+      return res.status(500).json({ erro: 'Erro ao criar boleto', detalhes: boletoError });
+    }
 
-// Formata vencimento
-const [dia, mes, ano] = vencimento.split('/');
-const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+    res.status(200).json({ sucesso: 'Boleto criado com sucesso' });
 
-// Busca configuração
-const { data: config, error: configError } = await supabase
-  .from('config_boletos')
-  .select('dia_liberacao')
-  .limit(1)
-  .maybeSingle();
-
-if (configError) {
-  console.error("Erro ao buscar config boletos", configError);
-  return res.status(500).json({ erro: 'Erro ao buscar configuração dos boletos.' });
-}
-
-let dia_liberacaoISO;
-if (config?.dia_liberacao) {
-  const hoje = new Date();
-  const anoAtual = hoje.getFullYear();
-  const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
-  const diaConfig = String(config.dia_liberacao).padStart(2, '0');
-  dia_liberacaoISO = `${anoAtual}-${mesAtual}-${diaConfig}`;
-} else {
-  dia_liberacaoISO = new Date().toISOString().split('T')[0];
-}
-
-console.log("Dia de liberação definido como:", dia_liberacaoISO);
-
-
-const valorNum = Number(valor.toString().replace(',', '.'));
-
-console.log("Inserindo boleto com valor:", valorNum);
-
-const { data: boletoData, error: boletoError } = await supabase
-  .from('boletos')
-  .insert([{
-    sacado_id: responsavel.id,
-    descricao,
-    vencimento: vencimentoISO,
-    valor: valorNum,
-    status: 'gerado',
-    dia_liberacao: dia_liberacaoISO,
-    cedente_id
-  }])
-  .select();
-
-if (boletoError) {
-  console.error("Erro ao criar boleto:", boletoError);
-  return res.status(500).json({ erro: boletoError.message });
-}
-
-const boletoComChavePix = {
-  ...boletoData[0],
-  chavePix
-};
-
-console.log("Boleto criado com sucesso:", boletoComChavePix);
-
-return res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
+  } catch (e) {
+    res.status(500).json({ erro: 'Erro inesperado', detalhes: e.message });
+  }
 });
 
 
