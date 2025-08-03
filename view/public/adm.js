@@ -120,10 +120,27 @@ async function adicionarCobrancaPix(cpf) {
  
 // não testei por medo kk
 async function excluirUsuario(cpf) {
-  if (!confirm("Excluir este usuário e todos os boletos?")) return;
-  await fetch(`${API_URL}/usuarios/${cpf}`, { method: "DELETE" });
-  await carregarUsuarios();
+  const confirmacao = confirm("Tem certeza que deseja excluir este usuário e todos os boletos?");
+  if (!confirmacao) return;
+
+  try {
+    const resposta = await fetch(`${API_URL}/usuarios/${cpf}`, { method: "DELETE" });
+
+    if (!resposta.ok) {
+      const erro = await resposta.json();
+      console.error("Erro ao excluir usuário:", erro.mensagem || resposta.statusText);
+      alert("Erro ao excluir usuário. Tente novamente.");
+      return;
+    }
+
+    alert("Usuário excluído com sucesso.");
+    await carregarUsuarios();
+  } catch (erro) {
+    console.error("Erro na requisição:", erro);
+    alert("Erro ao excluir usuário. Verifique sua conexão ou tente novamente mais tarde.");
+  }
 }
+
 
 // funciona mas não tá enviando pro banco de dados
 async function configurarBoletos() {
