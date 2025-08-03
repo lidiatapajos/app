@@ -18,7 +18,7 @@ app.use(cors({
   origin: 'https://primeirospassosdigital.netlify.app'
 }));
 
-// Corrigido: pasta 'view/public'
+// USUARIOS E ADM
 app.use(express.static(path.join(__dirname, '../view')));
 app.get('/usuarios', async (req, res) => {
   console.log("🔄 Rota /usuarios acessada");
@@ -85,6 +85,8 @@ app.post('/usuarios', async (req, res) => {
   res.status(201).json({ mensagem: 'Responsável criado com sucesso', data });
 });
 
+// ACABOU ARÉA DOS USUARIOS E ADMS
+// COBRANÇAS
 
 // 🔵 Buscar cobranças 
 app.get('/usuarios/:cpf/boletos', async (req, res) => {
@@ -106,9 +108,9 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
     .select('*')
     .eq('sacado_id', responsavel.id);
 
-  if (error) return res.status(404).json({ erro: 'Cobranças não encontradas' });
+  if (error) return res.status(500).json({ erro: 'Erro ao buscar cobranças' });
+  if (!data || data.length === 0) return res.status(404).json({ erro: 'Nenhuma cobrança encontrada' });
 
-  res.json(data);
 });
 
 
@@ -139,14 +141,29 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const [dia, mes, ano] = vencimento.split('/');
   const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
-  // Criar o boleto
+  // Buscar configuração do boleto para obter dia_liberacao
+  const { data: config, error: configError } = await supabase
+    .from('config_boletos')
+    .select('dia_liberacao')
+    .limit(1)
+    .maybeSingle();
+
+  if (configError) {
+    console.error("Erro ao buscar configuração:", configError);
+    return res.status(500).json({ erro: 'Erro ao buscar configuração dos boletos.' });
+  }
+
+  const dia_liberacao = config?.dia_liberacao ?? 4; // valor padrão 4 caso não tenha config
+
+  // Criar o boleto, agora incluindo o dia_liberacao obrigatório
   const { data, error } = await supabase.from('boletos').insert([{
     sacado_id: responsavel.id,
     descricao,
     vencimento: vencimentoISO,
-    valor,
-    status: 'gerado'
-  }]).select(); 
+    valor: Number(valor),
+    status: 'gerado',
+    dia_liberacao
+  }]).select();
 
   if (error) {
     console.error("Erro ao criar boleto:", error);
@@ -155,13 +172,14 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
 
   const boletoComChavePix = {
     ...data[0],
-    chavePix 
+    chavePix
   };
 
   console.log("Boleto criado com sucesso:", boletoComChavePix);
 
   res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
 });
+
 
 // 🟡 Atualizar cobrança
 app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
@@ -216,6 +234,8 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   res.json({ sucesso: true, mensagem: 'Cobrança removida' });
 });
+//ACABOU ARÉA DAS COBRANÇAS
+// ARÉA DE DELETAR
 
 app.delete('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf;
@@ -257,7 +277,8 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 
   res.status(200).json({ sucesso: "Usuário e boletos excluídos" });
 });
-
+// ACABOU ARÉA DE DELETAR
+// CONFIGURAÇÃO DE BOLETOS E ETC
 app.get('/configuracao-boletos', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -318,6 +339,7 @@ app.post('/configuracao-boletos', async (req, res) => {
     return res.status(500).json({ erro: 'Erro inesperado.' });
   }
 });
+// ACABOU A ARÉA DE BOLETOS 
 
 
 
