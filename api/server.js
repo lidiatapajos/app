@@ -129,7 +129,6 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
   console.log("Recebendo POST para criar cobrança");
   console.log("CPF recebido:", cpf, "Body:", req.body);
 
-  // Buscar ID do responsável
   const { data: responsavel, error: responsavelError } = await supabase
     .from('responsaveis')
     .select('id')
@@ -137,17 +136,14 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
     .single();
 
   if (responsavelError || !responsavel) {
-    console.error("Responsável não encontrado ou erro:", responsavelError);
     return res.status(404).json({ erro: 'Responsável não encontrado' });
   }
 
   console.log("Responsável encontrado com ID:", responsavel.id);
 
-  // ✅ Converter data de vencimento para ISO (YYYY-MM-DD)
   const [dia, mes, ano] = vencimento.split('/');
   const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
-  // 🔎 Buscar configuração do boleto para obter dia_liberacao
   const { data: config, error: configError } = await supabase
     .from('config_boletos')
     .select('dia_liberacao')
@@ -155,76 +151,73 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
     .maybeSingle();
 
   if (configError) {
-    console.error("Erro ao buscar configuração:", configError);
     return res.status(500).json({ erro: 'Erro ao buscar configuração dos boletos.' });
   }
 
-  // ⚙️ Se tiver configuração, montar a data com o dia configurado:
   let dia_liberacaoISO;
-  if (config && config.dia_liberacao) {
+  if (config?.dia_liberacao) {
     const hoje = new Date();
     const anoAtual = hoje.getFullYear();
     const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
     const diaConfig = String(config.dia_liberacao).padStart(2, '0');
     dia_liberacaoISO = `${anoAtual}-${mesAtual}-${diaConfig}`;
   } else {
-    // Se não houver configuração, usar data atual
-    dia_liberacaoISO = new Date().toISOString().split('T')[0]; // só YYYY-MM-DD
+    dia_liberacaoISO = new Date().toISOString().split('T')[0];
   }
 
   console.log("Dia de liberação definido como:", dia_liberacaoISO);
 
-  // Criar boleto
+  // 🔍 Busca admin com base no CPF (o mesmo do responsável?)
+  const { data: adminData, error: adminError } = await supabase
+    .from('admins')
+    .select('id')
+    .eq('cpf', cpf) // cuidado: isso depende de o admin ter o mesmo CPF do responsável
+    .single();
 
-  // Busca o admin pelo CPF (ou outro campo que tu tiver)
-const { data: adminData, error: adminError } = await supabase
-  .from('admins')
-  .select('id')
-  .eq('cpf', cpfAdm) // ou o campo que tu tiver
-  .single();
+  if (adminError || !adminData) {
+    return res.status(400).json({ erro: 'Admin não encontrado' });
+  }
 
-if (adminError || !adminData) {
-  return res.status(400).json({ erro: 'Admin não encontrado' });
-}
+  const { data: contaData, error: contaError } = await supabase
+    .from('contabancos')
+    .select('id')
+    .eq('adminid', adminData.id)
+    .single();
 
-// Agora pega a conta bancária vinculada a esse admin
-const { data: contaData, error: contaError } = await supabase
-  .from('contabancos')
-  .select('id')
-  .eq('adminid', adminData.id)
-  .single();
+  if (contaError || !contaData) {
+    return res.status(400).json({ erro: 'Conta bancária não encontrada' });
+  }
 
-if (contaError || !contaData) {
-  return res.status(400).json({ erro: 'Conta bancária não encontrada' });
-}
+  const cedente_id = contaData.id;
 
-const cedente_id = contaData.id;
+  // ✅ Cria o boleto uma única vez
+  const { data: boletoData, error: boletoError } = await supabase
+    .from('boletos')
+    .insert([{
+      sacado_id: responsavel.id,
+      descricao,
+      vencimento: vencimentoISO,
+      valor: Number(valor),
+      status: 'gerado',
+      dia_liberacao: dia_liberacaoISO,
+      cedente_id
+    }])
+    .select();
 
-const { data, error } = await supabase.from('boletos').insert([{
-  sacado_id: responsavel.id,
-  descricao,
-  vencimento: vencimentoISO,
-  valor: Number(valor),
-  status: 'gerado',
-  dia_liberacao: dia_liberacaoISO,
-  cedente_id // 👈 isso resolve o erro!
-}]).select();
-
-if (error) {
-  console.error("Erro ao criar boleto:", error);
-  return res.status(500).json({ erro: error.message });
-}
+  if (boletoError) {
+    console.error("Erro ao criar boleto:", boletoError);
+    return res.status(500).json({ erro: boletoError.message });
+  }
 
   const boletoComChavePix = {
-    ...data[0],
+    ...boletoData[0],
     chavePix
   };
 
   console.log("Boleto criado com sucesso:", boletoComChavePix);
 
-  res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
+  return res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
 });
-
 
 
 // 🟡 Atualizar cobrança
