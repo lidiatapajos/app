@@ -181,6 +181,22 @@ app.post('/boletos', async (req, res) => {
   } catch (e) {
     res.status(500).json({ erro: 'Erro inesperado', detalhes: e.message });
   }
+
+  const { data, error } = await supabase
+    .from('configuracao_boletos')
+    .select('*')
+    .eq('id', 1)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') { // registro não encontrado
+      return false
+    }
+    console.error('Erro ao verificar config:', error)
+    return false
+  }
+
+  return !!data
 });
 
 
