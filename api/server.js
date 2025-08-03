@@ -136,7 +136,7 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
     .eq('cpf', cpf)
     .single();
 
-   if (responsavelError || !responsavel) {
+  if (responsavelError || !responsavel) {
     console.error("Responsável não encontrado ou erro:", responsavelError);
     return res.status(404).json({ erro: 'Responsável não encontrado' });
   }
@@ -147,7 +147,7 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const [dia, mes, ano] = vencimento.split('/');
   const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
-  // Buscar configuração do boleto para obter dia_liberacao
+  // 🔎 Buscar configuração do boleto para obter dia_liberacao
   const { data: config, error: configError } = await supabase
     .from('config_boletos')
     .select('dia_liberacao')
@@ -159,17 +159,29 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
     return res.status(500).json({ erro: 'Erro ao buscar configuração dos boletos.' });
   }
 
+  // ⚙️ Se tiver configuração, montar a data com o dia configurado:
+  let dia_liberacaoISO;
+  if (config && config.dia_liberacao) {
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+    const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
+    const diaConfig = String(config.dia_liberacao).padStart(2, '0');
+    dia_liberacaoISO = `${anoAtual}-${mesAtual}-${diaConfig}`;
+  } else {
+    // Se não houver configuração, usar data atual
+    dia_liberacaoISO = new Date().toISOString().split('T')[0]; // só YYYY-MM-DD
+  }
 
-  const dia_liberacao = config?.dia_liberacao ?? 4; // valor padrão 4 caso não tenha config
+  console.log("Dia de liberação definido como:", dia_liberacaoISO);
 
-  // Criar o boleto, agora incluindo o dia_liberacao obrigatório
+  // Criar boleto
   const { data, error } = await supabase.from('boletos').insert([{
     sacado_id: responsavel.id,
     descricao,
     vencimento: vencimentoISO,
     valor: Number(valor),
     status: 'gerado',
-    dia_liberacao
+    dia_liberacao: dia_liberacaoISO
   }]).select();
 
   if (error) {
@@ -186,6 +198,7 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
 
   res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
 });
+
 
 
 // 🟡 Atualizar cobrança
