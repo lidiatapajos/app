@@ -174,7 +174,7 @@ console.log("Dia de liberação definido como:", dia_liberacaoISO);
 // Busca admin (confirma o CPF do admin antes)
 
 const { data: adminData, error: adminError } = await supabase
-  .from('admin')
+  .from('admins')
   .select('id, cpf')
   .eq('cpf', cpf)
   .single();
