@@ -121,14 +121,12 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const cpf = req.params.cpf;
   const { descricao, vencimento, valor } = req.body;
-  const chavePix = '79683428215';
-
-  // Data atual no formato YYYY-MM-DD para dia_liberacao
-  const dia_liberacao = new Date().toISOString().slice(0, 10);
+  const chavePix = '79683428215'; // chave fixa, não será salva no banco
 
   console.log("Recebendo POST para criar cobrança");
   console.log("CPF recebido:", cpf, "Body:", req.body);
 
+  // Buscar ID do responsável pelo CPF
   const { data: responsavel, error: responsavelError } = await supabase
     .from('responsaveis')
     .select('id')
@@ -142,14 +140,14 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
 
   console.log("Responsável encontrado com ID:", responsavel.id);
 
+  // Criar o boleto
   const { data, error } = await supabase.from('boletos').insert([{
     sacado_id: responsavel.id,
     descricao,
-    dia_liberacao,   // aqui está o campo obrigatório que faltava
-    dia_vencimento: vencimento,
+    vencimento,
     valor,
     status: 'gerado'
-  }]).select();
+  }]).select(); 
 
   if (error) {
     console.error("Erro ao criar boleto:", error);
@@ -158,12 +156,49 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
 
   const boletoComChavePix = {
     ...data[0],
-    chavePix
+    chavePix 
   };
 
   console.log("Boleto criado com sucesso:", boletoComChavePix);
 
   res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
+});
+
+// 🟡 Atualizar cobrança
+app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
+  const { cpf, id } = req.params;
+  const updates = req.body;
+
+  // Buscar ID do responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
+
+  if (responsavelError || !responsavel) {
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
+  // Verificar se a cobrança existe para este sacado
+  const { data: boleto, error: findError } = await supabase
+    .from('boletos')
+    .select('*')
+    .eq('id', id)
+    .eq('sacado_id', responsavel.id)
+    .single();
+
+  if (findError || !boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
+
+  const { data, error } = await supabase
+    .from('boletos')
+    .update(updates)
+    .eq('id', id)
+    .eq('sacado_id', responsavel.id);
+
+  if (error) return res.status(500).json({ erro: error.message });
+
+  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
 
 // 🔴 Excluir cobrança
