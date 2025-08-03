@@ -175,9 +175,10 @@ console.log("Dia de liberação definido como:", dia_liberacaoISO);
 
 const { data: adminData, error: adminError } = await supabase
   .from('admins')
-  .select('id, cpf')
+  .select('id')
   .eq('cpf', cpf)
-  .single();
+  .maybeSingle();
+
 
 if (adminError || !adminData) {
   console.error("Admin não encontrado", adminError);
