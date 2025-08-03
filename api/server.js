@@ -175,19 +175,45 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
   console.log("Dia de liberação definido como:", dia_liberacaoISO);
 
   // Criar boleto
-  const { data, error } = await supabase.from('boletos').insert([{
-    sacado_id: responsavel.id,
-    descricao,
-    vencimento: vencimentoISO,
-    valor: Number(valor),
-    status: 'gerado',
-    dia_liberacao: dia_liberacaoISO
-  }]).select();
 
-  if (error) {
-    console.error("Erro ao criar boleto:", error);
-    return res.status(500).json({ erro: error.message });
-  }
+  // Busca o admin pelo CPF (ou outro campo que tu tiver)
+const { data: adminData, error: adminError } = await supabase
+  .from('admins')
+  .select('id')
+  .eq('cpf', cpfAdm) // ou o campo que tu tiver
+  .single();
+
+if (adminError || !adminData) {
+  return res.status(400).json({ erro: 'Admin não encontrado' });
+}
+
+// Agora pega a conta bancária vinculada a esse admin
+const { data: contaData, error: contaError } = await supabase
+  .from('contabancos')
+  .select('id')
+  .eq('adminid', adminData.id)
+  .single();
+
+if (contaError || !contaData) {
+  return res.status(400).json({ erro: 'Conta bancária não encontrada' });
+}
+
+const cedente_id = contaData.id;
+
+const { data, error } = await supabase.from('boletos').insert([{
+  sacado_id: responsavel.id,
+  descricao,
+  vencimento: vencimentoISO,
+  valor: Number(valor),
+  status: 'gerado',
+  dia_liberacao: dia_liberacaoISO,
+  cedente_id // 👈 isso resolve o erro!
+}]).select();
+
+if (error) {
+  console.error("Erro ao criar boleto:", error);
+  return res.status(500).json({ erro: error.message });
+}
 
   const boletoComChavePix = {
     ...data[0],
