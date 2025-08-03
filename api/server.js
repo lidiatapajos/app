@@ -177,37 +177,44 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
   res.json({ sucesso: true, mensagem: 'Cobrança removida' });
 });
 app.delete('/usuarios/:cpf', async (req, res) => {
-  const { cpf } = req.params;
+  const cpf = req.params.cpf;
+  console.log("CPF recebido para exclusão:", cpf);
 
-  // Excluir boletos do usuário
+  // Busca o responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
+
+  if (responsavelError || !responsavel) {
+    console.error("Erro ao buscar responsável:", responsavelError);
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
+  // Exclui boletos vinculados ao responsável
   const { error: boletosError } = await supabase
     .from('boletos')
     .delete()
-    .eq('responsavelCpf', cpf);
+    .eq('sacado_id', responsavel.id);
 
   if (boletosError) {
-    console.error("Erro ao excluir boletos:", boletosError.message);
+    console.error("Erro ao excluir boletos:", boletosError);
     return res.status(500).json({ erro: 'Erro ao excluir boletos' });
   }
-});
 
-// Excluir o usuário
-app.delete('/usuarios/:cpf', async (req, res) => {
-  const cpf = req.params.cpf;
-  console.log("CPF recebido:", cpf); // Ver se a requisição chegou
-
-  const { data, error } = await supabase
+  // Exclui o responsável
+  const { error: responsavelDeleteError } = await supabase
     .from('responsaveis')
     .delete()
     .eq('cpf', cpf);
 
-  if (error) {
-    console.error("Erro ao deletar do Supabase:", error.message); // Mensagem de erro útil
-    return res.status(500).json({ erro: "Erro ao deletar usuário" });
+  if (responsavelDeleteError) {
+    console.error("Erro ao excluir responsável:", responsavelDeleteError);
+    return res.status(500).json({ erro: "Erro ao excluir usuário" });
   }
 
-  console.log("Usuário deletado com sucesso:", data);
-  res.status(200).json({ sucesso: "usuário deletado" });
+  res.status(200).json({ sucesso: "Usuário e boletos excluídos" });
 });
 
 
