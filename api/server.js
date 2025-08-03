@@ -123,6 +123,8 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const cpf = req.params.cpf;  
+  const { descricao, vencimento, valor } = req.body;
+  const chavePix = '79683428215';
  console.log("Recebendo POST para criar cobrança");
 console.log("CPF recebido:", cpf, "Body:", req.body);
 
@@ -218,8 +220,6 @@ if (boletoError) {
   console.error("Erro ao criar boleto:", boletoError);
   return res.status(500).json({ erro: boletoError.message });
 }
-
-const chavePix = '79683428215';
 
 const boletoComChavePix = {
   ...boletoData[0],
