@@ -128,7 +128,7 @@ app.post('/boletos', async (req, res) => {
     // 1. Buscar responsável pelo CPF
     const { data: responsaveis, error: respError } = await supabase
       .from('responsaveis')
-      .select('id, admin_id')
+      .select('id, adminid')
       .eq('cpf', cpf)
       .single();
 
@@ -137,13 +137,13 @@ app.post('/boletos', async (req, res) => {
     }
 
     const responsavelId = responsaveis.id;
-    const adminId = responsaveis.admin_id;
+    const adminid = responsaveis.adminid;
 
     // 2. Buscar conta bancária do admin
     const { data: conta, error: contaError } = await supabase
       .from('contabancos')
       .select('id')
-      .eq('admin_id', adminId)
+      .eq('adminid', adminid)
       .single();
 
     if (contaError || !conta) {
@@ -165,7 +165,7 @@ app.post('/boletos', async (req, res) => {
           vencimento: vencimentoFormatado,
           status: 'gerado',
           responsavel_id: responsavelId,
-          admin_id: adminId,
+          adminid: adminid,
           agencia_id: contaBancariaId,
           descricao,
           chave_pix: chavePix,
