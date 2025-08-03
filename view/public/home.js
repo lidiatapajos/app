@@ -3,9 +3,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cpf = localStorage.getItem('cpf');
   const totalSpan = document.getElementById("total");
   const totalContainer = document.querySelector(".total-container");
-  const form = document.getElementById("form-contato");
-if (!form) {
-  console.warn("form-contato não encontrado");
+ const form = document.getElementById("form-contato");
+  if (!form) {
+    console.warn("form-contato não encontrado");
+    return;
+  }
+  console.log("Form existe?", document.getElementById("form-contato"));
+
   const msg = document.getElementById("mensagem");  
 
   if (!cpf) {
@@ -64,7 +68,7 @@ if (!form) {
       msg.textContent = "Erro de conexão com o servidor.";
       console.error(err);
     }})
-}})
+})
    
 
 
