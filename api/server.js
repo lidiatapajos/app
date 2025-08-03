@@ -122,6 +122,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
+  const cpf = req.params.cpf;  
  console.log("Recebendo POST para criar cobrança");
 console.log("CPF recebido:", cpf, "Body:", req.body);
 
