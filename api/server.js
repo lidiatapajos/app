@@ -131,38 +131,25 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
     .single();
 
   if (responsavelError || !responsavel) {
-    console.error("Responsável não encontrado ou erro:", responsavelError);
     return res.status(404).json({ erro: 'Responsável não encontrado' });
   }
 
-  console.log("Responsável encontrado com ID:", responsavel.id);
+  // Converter vencimento (DD/MM/YYYY) para formato ISO
+  const [vDia, vMes, vAno] = vencimento.split('/');
+  const vencimentoISO = `${vAno}-${vMes.padStart(2, '0')}-${vDia.padStart(2, '0')}`;
 
-  // ✅ Converter data de vencimento para ISO (YYYY-MM-DD)
-  const [dia, mes, ano] = vencimento.split('/');
-  const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+  // Gerar dia_liberacao como data atual
+  const hoje = new Date();
+  const diaLiberacaoISO = hoje.toISOString().split('T')[0];
 
-  // Buscar configuração do boleto para obter dia_liberacao
-  const { data: config, error: configError } = await supabase
-    .from('config_boletos')
-    .select('dia_liberacao')
-    .limit(1)
-    .maybeSingle();
-
-  if (configError) {
-    console.error("Erro ao buscar configuração:", configError);
-    return res.status(500).json({ erro: 'Erro ao buscar configuração dos boletos.' });
-  }
-
-  const dia_liberacao = config?.dia_liberacao ?? 4; // valor padrão 4 caso não tenha config
-
-  // Criar o boleto, agora incluindo o dia_liberacao obrigatório
+  // Inserir boleto no banco
   const { data, error } = await supabase.from('boletos').insert([{
     sacado_id: responsavel.id,
     descricao,
     vencimento: vencimentoISO,
     valor: Number(valor),
     status: 'gerado',
-    dia_liberacao
+    dia_liberacao: diaLiberacaoISO
   }]).select();
 
   if (error) {
@@ -176,9 +163,9 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
   };
 
   console.log("Boleto criado com sucesso:", boletoComChavePix);
-
   res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
 });
+
 
 
 // 🟡 Atualizar cobrança
