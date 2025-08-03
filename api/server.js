@@ -174,6 +174,18 @@ console.log("Dia de liberação definido como:", dia_liberacaoISO);
 // Busca admin (confirma o CPF do admin antes)
 
 
+// Busca conta bancária (confirma nome do campo admin_id)
+const { data: contaData, error: contaError } = await supabase
+  .from('contabancos')
+  .select('id')
+  .eq('admin_id', adminData.id)  // tenta usar 'admin_id' no lugar de 'adminid'
+  .single();
+
+if (contaError || !contaData) {
+  console.error("Conta bancária não encontrada", contaError);
+  return res.status(400).json({ erro: 'Conta bancária não encontrada' });
+}
+
 const cedente_id = contaData.id;
 
 const valorNum = Number(valor.toString().replace(',', '.'));
