@@ -380,6 +380,21 @@ app.post('/configuracao-boletos', async (req, res) => {
 });
 // ACABOU A ARÉA DE BOLETOS 
 
+app.patch('/usuarios/:cpf', async (req, res) => {
+  const cpf = req.params.cpf;
+  const { email, telefone } = req.body;
+
+  const { data, error } = await supabase
+    .from('responsaveis')
+    .update({ email, telefone })
+    .eq('cpf', cpf);
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.status(200).json({ sucesso: true, data });
+});
 
 
 

@@ -388,27 +388,5 @@
       </form>
       <p id="mensagem"></p>
     </main>
-
-    <script>
-      const form = document.getElementById("form-contato");
-      const msg = document.getElementById("mensagem");
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById("email").value.trim();
-        const telefone = document.getElementById("telefone").value.trim();
-
-        localStorage.setItem("email", email);
-        localStorage.setItem("telefone", telefone);
-
-        msg.textContent = "Informações salvas com sucesso!";
-      });
-
-      document.getElementById("email").value =
-        localStorage.getItem("email") || "";
-      document.getElementById("telefone").value =
-        localStorage.getItem("telefone") || "";
-    </script>
   </body>
 </html>

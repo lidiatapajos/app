@@ -290,9 +290,9 @@ async function editarBoletoPrompt(cpf, id) {
   await carregarUsuarios();
 }
 
-//não envia pro banco de dados
+
 function adicionarUsuario() {
-  window.location.href = "cadastro.html"; // troque pelo caminho real da página de cadastro
+  window.location.href = "cadastro.html"; 
 }
 
 async function cadastrarUsuario() {
