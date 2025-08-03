@@ -33,20 +33,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error(error);
     totalContainer.innerHTML = `<p style="color: red;">Erro ao carregar boletos.</p>`;
   }
-});
 
-function copiarPix(chave) {
-  navigator.clipboard.writeText(chave).then(() => {
-    alert("Chave Pix copiada!");
-  }).catch(() => {
-    alert("Erro ao copiar chave Pix.");
-  });
-}
-
-form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const cpf = localStorage.getItem("cpf"); // ou pega de outro lugar
     const email = document.getElementById("email").value.trim();
     const telefone = document.getElementById("telefone").value.trim();
 
@@ -71,3 +61,14 @@ form.addEventListener("submit", async (e) => {
       console.error(err);
     }
   });
+
+});
+
+function copiarPix(chave) {
+  navigator.clipboard.writeText(chave).then(() => {
+    alert("Chave Pix copiada!");
+  }).catch(() => {
+    alert("Erro ao copiar chave Pix.");
+  });
+}
+
