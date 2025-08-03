@@ -10,7 +10,11 @@ const { PixQRCode } = require('pix-qrcode');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 8000;
+
+app.use(express.static(path.join(__dirname, 'views')));
+
+// process.env.PORT || 
 
 const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yaXlja3FnYWNhaW5yYW9nZWlmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzkxNDM4NCwiZXhwIjoyMDY5NDkwMzg0fQ.aP5bLKZYLMBec-rRaNYPfcJkLw1NhibgznhBduRP9DU';
@@ -20,12 +24,14 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Middlewares
 app.use(express.json());
 app.use(cors({
-  origin: 'https://primeirospassosdigital.netlify.app'
+  origin: "http://localhost:8000",
 }));
+
+// https://primeirospassosdigital.netlify.app
 
 
 // Corrigido: pasta 'view/public'
-app.use(express.static(path.join(__dirname, '../view/public')));
+app.use(express.static(path.join(__dirname, '../view')));
 
 // 🔵 Rota para listar todos os usuários (responsáveis)
 app.get('/usuarios', async (req, res) => {
@@ -37,7 +43,7 @@ app.get('/usuarios', async (req, res) => {
     console.error("Erro ao buscar usuários:", error.message);
     return res.status(500).json({ erro: true, mensagem: 'Erro ao buscar usuários.' });
   }
-
+  console.log("entrou na api usuarios")
   res.json(data); // aqui você envia a lista para o frontend
 });
 
@@ -52,6 +58,8 @@ app.get('/usuarios/:cpf', async (req, res) => {
     .select('*')
     .eq('cpf', cpf)
     .single();
+
+    console.log(adminData)
 
   if (!adminError && adminData) {
     return res.json({ erro: false, data: adminData, type: 'admin' });
@@ -78,26 +86,35 @@ app.get('/usuarios/:cpf', async (req, res) => {
 app.post('/usuarios', async (req, res) => {
   const { cpf, nome, email, telefone } = req.body;
 
-  if (!cpfValidator.isValid(cpf)) {
-    return res.status(400).json({ erro: `CPF inválido: ${cpf}` });
-  }
-
+  // if (!cpfValidator.isValid(cpf)) {
+  //   return res.status(400).json({ erro: `CPF inválido: ${cpf}` });
+  // }
+  console.log(req.body,"<---")
   const { data: exists } = await supabase.from('responsavel').select('cpf').eq('cpf', cpf).single();
   if (exists) return res.status(400).json({ erro: 'Usuário já existe' });
 
-  const { data, error } = await supabase.from('responsavel').insert([{ cpf, nome, email, telefone }]);
+  const { data, error } = await supabase.from('responsaveis').insert([{
+    cpf:cpf,
+    nome:nome,
+    email:email,
+    telefone:telefone, 
+    }]);
   if (error) return res.status(500).json({ erro: error.message });
 
   res.status(201).json({ mensagem: 'Responsável criado com sucesso', data });
 });
 
 // excluir usuario
-async function excluirUsuario(cpf) {
-  if (!confirm("Excluir este usuário e todos os boletos?")) return;
+app.delete('/usuarios/:cpf', async (req, res)=>{
+  const cpf = req.params.cpf;
 
-  await fetch(`${API_URL}/usuarios/${cpf}`, { method: "DELETE" });
-  await carregarUsuarios();
-}
+  const { data, error } = await supabase
+  .from('responsaveis')
+  .delete()
+  .eq('cpf', cpf);
+  
+  res.status(200).json({sucesso:"usuário deletado"})
+})
 
 // 🔵 Buscar cobranças 
 app.get('/usuarios/:cpf/boletos', async (req, res) => {

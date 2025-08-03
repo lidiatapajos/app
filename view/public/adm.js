@@ -1,4 +1,5 @@
-const API_URL = 'https://primeiros-passos-digital.onrender.com';
+const API_URL = 'http://localhost:8000'
+
 let cpfAdm = null;
 
 // Função principal para executar no carregamento da página
@@ -25,7 +26,7 @@ window.addEventListener("load", async () => {
 
     // Agora chama as funções que devem rodar ao carregar
     await configurarBoletos();
-    await gerarCobrancasPixAutomaticas();
+    // await gerarCobrancasPixAutomaticas();
     await carregarUsuarios();
     
 
@@ -291,7 +292,7 @@ async function adicionarUsuario() {
   await fetch(`${API_URL}/usuarios`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ cpf, nome, boletos: [] }),
+    body: JSON.stringify({ cpf, nome,}),
   });
   await carregarUsuarios();
 }
