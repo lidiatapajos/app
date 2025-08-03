@@ -17,7 +17,7 @@ window.addEventListener("load", async () => {
       window.location.href = '/configurar-boletos.html';
     } else {
       const configPadrao = {
-        dia_liberacao: 4,
+        dia_liberacao: 3,
         dia_vencimento: 28,
         valor: 100
       };
@@ -186,17 +186,25 @@ async function excluirUsuario(cpf) {
 
 // funciona mas não tá enviando pro banco de dados
 async function configurarBoletos() {
-  const config = localStorage.getItem('configBoletos');
-  if (!config) {
-    const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
-    if (desejaConfigurar) {
-      window.location.href = 'configurar-boletos.html';
-    } else {
-      const padrao = { diaLiberacao: 4, diaVencimento: 28 };
+  const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
+  if (desejaConfigurar) {
+    window.location.href = 'configurar-boletos.html';
+  } else {
+    const padrao = { diaLiberacao: 3, diaVencimento: 28, valor: 100 };
+    const sucesso = await salvarConfiguracaoNoBackend({
+      dia_liberacao: padrao.diaLiberacao,
+      dia_vencimento: padrao.diaVencimento,
+      valor: padrao.valor
+    });
+    if (sucesso) {
       localStorage.setItem('configBoletos', JSON.stringify(padrao));
+    } else {
+      alert('Erro ao salvar configuração padrão.');
     }
   }
 }
+ 
+
 
 function logout() {
   localStorage.clear();
