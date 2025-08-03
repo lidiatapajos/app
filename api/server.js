@@ -192,16 +192,23 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 });
 
 // Excluir o usuário
-
-app.delete('/usuarios/:cpf', async (req, res)=>{
+app.delete('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf;
+  console.log("CPF recebido:", cpf); // 👀
+
   const { data, error } = await supabase
-  .from('responsaveis')
-  .delete()
-  .eq('cpf', cpf);
-  
-  res.status(200).json({sucesso:"usuário deletado"})
+    .from('responsaveis')
+    .delete()
+    .eq('cpf', cpf);
+
+  if (error) {
+    console.error("Erro ao deletar:", error); // 👀
+    return res.status(500).json({ erro: "Erro ao deletar usuário" });
+  }
+
+  res.status(200).json({ sucesso: "usuário deletado" });
 });
+
 // 🔁 Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
