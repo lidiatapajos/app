@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cpf = localStorage.getItem('cpf');
   const totalSpan = document.getElementById("total");
   const totalContainer = document.querySelector(".total-container");
-
-  const form = document.getElementById("form-contato"); // <<< aqui, declara o form
+  const form = document.getElementById("form-contato");
+if (!form) {
+  console.warn("form-contato não encontrado");
   const msg = document.getElementById("mensagem");  
 
   if (!cpf) {
@@ -62,10 +63,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (err) {
       msg.textContent = "Erro de conexão com o servidor.";
       console.error(err);
-    }
-  });
+    }})
+}})
+   
 
-});
+
 
 function copiarPix(chave) {
   navigator.clipboard.writeText(chave).then(() => {
