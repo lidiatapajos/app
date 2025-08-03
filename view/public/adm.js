@@ -224,15 +224,37 @@ async function editarBoletoPrompt(cpf, id) {
 }
 
 //não envia pro banco de dados
-async function adicionarUsuario() {
-  const cpf = prompt("CPF do novo usuário:");
-  const nome = prompt("Nome do usuário:");
-  if (!cpf || !nome) return;
-
-  await fetch(`${API_URL}/usuarios`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ cpf, nome,}),
-  });
-  await carregarUsuarios();
+function adicionarUsuario() {
+  window.location.href = "cadastro.html"; // troque pelo caminho real da página de cadastro
 }
+
+async function cadastrarUsuario() {
+  const nome = document.getElementById('nome').value;
+  const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+  const email = document.getElementById('email').value;
+  const telefone = document.getElementById('telefone').value;
+
+  if (!nome || !cpf || !email || !telefone) {
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  try {
+    const response = await fetch("${API_URL}/usuarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome, cpf, email, telefone }),
+    });
+
+    if (response.ok) {
+      alert("Usuário cadastrado com sucesso!");
+      window.location.href = "adm.html"; // ou qualquer página de retorno
+    } else {
+      alert("Erro ao cadastrar usuário.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Erro de conexão com o servidor.");
+  }
+}
+
