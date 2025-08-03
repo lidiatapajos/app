@@ -123,6 +123,9 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const { descricao, vencimento, valor } = req.body;
   const chavePix = '79683428215';
 
+  console.log("Recebendo POST para criar cobrança");
+  console.log("CPF recebido:", cpf, "Body:", req.body);
+
   // Buscar ID do responsável pelo CPF
   const { data: responsavel, error: responsavelError } = await supabase
     .from('responsaveis')
@@ -131,10 +134,13 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
     .single();
 
   if (responsavelError || !responsavel) {
+    console.error("Responsável não encontrado ou erro:", responsavelError);
     return res.status(404).json({ erro: 'Responsável não encontrado' });
   }
 
-  // Criar boleto com sacado_id correto
+  console.log("Responsável encontrado com ID:", responsavel.id);
+
+  // Tentar criar o boleto
   const { data, error } = await supabase.from('boletos').insert([{
     sacado_id: responsavel.id,
     descricao,
@@ -144,10 +150,16 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
     status: 'gerado'
   }]);
 
-  if (error) return res.status(500).json({ erro: error.message });
+  if (error) {
+    console.error("Erro ao criar boleto:", error);
+    return res.status(500).json({ erro: error.message });
+  }
+
+  console.log("Boleto criado com sucesso:", data[0]);
 
   res.status(201).json({ sucesso: true, boleto: data[0] });
 });
+
 
 // 🟡 Atualizar cobrança
 app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
