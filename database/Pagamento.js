@@ -1,12 +1,26 @@
-const {DataTypes} = require("sequelize")
-const sequelize = require("./index")
+const supabase = require('./export');
 
+async function criarPagamento(dados) {
+  const { data, error } = await supabase
+    .from('Pagamento')
+    .insert([dados])
+    .select()
+    .single();
 
-const PagamentoTb = sequelize.define("Pagamento",{
-    data_pagamento:{type: DataTypes.DATE, allowNull:false},
-    valor_pago:{type: DataTypes.DOUBLE, allowNull:false},
-    meio_pagamento:{type: DataTypes.ENUM('cartão', 'pix', 'dinheiro'), allowNull:false},
-    status:{type: DataTypes.ENUM('sucesso', 'falha'), allowNull:false}
-})
+  if (error) throw error;
+  return data;
+}
 
-module.exports = PagamentoTb;
+async function listarPagamentos() {
+  const { data, error } = await supabase
+    .from('Pagamento')
+    .select('*');
+
+  if (error) throw error;
+  return data;
+}
+
+module.exports = {
+  criarPagamento,
+  listarPagamentos
+};

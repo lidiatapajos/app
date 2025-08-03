@@ -1,10 +1,34 @@
-const sequelize = require('./index')
-const DataTypes = require('sequelize')
+const supabase = require('./export');
 
-const ContaBancoTb = sequelize.define("ContaBanco",{
-    banco:{type:DataTypes.STRING, allowNull:false},
-    agencia:{type:DataTypes.STRING},
-    conta:{type:DataTypes.STRING, allowNull:false}
-})
+// 🔵 Criar nova conta bancária
+async function criarContaBanco(dadosConta) {
+  const { data, error } = await supabase
+    .from('ContaBanco')
+    .insert([dadosConta]);
 
-module.exports = ContaBancoTb;
+  if (error) {
+    console.error('Erro ao criar conta bancária:', error);
+    return null;
+  }
+
+  return data;
+}
+
+// 🔍 Buscar todas as contas bancárias
+async function buscarContasBancarias() {
+  const { data, error } = await supabase
+    .from('ContaBanco')
+    .select('*');
+
+  if (error) {
+    console.error('Erro ao buscar contas bancárias:', error);
+    return [];
+  }
+
+  return data;
+}
+
+module.exports = {
+  criarContaBanco,
+  buscarContasBancarias
+};

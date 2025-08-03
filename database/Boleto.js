@@ -1,15 +1,48 @@
-const sequelize = require("./index.js")
-const {DataTypes} = require("sequelize")
+const supabase = require('./export');
 
+// CRUD básico pra Boletos
 
-const BoletoTb = sequelize.define("Boleto",{
-    valor:{type:DataTypes.DOUBLE},
-    dia_liberacao:{type:DataTypes.DATE},
-    dia_vencimento:{type:DataTypes.DATE},
-    status:{type:DataTypes.ENUM('gerado', "pago","vencido", "cancelado")}},
-    {
-        timestamps:false
-    }
-)
+async function criarBoleto(dados) {
+  const { data, error } = await supabase
+    .from('boletos')
+    .insert([dados]);
 
-module.exports = BoletoTb;
+  if (error) throw error;
+  return data;
+}
+
+async function listarBoletos() {
+  const { data, error } = await supabase
+    .from('boletos')
+    .select('*');
+
+  if (error) throw error;
+  return data;
+}
+
+async function atualizarBoleto(id, novosDados) {
+  const { data, error } = await supabase
+    .from('boletos')
+    .update(novosDados)
+    .eq('id', id);
+
+  if (error) throw error;
+  return data;
+}
+
+async function deletarBoleto(id) {
+  const { data, error } = await supabase
+    .from('boletos')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+  return data;
+}
+
+module.exports = {
+  criarBoleto,
+  listarBoletos,
+  atualizarBoleto,
+  deletarBoleto
+};

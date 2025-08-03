@@ -1,47 +1,63 @@
-const { where } = require('sequelize');
-const {AdminTb, ContaBancoTb} = require('../database/associations');
-const { json } = require('body-parser');
-const { UPDATE } = require('sequelize/lib/query-types');
-const ContaBanco = require('./ContaBanco')
+const supabase = require('../database/associacao'); // importa o client configurado
+const ContaBanco = require('./ContaBanco');
 
+class Admin {
+  #ContaBanco;
 
-class Admin{
-    #Admin;
-    #ContaBanco;
-    constructor(){
-        this.#Admin = AdminTb;
-        this.#ContaBanco = ContaBanco;
-    }
+  constructor() {
+    this.#ContaBanco = new ContaBanco();
+  }
 
-    async Criar_Admin(nome, cpf, banco, agencia, conta){
-        const admin = await this.#Admin.create({nome:nome, cpf:cpf})
+  async Criar_Admin(nome, cpf, banco, agencia, conta) {
+    const { data: admin, error } = await supabase
+      .from('admins')
+      .insert([{ nome, cpf }])
+      .select()
+      .single();
 
-        const conta_banco = new this.#ContaBanco()
-        await conta_banco.Criar_Conta_Banco(banco, agencia, conta, admin.id)
-    }
+    if (error) throw error;
 
-    async Selecionar_Admin_especifoco(cpf){
-        const admin = await this.#Admin.findAll({
-            where:{
-                cpf:cpf
-            },
-            include:[ContaBancoTb]})
+    await this.#ContaBanco.Criar_Conta_Banco(banco, agencia, conta, admin.id);
+  }
 
-        return admin
-    }
+  async Selecionar_Admin_especifico(cpf) {
+    const { data, error } = await supabase
+      .from('admins')
+      .select('*, contabancos(*)') // relacionamento
+      .eq('cpf', cpf);
 
-    async Selecionar_Todos_Admins(){
-        const admin = await this.#Admin.findAll({include:[ContaBancoTb]})
-    return admin
-    }
+    if (error) throw error;
 
-    async Editar_Admin(cpf, campos_para_editar){
-        const admin = await this.#Admin.update(campos_para_editar,{where:{cpf:cpf}})
-    }
+    return data;
+  }
 
-    async Deletar_Admin(cpf){
-        const admin = await this.#Admin.destroy({where:{cpf:cpf}})
-    }
+  async Selecionar_Todos_Admins() {
+    const { data, error } = await supabase
+      .from('admins')
+      .select('*, contabancos(*)');
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  async Editar_Admin(cpf, campos_para_editar) {
+    const { error } = await supabase
+      .from('admins')
+      .update(campos_para_editar)
+      .eq('cpf', cpf);
+
+    if (error) throw error;
+  }
+
+  async Deletar_Admin(cpf) {
+    const { error } = await supabase
+      .from('admins')
+      .delete()
+      .eq('cpf', cpf);
+
+    if (error) throw error;
+  }
 }
 
-module.exports = Admin
+module.exports = Admin;

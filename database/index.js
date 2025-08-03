@@ -1,21 +1,9 @@
-const Sequelize = require('sequelize');
+const { createClient } = require('@supabase/supabase-js');
 
-const sequelize = new Sequelize(
-  'postgres',            // nome do banco
-  'postgres',            // usuário
-  'Passinhos2025',      // senha 
-  {
-    host: 'mriyckqgacainraogeif.supabase.co',
-    dialect: 'postgres',
-    port: 5432,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
-    logging: false, // desliga logs chatos
-  }
-);
+const SUPABASE_URL = 'https://mriyckqgacainraogeif.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yaXlja3FnYWNhaW5yYW9nZWlmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzkxNDM4NCwiZXhwIjoyMDY5NDkwMzg0fQ.aP5bLKZYLMBec-rRaNYPfcJkLw1NhibgznhBduRP9DU';
 
-module.exports = sequelize;
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+module.exports = supabase;
