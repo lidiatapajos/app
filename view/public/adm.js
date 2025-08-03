@@ -185,25 +185,28 @@ async function excluirUsuario(cpf) {
 
 
 // funciona mas não tá enviando pro banco de dados
-async function configurarBoletos() {
-  const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
-  if (desejaConfigurar) {
-    window.location.href = 'configurar-boletos.html';
-  } else {
-    const padrao = { diaLiberacao: 3, diaVencimento: 28, valor: 100 };
-    const sucesso = await salvarConfiguracaoNoBackend({
-      dia_liberacao: padrao.diaLiberacao,
-      dia_vencimento: padrao.diaVencimento,
-      valor: padrao.valor
+async function salvarConfiguracaoNoBackend(config) {
+  try {
+    const response = await fetch('/configuracao-boletos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(config)
     });
-    if (sucesso) {
-      localStorage.setItem('configBoletos', JSON.stringify(padrao));
-    } else {
-      alert('Erro ao salvar configuração padrão.');
+
+    if (!response.ok) {
+      console.error('Erro ao salvar configuração:', response.statusText);
+      return false;
     }
+
+    return true;
+  } catch (error) {
+    console.error('Erro na requisição:', error);
+    return false;
   }
 }
- 
+
 
 
 function logout() {

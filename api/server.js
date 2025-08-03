@@ -282,27 +282,6 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 });
 // ACABOU ARÉA DE DELETAR
 // CONFIGURAÇÃO DE BOLETOS E ETC
-app.get('/configuracao-boletos', async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('config_boletos')
-      .select('id')
-      .limit(1)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Erro ao buscar configuração:", error);
-      return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
-    }
-
-    const configExists = !!data;
-    return res.json({ configExists });
-  } catch (e) {
-    console.error("Erro inesperado:", e);
-    return res.status(500).json({ erro: 'Erro inesperado.' });
-  }
-});
-
 app.post('/configuracao-boletos', async (req, res) => {
   const { dia_liberacao, dia_vencimento, valor } = req.body;
 
@@ -314,29 +293,17 @@ app.post('/configuracao-boletos', async (req, res) => {
     return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
   }
 
-  // Validação simples (opcional)
-  if (
-    !Number.isInteger(dia_liberacao) ||
-    !Number.isInteger(dia_vencimento) ||
-    typeof valor !== 'number'
-  ) {
-    return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
-  }
-
   try {
-    // Apaga todas as configurações existentes para manter apenas uma
-    await supabase.from('config_boletos').delete();
-
     const { data, error } = await supabase
       .from('config_boletos')
       .insert([{ dia_liberacao, dia_vencimento, valor }]);
 
     if (error) {
-      console.error("Erro ao salvar configuração:", error);
+      console.error("Erro ao inserir configuração:", error);
       return res.status(500).json({ erro: 'Erro ao salvar configuração.' });
     }
 
-    return res.status(201).json({ sucesso: true, data });
+    return res.status(201).json({ mensagem: 'Configuração salva com sucesso.', data });
   } catch (e) {
     console.error("Erro inesperado:", e);
     return res.status(500).json({ erro: 'Erro inesperado.' });
