@@ -1,11 +1,11 @@
- const API_URL = 'https://primeiros-passos-digital.onrender.com';
+const API_URL = 'https://primeiros-passos-digital.onrender.com';
 document.addEventListener("DOMContentLoaded", async () => {
   const cpf = localStorage.getItem('cpf');
   const totalSpan = document.getElementById("total");
   const totalContainer = document.querySelector(".total-container");
- const form = document.getElementById("form-contato");
+  const form = document.getElementById("form-contato");
 
-  const msg = document.getElementById("mensagem");  
+  const msg = document.getElementById("mensagem");
 
   if (!cpf) {
     totalContainer.innerHTML = `<p style="color: red;">CPF não encontrado. Faça login novamente.</p>`;
@@ -37,9 +37,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     totalContainer.innerHTML = `<p style="color: red;">Erro ao carregar boletos.</p>`;
   }
 
-   form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-      console.log('Submit do form acionado');
+    console.log('Submit do form acionado');
 
     const email = document.getElementById("email").value.trim();
     const telefone = document.getElementById("telefone").value.trim();
@@ -52,9 +52,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         body: JSON.stringify({ email, telefone })
       });
-console.log('Status da resposta:', resposta.status);
-const textoResposta = await resposta.text();
-console.log('Resposta raw:', textoResposta);
+      console.log('Status da resposta:', resposta.status);
+      const textoResposta = await resposta.text();
+      console.log('Resposta raw:', textoResposta);
 
       const data = await resposta.json();
 
@@ -66,9 +66,10 @@ console.log('Resposta raw:', textoResposta);
     } catch (err) {
       msg.textContent = "Erro de conexão com o servidor.";
       console.error(err);
-    }})
+    }
+  })
 })
-   
+
 
 
 

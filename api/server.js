@@ -122,101 +122,112 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
-  const cpf = req.params.cpf;
-  const { descricao, vencimento, valor } = req.body;
-  const chavePix = '79683428215';
+ console.log("Recebendo POST para criar cobrança");
+console.log("CPF recebido:", cpf, "Body:", req.body);
 
-  console.log("Recebendo POST para criar cobrança");
-  console.log("CPF recebido:", cpf, "Body:", req.body);
+// Busca responsável
+const { data: responsavel, error: responsavelError } = await supabase
+  .from('responsaveis')
+  .select('id')
+  .eq('cpf', cpf)
+  .single();
 
-  const { data: responsavel, error: responsavelError } = await supabase
-    .from('responsaveis')
-    .select('id')
-    .eq('cpf', cpf)
-    .single();
+if (responsavelError || !responsavel) {
+  console.error("Responsável não encontrado", responsavelError);
+  return res.status(404).json({ erro: 'Responsável não encontrado' });
+}
 
-  if (responsavelError || !responsavel) {
-    return res.status(404).json({ erro: 'Responsável não encontrado' });
-  }
+console.log("Responsável encontrado com ID:", responsavel.id);
 
-  console.log("Responsável encontrado com ID:", responsavel.id);
+// Formata vencimento
+const [dia, mes, ano] = vencimento.split('/');
+const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
-  const [dia, mes, ano] = vencimento.split('/');
-  const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+// Busca configuração
+const { data: config, error: configError } = await supabase
+  .from('config_boletos')
+  .select('dia_liberacao')
+  .limit(1)
+  .maybeSingle();
 
-  const { data: config, error: configError } = await supabase
-    .from('config_boletos')
-    .select('dia_liberacao')
-    .limit(1)
-    .maybeSingle();
+if (configError) {
+  console.error("Erro ao buscar config boletos", configError);
+  return res.status(500).json({ erro: 'Erro ao buscar configuração dos boletos.' });
+}
 
-  if (configError) {
-    return res.status(500).json({ erro: 'Erro ao buscar configuração dos boletos.' });
-  }
+let dia_liberacaoISO;
+if (config?.dia_liberacao) {
+  const hoje = new Date();
+  const anoAtual = hoje.getFullYear();
+  const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
+  const diaConfig = String(config.dia_liberacao).padStart(2, '0');
+  dia_liberacaoISO = `${anoAtual}-${mesAtual}-${diaConfig}`;
+} else {
+  dia_liberacaoISO = new Date().toISOString().split('T')[0];
+}
 
-  let dia_liberacaoISO;
-  if (config?.dia_liberacao) {
-    const hoje = new Date();
-    const anoAtual = hoje.getFullYear();
-    const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
-    const diaConfig = String(config.dia_liberacao).padStart(2, '0');
-    dia_liberacaoISO = `${anoAtual}-${mesAtual}-${diaConfig}`;
-  } else {
-    dia_liberacaoISO = new Date().toISOString().split('T')[0];
-  }
+console.log("Dia de liberação definido como:", dia_liberacaoISO);
 
-  console.log("Dia de liberação definido como:", dia_liberacaoISO);
+// Busca admin (confirma o CPF do admin antes)
+const { data: adminData, error: adminError } = await supabase
+  .from('admins')
+  .select('id, cpf')
+  .eq('cpf', cpf)
+  .single();
 
-  // 🔍 Busca admin com base no CPF (o mesmo do responsável?)
-  const { data: adminData, error: adminError } = await supabase
-    .from('admins')
-    .select('id')
-    .eq('cpf', cpf) // cuidado: isso depende de o admin ter o mesmo CPF do responsável
-    .single();
+if (adminError || !adminData) {
+  console.error("Admin não encontrado", adminError);
+  return res.status(400).json({ erro: 'Admin não encontrado' });
+}
 
-  if (adminError || !adminData) {
-    return res.status(400).json({ erro: 'Admin não encontrado' });
-  }
+console.log("Admin encontrado:", adminData);
 
-  const { data: contaData, error: contaError } = await supabase
-    .from('contabancos')
-    .select('id')
-    .eq('adminid', adminData.id)
-    .single();
+// Busca conta bancária (confirma nome do campo admin_id)
+const { data: contaData, error: contaError } = await supabase
+  .from('contabancos')
+  .select('id')
+  .eq('admin_id', adminData.id)  // tenta usar 'admin_id' no lugar de 'adminid'
+  .single();
 
-  if (contaError || !contaData) {
-    return res.status(400).json({ erro: 'Conta bancária não encontrada' });
-  }
+if (contaError || !contaData) {
+  console.error("Conta bancária não encontrada", contaError);
+  return res.status(400).json({ erro: 'Conta bancária não encontrada' });
+}
 
-  const cedente_id = contaData.id;
+const cedente_id = contaData.id;
 
-  // ✅ Cria o boleto uma única vez
-  const { data: boletoData, error: boletoError } = await supabase
-    .from('boletos')
-    .insert([{
-      sacado_id: responsavel.id,
-      descricao,
-      vencimento: vencimentoISO,
-      valor: Number(valor),
-      status: 'gerado',
-      dia_liberacao: dia_liberacaoISO,
-      cedente_id
-    }])
-    .select();
+const valorNum = Number(valor.toString().replace(',', '.'));
 
-  if (boletoError) {
-    console.error("Erro ao criar boleto:", boletoError);
-    return res.status(500).json({ erro: boletoError.message });
-  }
+console.log("Inserindo boleto com valor:", valorNum);
 
-  const boletoComChavePix = {
-    ...boletoData[0],
-    chavePix
-  };
+const { data: boletoData, error: boletoError } = await supabase
+  .from('boletos')
+  .insert([{
+    sacado_id: responsavel.id,
+    descricao,
+    vencimento: vencimentoISO,
+    valor: valorNum,
+    status: 'gerado',
+    dia_liberacao: dia_liberacaoISO,
+    cedente_id
+  }])
+  .select();
 
-  console.log("Boleto criado com sucesso:", boletoComChavePix);
+if (boletoError) {
+  console.error("Erro ao criar boleto:", boletoError);
+  return res.status(500).json({ erro: boletoError.message });
+}
 
-  return res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
+const chavePix = '79683428215';
+
+const boletoComChavePix = {
+  ...boletoData[0],
+  chavePix
+};
+
+console.log("Boleto criado com sucesso:", boletoComChavePix);
+
+return res.status(201).json({ sucesso: true, boleto: boletoComChavePix });
 });
 
 
