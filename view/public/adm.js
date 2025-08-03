@@ -10,27 +10,6 @@ window.addEventListener("load", async () => {
     return;
   }
 
-  const jaConfigurou = await verificarSeConfigExisteNoBackend();
-  if (!jaConfigurou) {
-    const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
-    if (desejaConfigurar) {
-      window.location.href = '/configurar-boletos.html';
-    } else {
-      const configPadrao = {
-        dia_liberacao: 3,
-        dia_vencimento: 28,
-        valor: 100
-      };
-      const sucesso = await salvarConfiguracaoNoBackend(configPadrao);
-      if (!sucesso) {
-        alert("Erro ao salvar configuração padrão. Contate o suporte.");
-      } else {
-        alert("Configuração padrão aplicada com sucesso!");
-        // RELOAD pra atualizar o estado e evitar loop
-        window.location.reload();
-      }
-    }
-  }
 
   try {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
@@ -39,40 +18,20 @@ window.addEventListener("load", async () => {
     const config = data?.configBoletos || null;
     console.log("Configuração atual de boletos:", config);
 
-    await configurarBoletos();
+    await verificarSeConfigExisteNoBackend();
     await carregarUsuarios();
+    await salvarConfiguracaoNoBackend();
+    await adicionarCobrancaPix();
 
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
     console.warn("Verifique se o servidor está rodando e a rota está correta.");
   }
+
 });
 
-//configuração dos boletos
-async function verificarSeConfigExisteNoBackend() {
-  try {
-    const res = await fetch(`${API_URL}/configuracao-boletos`);
-    const json = await res.json();
-    return json?.configExists || false;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
 
-async function salvarConfiguracaoNoBackend(config) {
-  try {
-    const res = await fetch(`${API_URL}/configuracao-boletos`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    });
-    return res.ok;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
+
 
 
 
@@ -185,23 +144,40 @@ async function excluirUsuario(cpf) {
 
 
 // funciona mas não tá enviando pro banco de dados
-async function configurarBoletos() {
-  const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
-  if (desejaConfigurar) {
-    window.location.href = 'configurar-boletos.html';
-  } else {
-    const padrao = { diaLiberacao: 3, diaVencimento: 28, valor: 100 };
-    const sucesso = await salvarConfiguracaoNoBackend({
-      dia_liberacao: padrao.diaLiberacao,
-      dia_vencimento: padrao.diaVencimento,
-      valor: padrao.valor
-    });
-    if (sucesso) {
-      localStorage.setItem('configBoletos', JSON.stringify(padrao));
-    } else {
-      alert('Erro ao salvar configuração padrão.');
-    }
+async function salvarConfiguracaoNoBackend(config) {
+  const { data, error } = await supabase
+    .from('configuracao_boletos')
+    .upsert({
+      id: 1, // fixa um ID só pra garantir que tem só UMA config (tipo singleton)
+      dia_liberacao: config.dia_liberacao,
+      dia_vencimento: config.dia_vencimento,
+      valor: config.valor
+    }, { onConflict: 'id' })
+
+  if (error) {
+    console.error('Erro ao salvar config no Supabase:', error)
+    return false
   }
+
+  return true
+}
+
+async function verificarSeConfigExisteNoBackend() {
+  const { data, error } = await supabase
+    .from('configuracao_boletos')
+    .select('*')
+    .eq('id', 1)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') { // registro não encontrado
+      return false
+    }
+    console.error('Erro ao verificar config:', error)
+    return false
+  }
+
+  return !!data
 }
  
 
