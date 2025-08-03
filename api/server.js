@@ -34,7 +34,6 @@ app.get('/usuarios', async (req, res) => {
   res.json(data);
 });
 
-// Rota simples
 app.get('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf.replace(/\D/g, '');
   console.log("🔍 Buscando CPF:", cpf);
@@ -70,10 +69,6 @@ app.get('/usuarios/:cpf', async (req, res) => {
 // 🟢 Criar novo usuário 
 app.post('/usuarios', async (req, res) => {
   const { cpf, nome, email, telefone } = req.body;
-
-  /*if (!cpfValidator.isValid(cpf)) {
-    return res.status(400).json({ erro: `CPF inválido: ${cpf}` });
-  }*/
 
   // Verifica se já existe na tabela de responsáveis
   const { data: exists } = await supabase.from('responsaveis').select('cpf').eq('cpf', cpf).single();
@@ -121,12 +116,12 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const cpf = req.params.cpf;
   const { descricao, vencimento, valor } = req.body;
-  const chavePix = '79683428215'; // chave fixa, não será salva no banco
+  const chavePix = '79683428215';
 
   console.log("Recebendo POST para criar cobrança");
   console.log("CPF recebido:", cpf, "Body:", req.body);
 
-  // Buscar ID do responsável pelo CPF
+  // Buscar ID do responsável
   const { data: responsavel, error: responsavelError } = await supabase
     .from('responsaveis')
     .select('id')
@@ -140,11 +135,15 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
 
   console.log("Responsável encontrado com ID:", responsavel.id);
 
+  // ✅ Converter data de vencimento para ISO (YYYY-MM-DD)
+  const [dia, mes, ano] = vencimento.split('/');
+  const vencimentoISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+
   // Criar o boleto
   const { data, error } = await supabase.from('boletos').insert([{
     sacado_id: responsavel.id,
     descricao,
-    vencimento,
+    vencimento: vencimentoISO,
     valor,
     status: 'gerado'
   }]).select(); 
@@ -258,6 +257,69 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 
   res.status(200).json({ sucesso: "Usuário e boletos excluídos" });
 });
+
+app.get('/configuracao-boletos', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('config_boletos')
+      .select('id')
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Erro ao buscar configuração:", error);
+      return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
+    }
+
+    const configExists = !!data;
+    return res.json({ configExists });
+  } catch (e) {
+    console.error("Erro inesperado:", e);
+    return res.status(500).json({ erro: 'Erro inesperado.' });
+  }
+});
+
+app.post('/configuracao-boletos', async (req, res) => {
+  const { dia_liberacao, dia_vencimento, valor } = req.body;
+
+  if (
+    dia_liberacao == null ||
+    dia_vencimento == null ||
+    valor == null
+  ) {
+    return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+  }
+
+  // Validação simples (opcional)
+  if (
+    !Number.isInteger(dia_liberacao) ||
+    !Number.isInteger(dia_vencimento) ||
+    typeof valor !== 'number'
+  ) {
+    return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
+  }
+
+  try {
+    // Apaga todas as configurações existentes para manter apenas uma
+    await supabase.from('config_boletos').delete();
+
+    const { data, error } = await supabase
+      .from('config_boletos')
+      .insert([{ dia_liberacao, dia_vencimento, valor }]);
+
+    if (error) {
+      console.error("Erro ao salvar configuração:", error);
+      return res.status(500).json({ erro: 'Erro ao salvar configuração.' });
+    }
+
+    return res.status(201).json({ sucesso: true, data });
+  } catch (e) {
+    console.error("Erro inesperado:", e);
+    return res.status(500).json({ erro: 'Erro inesperado.' });
+  }
+});
+
+
 
 
 // 🔁 Iniciar servidor

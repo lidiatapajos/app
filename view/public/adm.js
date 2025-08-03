@@ -10,6 +10,26 @@ window.addEventListener("load", async () => {
     return;
   }
 
+  const jaConfigurou = await verificarSeConfigExisteNoBackend();
+  if (!jaConfigurou) {
+    const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
+    if (desejaConfigurar) {
+      window.location.href = '/configurar-boletos.html';
+    } else {
+      const configPadrao = {
+        dia_liberacao: 4,
+        dia_vencimento: 28,
+        valor: 100
+      };
+      const sucesso = await salvarConfiguracaoNoBackend(configPadrao);
+      if (!sucesso) {
+        alert("Erro ao salvar configuração padrão. Contate o suporte.");
+      } else {
+        alert("Configuração padrão aplicada com sucesso!");
+      }
+    }
+  }
+
   try {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
@@ -17,22 +37,41 @@ window.addEventListener("load", async () => {
     const config = data?.configBoletos || null;
     console.log("Configuração atual de boletos:", config);
 
-
-    console.log("Configuração atual de boletos:", config);
-
-    console.log("Chamando carregarUsuarios...");
-
     await configurarBoletos();
-    console.log("Vai chamar carregarUsuarios");
-
     await carregarUsuarios();
-    console.log("Função carregarUsuarios foi chamada");
 
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
     console.warn("Verifique se o servidor está rodando e a rota está correta.");
   }
 });
+
+//configuração dos boletos
+async function verificarSeConfigExisteNoBackend() {
+  try {
+    const res = await fetch(`${API_URL}/configuracao-boletos`);
+    const json = await res.json();
+    return json?.configExists || false;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+async function salvarConfiguracaoNoBackend(config) {
+  try {
+    const res = await fetch(`${API_URL}/configuracao-boletos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+    return res.ok;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
 
 async function carregarUsuarios() {
   const container = document.getElementById("usuarios-boletos");
@@ -118,7 +157,7 @@ async function adicionarCobrancaPix(cpf) {
   }
 }
  
-// não testei por medo kk
+// funciona
 async function excluirUsuario(cpf) {
   const confirmacao = confirm("Tem certeza que deseja excluir este usuário e todos os boletos?");
   if (!confirmacao) return;
