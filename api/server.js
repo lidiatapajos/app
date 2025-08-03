@@ -95,15 +95,27 @@ app.post('/usuarios', async (req, res) => {
 app.get('/usuarios/:cpf/boletos', async (req, res) => {
   const cpf = req.params.cpf;
 
+  // Buscar ID do responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
+
+  if (responsavelError || !responsavel) {
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
   const { data, error } = await supabase
     .from('boletos')
     .select('*')
-    .eq('responsaveisCpf', cpf);
+    .eq('sacado_id', responsavel.id);
 
   if (error) return res.status(404).json({ erro: 'Cobranças não encontradas' });
 
   res.json(data);
 });
+
 
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/:cpf/boletos', async (req, res) => {
@@ -111,11 +123,20 @@ app.post('/usuarios/:cpf/boletos', async (req, res) => {
   const { descricao, vencimento, valor } = req.body;
   const chavePix = '79683428215';
 
-  const { data: responsaveis } = await supabase.from('responsaveis').select('cpf').eq('cpf', cpf).single();
-  if (!responsaveis) return res.status(404).json({ erro: 'Usuário não encontrado' });
+  // Buscar ID do responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
 
+  if (responsavelError || !responsavel) {
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
+  // Criar boleto com sacado_id correto
   const { data, error } = await supabase.from('boletos').insert([{
-    responsaveisCpf: cpf,
+    sacado_id: responsavel.id,
     descricao,
     vencimento,
     valor,
@@ -133,20 +154,32 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
   const { cpf, id } = req.params;
   const updates = req.body;
 
+  // Buscar ID do responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
+
+  if (responsavelError || !responsavel) {
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
+  // Verificar se a cobrança existe para este sacado
   const { data: boleto, error: findError } = await supabase
     .from('boletos')
     .select('*')
     .eq('id', id)
-    .eq('responsaveisCpf', cpf)
+    .eq('sacado_id', responsavel.id)
     .single();
 
-  if (findError) return res.status(404).json({ erro: 'Cobrança não encontrada' });
+  if (findError || !boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
 
   const { data, error } = await supabase
     .from('boletos')
     .update(updates)
     .eq('id', id)
-    .eq('responsaveisCpf', cpf);
+    .eq('sacado_id', responsavel.id);
 
   if (error) return res.status(500).json({ erro: error.message });
 
@@ -155,27 +188,21 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
-  const { cpf, id } = req.params;
-
-  const { data: boleto, error: findError } = await supabase
-    .from('boletos')
-    .select('*')
-    .eq('id', id)
-    .eq('responsaveisCpf', cpf)
-    .single();
-
-  if (findError) return res.status(404).json({ erro: 'Cobrança não encontrada' });
-
+  const { id } = req.params;
   const { error } = await supabase
     .from('boletos')
     .delete()
     .eq('id', id)
-    .eq('responsaveisCpf', cpf);
+    .eq('sacado_id', responsavel.id);
 
-  if (error) return res.status(500).json({ erro: error.message });
+  if (error) {
+    console.error("Erro ao deletar cobrança:", error);
+    return res.status(500).json({ erro: error.message });
+  }
 
   res.json({ sucesso: true, mensagem: 'Cobrança removida' });
 });
+
 app.delete('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf;
   console.log("CPF recebido para exclusão:", cpf);
