@@ -152,7 +152,8 @@ app.post('/usuarios/boletos', async (req, res) => {
       return res.status(400).json({ erro: 'Conta bancária do admin não encontrada' });
     }
 
-    const contaBancariaId = conta.id;
+    const contaBancariaId = conta.conta;
+    console.log("rodando", contaBancariaId);
 
     // 3. Inserir o boleto com todos os dados
     const dataLiberacao = new Date().toISOString().split('T')[0]; // hoje
