@@ -30,7 +30,7 @@ app.get('/usuarios', async (req, res) => {
   console.log("🔄 Rota /usuarios acessada");
   const { data, error } = await supabase
     .from('responsaveis')
-    .select('*');
+    .select('*, boletos(*)');
 
   if (error) {
     console.error("Erro ao buscar usuários:", error.message);
