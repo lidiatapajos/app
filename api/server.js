@@ -154,7 +154,7 @@ app.post('/usuarios/boletos', async (req, res) => {
 
     const contaBancariaId = conta.conta;
     console.log("rodando", contaBancariaId);
-    const agencia_id = conta.id;
+    const agencia_id = 3;
     // 3. Inserir o boleto com todos os dados
     const dataLiberacao = new Date().toISOString().split('T')[0]; // hoje
     const vencimentoFormatado = vencimento.split('/').reverse().join('-'); // de DD/MM/YYYY pra YYYY-MM-DD
