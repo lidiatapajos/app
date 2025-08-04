@@ -121,7 +121,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
 
 // 🟢 Criar cobrança Pix
-app.post('/usuarios/:cpf/boletos', async (req, res) => {
+app.post('/usuarios/boletos', async (req, res) => {
   const { descricao, vencimento, valor, chavePix } = req.body;
   const cpf = req.params.cpf;
   console.log("entrou aqui-----------------------------------------------------------------------------------fds");
