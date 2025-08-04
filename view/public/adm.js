@@ -328,58 +328,68 @@ window.addEventListener('load', () => {
   } else {
     console.error('Form não encontrado!');
   }
+
+  
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('cadastroForm');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault(); // PARA o recarregamento
+      cadastrarUsuario();
+    });
+  }
 });
 
-document.addEventListener('DOMContentLoaded', () =>
+
+
 async function cadastrarUsuario() {
-  console.log('Função cadastrarUsuario chamada.');
-  
+  console.log('🔥 cadastrarUsuario iniciado');
+
   const form = document.getElementById('cadastroForm');
   if (!form) {
-    console.error('Form não encontrado dentro da função cadastrarUsuario!');
+    console.error('🚨 Form não encontrado!');
     return;
   }
 
   const formData = new FormData(form);
   const dados = {
     nome: formData.get('nome'),
-    cpf: formData.get('cpf').replace(/\D/g, ''),
+    cpf: formData.get('cpf')?.replace(/\D/g, ''),
     email: formData.get('email'),
     telefone: formData.get('telefone'),
   };
 
-  console.log('Dados extraídos do formulário:', dados);
+  console.log('📋 Dados do formulário:', dados);
 
-  // Validação básica
+  // Validação rápida e direta
   if (!dados.nome || !dados.cpf || !dados.email) {
-    alert('Preencha todos os campos obrigatórios (nome, cpf, email).');
-    console.log('Campos obrigatórios não preenchidos.');
+    alert('Preencha os campos obrigatórios: nome, cpf e email.');
+    console.log('⚠️ Campos obrigatórios faltando.');
     return;
   }
 
   try {
-    console.log(`Enviando dados para API em ${API_URL}/usuarios`);
+    console.log(`🚀 Enviando para API em ${API_URL}/usuarios`);
     const response = await fetch(`${API_URL}/usuarios`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dados),
     });
 
-    console.log('Resposta da API recebida. Status:', response.status);
-    const result = await response.json();
-    console.log('Corpo da resposta:', result);
+    const resultado = await response.json();
+    console.log('📥 Resposta da API:', resultado);
 
-    if (response.ok && !result.erro) {
-      alert('Usuário cadastrado com sucesso!');
-      console.log('Cadastro OK, redirecionando para adm.html');
+    if (response.ok && !resultado.erro) {
+      alert('✅ Usuário cadastrado com sucesso!');
+      console.log('➡️ Redirecionando pra adm.html...');
       window.location.href = 'adm.html';
     } else {
-      alert(`Erro ao cadastrar usuário: ${result.erro || 'Erro desconhecido'}`);
-      console.warn('Erro na resposta da API:', result);
+      alert(`❌ Erro ao cadastrar: ${resultado.erro || 'Erro desconhecido'}`);
+      console.warn('⚠️ Resposta de erro da API:', resultado);
     }
-  } catch (err) {
-    console.error('Erro na conexão com a API:', err);
-    alert('Erro na conexão com o servidor.');
+  } catch (error) {
+    console.error('🔥 Erro na requisição:', error);
+    alert('🚨 Erro na conexão com o servidor.');
   }
-
-});
+}
