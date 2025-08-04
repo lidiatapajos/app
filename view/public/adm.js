@@ -308,10 +308,6 @@ async function editarBoletoPrompt(cpf, id) {
 }
 
 
-function adicionarUsuario() {
-  window.location.href = "cadastro.html"; 
-}
-
 async function cadastrarUsuario() {
   const nome = document.getElementById('nome').value;
   const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
