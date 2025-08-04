@@ -330,6 +330,7 @@ window.addEventListener('load', () => {
   }
 });
 
+document.addEventListener('DOMContentLoaded', () =>
 async function cadastrarUsuario() {
   console.log('Função cadastrarUsuario chamada.');
   
@@ -380,4 +381,5 @@ async function cadastrarUsuario() {
     console.error('Erro na conexão com a API:', err);
     alert('Erro na conexão com o servidor.');
   }
-}
+
+});
