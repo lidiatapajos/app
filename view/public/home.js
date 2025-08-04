@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let total = boletos.reduce((sum, boleto) => {
       if (!boleto.pago) {
-        const valor = parseFloat((boleto.valor || '0').replace(',', '.')) || 0;
+        const valor = parseFloat(String(boleto.valor).replace(',', '.')) || 0;
         return sum + valor;
       }
       return sum;
