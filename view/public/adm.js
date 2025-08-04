@@ -160,7 +160,7 @@ async function adicionarCobrancaPix(cpf) {
   if (!descricao || !vencimento || !valor) return;
 
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos`, {
+    const res = await fetch(`${API_URL}/usuarios/boletos?cpf=${cpf}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ descricao, vencimento, valor, chavePix }),
