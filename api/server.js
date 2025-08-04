@@ -26,7 +26,7 @@ app.use(express.json());
 
 // USUARIOS E ADM
 app.use(express.static(path.join(__dirname, '../view')));
-app.get('/usuarios', async (req, res) => {
+app.get('/usuarios', async (_req, res) => {
   console.log("🔄 Rota /usuarios acessada");
   const { data, error } = await supabase
     .from('responsaveis')

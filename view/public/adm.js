@@ -41,7 +41,7 @@ window.addEventListener("load", async () => {
 
     await configurarBoletos();
     await carregarUsuarios();
-
+    await iniciarTutorialAdm();
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
     console.warn("Verifique se o servidor está rodando e a rota está correta.");
@@ -234,7 +234,7 @@ function copiarPix(chave) {
     .catch(() => alert("Erro ao copiar chave Pix."));
 }
 // não tá funcionando
-function iniciarTutorialAdm() {
+async function iniciarTutorialAdm() {
   const jaViu = localStorage.getItem("tutorialAdmVisto");
   if (jaViu) return;
 
@@ -272,7 +272,7 @@ function iniciarTutorialAdm() {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-iniciarTutorialAdm();
+
 
 //não tem como testar
 async function marcarComoPago(cpf, id) {
