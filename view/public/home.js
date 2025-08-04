@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/boletos/${cpf}`);
+    const response = await fetch(`${API_URL}/usuarios/${cpf}/boletos`);
     if (!response.ok) throw new Error('Erro ao buscar boletos');
 
     const boletos = await response.json();
