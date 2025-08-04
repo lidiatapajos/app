@@ -51,8 +51,11 @@ window.addEventListener("load", async () => {
 //configuração dos boletos
 async function verificarSeConfigExisteNoBackend() {
   try {
-    const res = await fetch(`${API_URL}/configuracao-boletos`);
+    const res = await fetch(`${API_URL}/configuracao-boletos`, {
+      method: 'GET'
+    });
     const json = await res.json();
+    console.log(json,'----------------- json')
     return json?.configExists || false;
   } catch (e) {
     console.error(e);

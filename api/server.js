@@ -313,9 +313,11 @@ app.get('/configuracao-boletos', async (req, res) => {
       console.error("Erro ao buscar configuração:", error);
       return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
     }
+    console.log(data, "----------------------- resposta do bd confing");
+    
 
     const configExists = !!data;
-    return res.json({ configExists });
+    return res.status(200).json({ configExists });
   } catch (e) {
     console.error("Erro inesperado:", e);
     return res.status(500).json({ erro: 'Erro inesperado.' });
