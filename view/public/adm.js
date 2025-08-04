@@ -309,37 +309,25 @@ async function editarBoletoPrompt(cpf, id) {
 
 
 async function cadastrarUsuario() {
-  const nome = document.getElementById('nome').value;
-  const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
-  const email = document.getElementById('email').value;
-  const telefone = document.getElementById('telefone').value;
-  console.log("Redirecionando para:", window.location.href);
+  const form = document.getElementById('cadastroForm');
+  const formData = new FormData(form);
+  const dados = {
+    nome: formData.get('nome'),
+    cpf: formData.get('cpf'),
+    email: formData.get('email'),
+    telefone: formData.get('telefone'),
+  };
 
-  if (!nome || !cpf || !email || !telefone) {
-    alert("Preencha todos os campos!");
-    return;
-  }
+  const response = await fetch(`${API_URL}usuarios`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados),
+  });
 
-  try {
-    const response = await fetch(`${API_URL}/usuarios`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, cpf, email, telefone }),
-    });
-const resultado = await response.json(); // pega o corpo da resposta
-  console.log("Resposta da API:", resultado);
-
+  const result = await response.json();
   if (response.ok) {
-    alert("Usuário cadastrado com sucesso!");
-    window.location.href = "adm.html";
+    alert('Usuário cadastrado com sucesso!');
   } else {
-    alert("Erro ao cadastrar usuário: " + (resultado?.erro || "Erro desconhecido"));
+    alert(`Erro: ${result.erro}`);
   }
-  console.log("Redirecionando para:", window.location.href);
-
-} catch (err) {
-  console.error("Erro de conexão:", err);
-  alert("Erro de conexão com o servidor.");
-}
-
 }
