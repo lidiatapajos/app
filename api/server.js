@@ -265,6 +265,34 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
+app.get('/pix', (req, res) => {
+  const { chave, valor, nome, cidade } = req.query;
+
+  if (!chave || !valor || !nome || !cidade) {
+    return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valor, nome, cidade' });
+  }
+
+  try {
+    const payload = {
+      version: '01',
+      key: chave,
+      name: nome,
+      city: cidade,
+      amount: valor
+    };
+
+    const codigoPix = new PixQRCode(payload);
+
+    res.json({
+      brcode: codigoPix.payload(),
+      qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codigoPix.payload())}`
+    });
+
+  } catch (err) {
+    console.error('Erro ao gerar QRCode:', err);
+    res.status(500).json({ erro: 'Erro ao gerar código Pix' });
+  }
+});
 
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
