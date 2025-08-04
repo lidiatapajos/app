@@ -137,7 +137,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
   const { data, error } = await supabase
     .from('boletos')
     .select('*')
-    .eq('sacado_id', responsavel.id);
+    .eq('responsavel_id', responsavel.id);
 
   if (error) return res.status(500).json({ erro: 'Erro ao buscar cobranças' });
   if (!data || data.length === 0) return res.status(404).json({ erro: 'Nenhuma cobrança encontrada' });
@@ -249,7 +249,7 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
     .from('boletos')
     .select('*')
     .eq('id', id)
-    .eq('sacado_id', responsavel.id)
+    .eq('responsavel_id', responsavel.id)
     .single();
 
   if (findError || !boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
@@ -258,7 +258,7 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
     .from('boletos')
     .update(updates)
     .eq('id', id)
-    .eq('sacado_id', responsavel.id);
+    .eq('responsavel_id', responsavel.id);
 
   if (error) return res.status(500).json({ erro: error.message });
 
@@ -272,7 +272,7 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
     .from('boletos')
     .delete()
     .eq('id', id)
-    .eq('sacado_id', responsavel.id);
+    .eq('responsavel_id', responsavel.id);
 
   if (error) {
     console.error("Erro ao deletar cobrança:", error);
@@ -304,7 +304,7 @@ app.delete('/usuarios/:cpf', async (req, res) => {
   const { error: boletosError } = await supabase
     .from('boletos')
     .delete()
-    .eq('sacado_id', responsavel.id);
+    .eq('responsavel_id', responsavel.id);
 
   if (boletosError) {
     console.error("Erro ao excluir boletos:", boletosError);

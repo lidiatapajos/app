@@ -335,11 +335,11 @@ window.addEventListener('load', () => {
 
 
 async function cadastrarUsuario() {
-  console.log('🔥 cadastrarUsuario iniciado');
+  console.log('cadastrarUsuario iniciado');
 
   const form = document.getElementById('cadastroForm');
   if (!form) {
-    console.error('🚨 Form não encontrado!');
+    console.error(' Form não encontrado!');
     return;
   }
 
@@ -351,17 +351,17 @@ async function cadastrarUsuario() {
     telefone: formData.get('telefone'),
   };
 
-  console.log('📋 Dados do formulário:', dados);
+  console.log('Dados do formulário:', dados);
 
   // Validação rápida e direta
   if (!dados.nome || !dados.cpf || !dados.email) {
     alert('Preencha os campos obrigatórios: nome, cpf e email.');
-    console.log('⚠️ Campos obrigatórios faltando.');
+    console.log('Campos obrigatórios faltando.');
     return;
   }
 
   try {
-    console.log(`🚀 Enviando para API em ${API_URL}/usuarios`);
+    console.log(`Enviando para API em ${API_URL}/usuarios`);
     const response = await fetch(`${API_URL}/usuarios`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -376,11 +376,11 @@ async function cadastrarUsuario() {
       console.log('➡️ Redirecionando pra adm.html...');
       window.location.href = 'adm.html';
     } else {
-      alert(`❌ Erro ao cadastrar: ${resultado.erro || 'Erro desconhecido'}`);
-      console.warn('⚠️ Resposta de erro da API:', resultado);
+      alert(`Erro ao cadastrar: ${resultado.erro || 'Erro desconhecido'}`);
+      console.warn('Resposta de erro da API:', resultado);
     }
   } catch (error) {
-    console.error('🔥 Erro na requisição:', error);
-    alert('🚨 Erro na conexão com o servidor.');
+    console.error('Erro na requisição:', error);
+    alert('Erro na conexão com o servidor.');
   }
 }
