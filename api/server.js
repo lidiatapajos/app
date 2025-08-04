@@ -118,7 +118,6 @@ app.post('/usuarios', async (req, res) => {
 
 // ACABOU ARÉA DOS USUARIOS E ADMS
 // COBRANÇAS
-
 // 🔵 Buscar cobranças 
 app.get('/usuarios/:cpf/boletos', async (req, res) => {
   const cpf = req.params.cpf;
@@ -140,9 +139,11 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
     .eq('responsavel_id', responsavel.id);
 
   if (error) return res.status(500).json({ erro: 'Erro ao buscar cobranças' });
-  if (!data || data.length === 0) return res.status(404).json({ erro: 'Nenhuma cobrança encontrada' });
 
+  
+  res.json(data);
 });
+
 
 
 // 🟢 Criar cobrança Pix
