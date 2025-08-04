@@ -168,6 +168,7 @@ app.post('/usuarios/boletos', async (req, res) => {
           status: 'gerado',
           responsavel_id: responsavelId,
           agencia_id: contaBancariaId,
+          cedente_id: cedente_id,
           descricao,
           chave_pix: chavePix,
         },
