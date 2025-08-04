@@ -74,6 +74,18 @@ async function salvarConfiguracaoNoBackend(config) {
   }
 }
 
+async function configurarBoletos() {
+  const config = localStorage.getItem('configBoletos');
+  if (!config) {
+    const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
+    if (desejaConfigurar) {
+      window.location.href = 'configurar-boletos.html';
+    } else {
+      const padrao = { diaLiberacao: 4, diaVencimento: 28 };
+      localStorage.setItem('configBoletos', JSON.stringify(padrao));
+    }
+  }
+}
 
 
 async function carregarUsuarios() {
