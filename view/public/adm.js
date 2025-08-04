@@ -79,6 +79,9 @@ async function salvarConfiguracaoNoBackend(config) {
 
 async function configurarBoletos() {
   const config = localStorage.getItem('configBoletos');
+  console.log(config,'valor')
+  console.log(!config,'valor booleano')
+
   if (!config) {
     const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
     if (desejaConfigurar) {
