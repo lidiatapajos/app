@@ -74,21 +74,46 @@ app.get('/usuarios/:cpf', async (req, res) => {
 
 // 🟢 Criar novo usuário 
 app.post('/usuarios', async (req, res) => {
+  console.log('POST /usuarios chamado');
+  console.log('Corpo da requisição:', req.body);
+
   const { cpf, nome, email, telefone } = req.body;
 
-  // Verifica se já existe na tabela de responsáveis
-  const { data: exists } = await supabase.from('responsaveis').select('cpf').eq('cpf', cpf).single();
-  if (exists) return res.status(400).json({ erro: 'Usuário já existe' });
+  try {
+    console.log(`Verificando se CPF ${cpf} já existe...`);
+    const { data: exists, error: existsError } = await supabase
+      .from('responsaveis')
+      .select('cpf')
+      .eq('cpf', cpf)
+      .single();
 
-  const { data, error } = await supabase.from('responsaveis').insert([{
-    cpf: cpf,
-    nome: nome,
-    email: email,
-    telefone: telefone,
-  }]);
-  if (error) return res.status(500).json({ erro: error.message });
+    if (existsError && existsError.code !== 'PGRST116') { // 'PGRST116' = not found, normal se não existir
+      console.error('Erro ao buscar CPF:', existsError);
+      return res.status(500).json({ erro: 'Erro ao consultar banco de dados' });
+    }
 
-  res.status(201).json({ mensagem: 'Responsável criado com sucesso', data });
+    if (exists) {
+      console.log(`CPF ${cpf} já existe!`);
+      return res.status(400).json({ erro: 'Usuário já existe' });
+    }
+
+    console.log('Inserindo novo usuário:', { cpf, nome, email, telefone });
+    const { data, error } = await supabase
+      .from('responsaveis')
+      .insert([{ cpf, nome, email, telefone }]);
+
+    if (error) {
+      console.error('Erro ao inserir usuário:', error);
+      return res.status(500).json({ erro: error.message });
+    }
+
+    console.log('Usuário criado com sucesso:', data);
+    res.status(201).json({ mensagem: 'Responsável criado com sucesso', data });
+
+  } catch (err) {
+    console.error('Erro inesperado no POST /usuarios:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
 });
 
 // ACABOU ARÉA DOS USUARIOS E ADMS
