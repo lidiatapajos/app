@@ -144,7 +144,7 @@ app.post('/usuarios/boletos', async (req, res) => {
     // 2. Buscar conta bancária do admin
     const { data: conta, error: contaError } = await supabase
       .from('contabancos')
-      .select('cedente_id')
+      .select('conta, banco, agencia')
       .eq('adminid', cedente_id)
       .single();
 
