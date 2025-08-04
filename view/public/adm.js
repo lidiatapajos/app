@@ -313,6 +313,7 @@ async function cadastrarUsuario() {
   const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
   const email = document.getElementById('email').value;
   const telefone = document.getElementById('telefone').value;
+  console.log("Redirecionando para:", window.location.href);
 
   if (!nome || !cpf || !email || !telefone) {
     alert("Preencha todos os campos!");
@@ -334,6 +335,8 @@ const resultado = await response.json(); // pega o corpo da resposta
   } else {
     alert("Erro ao cadastrar usuário: " + (resultado?.erro || "Erro desconhecido"));
   }
+  console.log("Redirecionando para:", window.location.href);
+
 } catch (err) {
   console.error("Erro de conexão:", err);
   alert("Erro de conexão com o servidor.");
