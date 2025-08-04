@@ -308,26 +308,76 @@ async function editarBoletoPrompt(cpf, id) {
 }
 
 
-async function cadastrarUsuario() {
+window.addEventListener('load', () => {
+  console.log('Página carregada. Verificando query string...');
+  if (window.location.search) {
+    console.log('Query string detectada:', window.location.search);
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+    console.log('Query string removida da URL.');
+  }
+  
   const form = document.getElementById('cadastroForm');
+  if (form) {
+    console.log('Form encontrado. Adicionando listener de submit.');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log('Submit interceptado, chamando cadastrarUsuario...');
+      await cadastrarUsuario();
+    });
+  } else {
+    console.error('Form não encontrado!');
+  }
+});
+
+async function cadastrarUsuario() {
+  console.log('Função cadastrarUsuario chamada.');
+  
+  const form = document.getElementById('cadastroForm');
+  if (!form) {
+    console.error('Form não encontrado dentro da função cadastrarUsuario!');
+    return;
+  }
+
   const formData = new FormData(form);
   const dados = {
     nome: formData.get('nome'),
-    cpf: formData.get('cpf'),
+    cpf: formData.get('cpf').replace(/\D/g, ''),
     email: formData.get('email'),
     telefone: formData.get('telefone'),
   };
 
-  const response = await fetch(`${API_URL}/usuarios`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dados),
-  });
+  console.log('Dados extraídos do formulário:', dados);
 
-  const result = await response.json();
-  if (response.ok) {
-    alert('Usuário cadastrado com sucesso!');
-  } else {
-    alert(`Erro: ${result.erro}`);
+  // Validação básica
+  if (!dados.nome || !dados.cpf || !dados.email) {
+    alert('Preencha todos os campos obrigatórios (nome, cpf, email).');
+    console.log('Campos obrigatórios não preenchidos.');
+    return;
+  }
+
+  try {
+    console.log(`Enviando dados para API em ${API_URL}/usuarios`);
+    const response = await fetch(`${API_URL}/usuarios`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados),
+    });
+
+    console.log('Resposta da API recebida. Status:', response.status);
+    const result = await response.json();
+    console.log('Corpo da resposta:', result);
+
+    if (response.ok && !result.erro) {
+      alert('Usuário cadastrado com sucesso!');
+      console.log('Cadastro OK, redirecionando para adm.html');
+      window.location.href = 'adm.html';
+    } else {
+      alert(`Erro ao cadastrar usuário: ${result.erro || 'Erro desconhecido'}`);
+      console.warn('Erro na resposta da API:', result);
+    }
+  } catch (err) {
+    console.error('Erro na conexão com a API:', err);
+    alert('Erro na conexão com o servidor.');
   }
 }
