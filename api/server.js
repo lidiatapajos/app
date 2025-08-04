@@ -123,7 +123,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/boletos', async (req, res) => {
   const { descricao, vencimento, valor, chavePix } = req.body;
-  const cpf = req.params.cpf;
+  const cpf = req.query.cpf;
   console.log("entrou aqui-----------------------------------------------------------------------------------fds");
 
   try {
@@ -139,7 +139,7 @@ app.post('/usuarios/boletos', async (req, res) => {
     }
 
     const responsavelId = responsaveis.id;
-
+    const cedente_id = 2;
 
     // 2. Buscar conta bancária do admin
     const { data: conta, error: contaError } = await supabase
