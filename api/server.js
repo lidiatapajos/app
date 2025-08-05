@@ -267,22 +267,22 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 });
 
 app.get('/pix', (req, res) => {
-  const { chave, valor, nome, cidade } = req.query;
-
-  if (!chave || !valor || !nome || !cidade) {
+  const { valor, nome, cidade } = req.query;
+ const chavePix = '79683428215'; 
+  if (!chavePix || !valor || !nome || !cidade) {
     return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valor, nome, cidade' });
   }
 
   try {
     const payload = {
       version: '01',
-      key: chave,
+      key: chavePix,
       name: nome,
       city: cidade,
       amount: valor
     };
 
-    const codigoPix = new PixQRCode(payload);
+    const codigoPix = PixQRCode(payload);
 
     res.json({
       brcode: codigoPix.payload(),
@@ -332,7 +332,6 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
   const { cpf, id } = req.params;
 
   try {
-    // 1) Buscar responsável
     const { data: responsavel, error: responsavelError } = await supabase
       .from('responsaveis')
       .select('id')

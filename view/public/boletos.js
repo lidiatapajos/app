@@ -3,11 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!cpf) {
     alert("CPF não encontrado. Redirecionando para login.");
-    window.location.href = "index.html";
+    window.location.href = "/index.html";
     return;
   }
 
-  fetch(`https://primeiros-passos-digital.onrender.com/usuarios/${cpf}/boletos`)
+  fetch(`${API_URL}/usuarios/${cpf}/boletos`)
     .then((res) => res.json())
     .then((boletos) => {
       const lista = document.getElementById("lista-boletos");
@@ -65,9 +65,16 @@ function abrirPagamento(index, boleto) {
 
   const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
 
-  fetch(
-    `https://primeiros-passos-digital.onrender.com/pix?chave=contato@boletos.com&valor=${valor}&nome=Cliente%20App&cidade=Sao%20Paulo`
-  )
+ fetch(`${API_URL}/pix`, {
+  method: 'GET',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    valor: valor,
+    nome: "Cliente",
+    cidade: "Soure"
+  })
+})
+
     .then((res) => res.json())
     .then((data) => {
       box.innerHTML = `
