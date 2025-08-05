@@ -345,30 +345,27 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
     }
 
     // 2) Atualizar o boleto para pago
-    const { data: boletoAtualizado, error: boletoError } = await supabase
-      .from('boletos')
-      .update({ pago: true })
-      .eq('id', id)
-      .eq('responsavel_id', responsavel.id)
-      .select()
-      .single();
+   const { data, error } = await supabase
+  .from('cobrancas')
+  .update({ campo: 'valor' })
+  .eq('id', id)
+  .select();
 
-    if (boletoError || !boletoAtualizado) {
-      console.error("Erro ao atualizar boleto:", boletoError);
-      return res.status(500).json({ erro: 'Não foi possível atualizar o boleto' });
-    }
+if (error) {
+  console.error('Erro ao atualizar cobrança:', error);
+  return res.status(500).json({ erro: 'Não foi possível atualizar a cobrança' });
+}
 
-    // 3) Retornar sucesso
-    return res.status(200).json({
-      mensagem: 'Boleto marcado como pago com sucesso!',
-      boleto: boletoAtualizado
-    });
+if (!data || data.length === 0) {
+  console.error('Nenhuma cobrança encontrada para atualizar');
+  return res.status(404).json({ erro: 'Cobrança não encontrada' });
+}
 
-  } catch (e) {
+res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0]});
+} catch (e) {
     console.error("Erro inesperado:", e);
-    return res.status(500).json({ erro: 'Erro interno ao processar a requisição' });
-  }
-});
+    return res.status(500).json({ erro: 'Erro inesperado.' })};}
+);
 
 //ACABOU ARÉA DAS COBRANÇAS
 // ARÉA DE DELETAR
