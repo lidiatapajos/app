@@ -140,7 +140,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
   if (error) return res.status(500).json({ erro: 'Erro ao buscar cobranças' });
 
-  
+
   res.json(data);
 });
 
@@ -351,6 +351,10 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   if (error) return res.status(500).json({ erro: error.message });
 
+  if (!data || data.length === 0) {
+    return res.status(404).json({ erro: 'Boleto não encontrado ou não pertence a esse responsável' });
+  }
+
   res.json({ sucesso: true, mensagem: 'Boleto marcado como pago', boleto: data[0] });
 });
 
@@ -412,7 +416,7 @@ app.get('/configuracao-boletos', async (req, res) => {
       return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
     }
     console.log(data, "----------------------- resposta do bd confing");
-    
+
 
     const configExists = !!data;
     return res.status(200).json({ configExists });
