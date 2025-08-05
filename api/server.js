@@ -296,7 +296,20 @@ app.get('/pix', (req, res) => {
 });
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
-  const { id } = req.params;
+  const { cpf, id } = req.params;
+
+  // Busca o responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
+
+  if (responsavelError || !responsavel) {
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
+  // Agora sim delete o boleto se pertencer a esse responsável
   const { error } = await supabase
     .from('boletos')
     .delete()
@@ -310,6 +323,7 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   res.json({ sucesso: true, mensagem: 'Cobrança removida' });
 });
+
 //ACABOU ARÉA DAS COBRANÇAS
 // ARÉA DE DELETAR
 

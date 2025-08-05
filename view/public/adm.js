@@ -276,20 +276,37 @@ async function iniciarTutorialAdm() {
 
 //não tem como testar
 async function marcarComoPago(cpf, id) {
-  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pago: true })
-  });
-  await carregarUsuarios();
+ try {
+    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pago: true })
+    });
+
+    if (!res.ok) throw new Error("Erro ao marcar como pago!");
+
+    await carregarUsuarios();
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível marcar como pago. Entre em contato com o técnico para mais informações!");
+  }
 }
 // não tem como testar
 async function excluirBoleto(cpf, id) {
-  if (!confirm("Excluir boleto?")) return;
-  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
-    method: "DELETE"
-  });
-  await carregarUsuarios();
+  try {
+    if (!confirm("Excluir boleto?")) return;
+
+    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!res.ok) throw new Error("Erro ao excluir!");
+
+    await carregarUsuarios();
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível excluir esse boleto. Entre em contato com o técnico para mais informações!");
+  }
 }
 
 // não funciona
