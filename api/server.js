@@ -212,9 +212,9 @@ app.post('/usuarios/boletos', async (req, res) => {
   }
 
   const { data, error } = await supabase
-    .from('configuracao_boletos')
+    .from('config_boletos')
     .select('*')
-    .eq('id', 1)
+    .eq('id')
     .single()
 
   if (error) {
@@ -327,6 +327,32 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
   res.json({ sucesso: true, mensagem: 'Cobrança removida' });
 });
 
+//Marcar como pago
+app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
+  const { cpf, id } = req.params;
+
+  // Buscar o responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
+
+  if (responsavelError || !responsavel) {
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
+  // Atualizar o status do boleto pra "pago"
+  const { data, error } = await supabase
+    .from('boletos')
+    .update({ status: 'pago' })
+    .eq('id', id)
+    .eq('responsavel_id', responsavel.id);
+
+  if (error) return res.status(500).json({ erro: error.message });
+
+  res.json({ sucesso: true, mensagem: 'Boleto marcado como pago', boleto: data[0] });
+});
 
 //ACABOU ARÉA DAS COBRANÇAS
 // ARÉA DE DELETAR
