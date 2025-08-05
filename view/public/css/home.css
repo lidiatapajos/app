@@ -142,6 +142,17 @@ body {
   font-size: 1rem;
   color: #555;
 }
+.pix-section {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.pix-section img {
+  margin: 10px 0;
+  width: 200px;
+  height: 200px;
+}
+
 
 
 /* === RESPONSIVO === */

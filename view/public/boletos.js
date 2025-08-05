@@ -72,12 +72,15 @@ fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`)
   .then(res => res.json())
   .then(dados => {
     const box = document.getElementById(`pagamento-${index}`);
-    box.innerHTML = `
-      <p>Chave Pix: <strong>79683428215</strong></p>
-      <img src="${dados.qr}" alt="QR Code Pix">
-      <p><strong>Copia e cola:</strong> ${dados.brcode}</p>
-    `;
-    box.classList.add("active");
+  box.innerHTML = `
+  <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(
+    boleto
+  ).replace(/"/g, "&quot;")})">✖</button>
+  <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
+  <div class="pix-section">
+    <img src="${dados.qr}" alt="QR Code Pix">
+    <p><strong>Copia e cola:</strong> ${dados.brcode}</p>
+  </div>`;
   })
   .catch(err => {
     console.error("Erro ao gerar Pix:", err);
