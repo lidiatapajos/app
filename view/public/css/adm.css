@@ -118,11 +118,17 @@ body {
   font-size: 0.95rem;
 }
 
-.boleto-acoes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+.boleto-acoes button {
+  border: none;
+  font-size: 1.2rem;
+  color: #333;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.boleto-acoes button:hover {
+  color: #d32f2f;
+  transform: scale(1.1);
 }
 
 .btn {
