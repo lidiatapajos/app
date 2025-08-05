@@ -286,8 +286,6 @@ async function marcarComoPago(cpf, id) {
       throw new Error(erroRes.erro || "Erro ao marcar como pago!");
     }
 
-    const json = await res.json();
-
     console.log("Boleto atualizado:", json.boleto);
 
     await carregarUsuarios();
@@ -299,6 +297,22 @@ async function marcarComoPago(cpf, id) {
     alert("Não foi possível marcar como pago. Entre em contato com o técnico para mais informações!");
   }
 }
+
+async function excluirBoleto(cpf, id) {
+  try{
+  if (!confirm("Excluir boleto?")) return;
+  await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
+    method: "DELETE"
+  });
+  if(!res.ok) throw new Error("Erro ao excluir!");
+
+  await carregarUsuarios();}
+  catch (error){
+    console.error(error);
+    alert("Não foi possível excluir esse boleto. Entre em contanto com o técnico para mais informações!");
+  }
+}
+
 // não funciona
 async function editarBoletoPrompt(cpf, id) {
   const descricao = prompt("Nova descrição:");

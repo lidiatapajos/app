@@ -331,34 +331,43 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
 app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
   const { cpf, id } = req.params;
 
-  // Buscar o responsável pelo CPF
-  const { data: responsavel, error: responsavelError } = await supabase
-    .from('responsaveis')
-    .select('id')
-    .eq('cpf', cpf)
-    .single();
+  try {
+    // 1) Buscar responsável
+    const { data: responsavel, error: responsavelError } = await supabase
+      .from('responsaveis')
+      .select('id')
+      .eq('cpf', cpf)
+      .single();
 
-  if (responsavelError || !responsavel) {
-    return res.status(404).json({ erro: 'Responsável não encontrado' });
+    if (responsavelError || !responsavel) {
+      console.error("Erro ao buscar responsável:", responsavelError);
+      return res.status(404).json({ erro: 'Responsável não encontrado' });
+    }
+
+    // 2) Atualizar o boleto para pago
+    const { data: boletoAtualizado, error: boletoError } = await supabase
+      .from('boletos')
+      .update({ pago: true })
+      .eq('id', id)
+      .eq('responsavel_id', responsavel.id)
+      .select()
+      .single();
+
+    if (boletoError || !boletoAtualizado) {
+      console.error("Erro ao atualizar boleto:", boletoError);
+      return res.status(500).json({ erro: 'Não foi possível atualizar o boleto' });
+    }
+
+    // 3) Retornar sucesso
+    return res.status(200).json({
+      mensagem: 'Boleto marcado como pago com sucesso!',
+      boleto: boletoAtualizado
+    });
+
+  } catch (e) {
+    console.error("Erro inesperado:", e);
+    return res.status(500).json({ erro: 'Erro interno ao processar a requisição' });
   }
-
-  // Atualizar o status do boleto pra "pago"
-  const { data, error } = await supabase
-    .from('boletos')
-    .update({ status: 'pago' })
-    .eq('id', id)
-    .eq('responsavel_id', responsavel.id);
-
-  if (error) return res.status(500).json({ erro: error.message });
-
- if (!data || data.length === 0) {
-  return res.status(404).json({ erro: 'Cobrança não encontrada' });
-}
-
-const boletoAtualizado = data[0]; // pegando o primeiro registro, que é o atualizado
-
-res.json({ sucesso: true, mensagem: 'Boleto marcado como pago', boleto: boletoAtualizado });
-
 });
 
 //ACABOU ARÉA DAS COBRANÇAS
