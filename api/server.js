@@ -266,7 +266,7 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
 
-app.get('/pix', (req, res) => {
+app.post('/pix', (req, res) => {
   const { valor, nome, cidade } = req.query;
  const chavePix = '79683428215'; 
   if (!chavePix || !valor || !nome || !cidade) {
