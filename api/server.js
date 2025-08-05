@@ -284,13 +284,13 @@ app.post('/pix', (req, res) => {
       amount: valor
     };
 
-    const codigoPix = PixQRCode(payload);
+const codigoPix = new PixQRCode(payload);
+const brcode = codigoPix.payload(); // isso sim é a string do Pix
 
-
-    res.json({
-      brcode: codigoPix.payload(),
-      qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codigoPix.payload())}`
-    });
+res.json({
+  brcode,
+  qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brcode)}`
+});
 
   } catch (err) {
     console.error('Erro ao gerar QRCode:', err);
