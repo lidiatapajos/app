@@ -1,4 +1,6 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const cpf = localStorage.getItem('cpf');
   const totalSpan = document.getElementById("total");

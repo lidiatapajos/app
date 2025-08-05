@@ -420,56 +420,46 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 });
 // ACABOU ARÉA DE DELETAR
 // CONFIGURAÇÃO DE BOLETOS E ETC
-app.get('/configuracao-boletos', async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('config_boletos')
-      .select('id')
-      .limit(1)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Erro ao buscar configuração:", error);
-      return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
-    }
-    console.log(data, "----------------------- resposta do bd confing");
-
-
-    const configExists = !!data;
-    return res.status(200).json({ configExists });
-  } catch (e) {
-    console.error("Erro inesperado:", e);
-    return res.status(500).json({ erro: 'Erro inesperado.' });
-  }
-});
-
 app.post('/configuracao-boletos', async (req, res) => {
-  const { dia_liberacao, dia_vencimento, valor } = req.body;
-
-  if (
-    dia_liberacao == null ||
-    dia_vencimento == null ||
-    valor == null
-  ) {
-    return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
-  }
-
-  // Validação simples (opcional)
-  if (
-    !Number.isInteger(dia_liberacao) ||
-    !Number.isInteger(dia_vencimento) ||
-    typeof valor !== 'number'
-  ) {
-    return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
-  }
+  const { usarConfiguracaoPadrao, dia_liberacao, dia_vencimento, valor } = req.body;
 
   try {
-    // Apaga todas as configurações existentes para manter apenas uma
+    // Remove qualquer configuração existente
     await supabase.from('config_boletos').delete();
 
+    let configData;
+
+    if (usarConfiguracaoPadrao) {
+      // Caso o admin escolha a configuração padrão
+      configData = {
+        dia_liberacao: 4,
+        dia_vencimento: 28,
+        valor: 100,
+      };
+    } else {
+      // Validação para configuração manual
+      if (
+        dia_liberacao == null ||
+        dia_vencimento == null ||
+        valor == null
+      ) {
+        return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+      }
+
+      if (
+        !Number.isInteger(dia_liberacao) ||
+        !Number.isInteger(dia_vencimento) ||
+        typeof valor !== 'number'
+      ) {
+        return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
+      }
+
+      configData = { dia_liberacao, dia_vencimento, valor };
+    }
+
     const { data, error } = await supabase
       .from('config_boletos')
-      .insert([{ dia_liberacao, dia_vencimento, valor }]);
+      .insert([configData]);
 
     if (error) {
       console.error("Erro ao salvar configuração:", error);
@@ -482,6 +472,9 @@ app.post('/configuracao-boletos', async (req, res) => {
     return res.status(500).json({ erro: 'Erro inesperado.' });
   }
 });
+
+
+
 // ACABOU A ARÉA DE BOLETOS 
 
 app.patch('/usuarios/:cpf', async (req, res) => {
