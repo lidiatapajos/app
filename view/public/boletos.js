@@ -68,7 +68,7 @@ function abrirPagamento(index, boleto) {
   const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
 
  fetch(`${API_URL}/pix`, {
-  method: 'POST',
+  method: 'GET',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     valor: valor,
