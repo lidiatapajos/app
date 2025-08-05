@@ -266,11 +266,10 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
 
-app.post('/pix', (req, res) => {
-  const { valor, nome, cidade } = req.body;
-
-  const chave = '79683428215'; // chave Pix segura, mantida no backend
-
+app.get('/pix', (req, res) => {
+  const { valor, nome, cidade } = req.query;
+  const chave = process.env.CHAVE_PIX || '79683428215'; // sensível, tirada do código
+  
   if (!chave || !valor || !nome || !cidade) {
     return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valor, nome, cidade' });
   }
@@ -284,22 +283,20 @@ app.post('/pix', (req, res) => {
       amount: valor
     };
 
-const codigoPix = new PixQRCode(payload);
-const brcode = codigoPix.payload(); // isso sim é a string do Pix
+    const codigoPix = new PixQRCode(payload);
+    const brcode = codigoPix.payload();
 
-res.json({
-  brcode,
-  qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brcode)}`
-});
+    res.json({
+      brcode,
+      qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brcode)}`
+    });
 
   } catch (err) {
     console.error('Erro ao gerar QRCode:', err);
     res.status(500).json({ erro: 'Erro ao gerar código Pix' });
   }
-  PixQRCode(payload).then(brCode => {
-    console.log("BR Code gerado:", brCode);
-  });
 });
+
 
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
