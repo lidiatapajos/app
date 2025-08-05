@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
 const { cpf: cpfValidator } = require('cpf-cnpj-validator');
-const { PixQRCode } = require('pix-qrcode');
+const PixQRCode = require('pix-qrcode');
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -284,20 +284,21 @@ app.post('/pix', (req, res) => {
       amount: valor
     };
 
-    const codigoPix = new PixQRCode(payload);
+    const codigoPix = PixQRCode(payload);
+
 
     res.json({
       brcode: codigoPix.payload(),
       qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codigoPix.payload())}`
     });
-    
+
   } catch (err) {
     console.error('Erro ao gerar QRCode:', err);
     res.status(500).json({ erro: 'Erro ao gerar código Pix' });
   }
   PixQRCode(payload).then(brCode => {
-  console.log("BR Code gerado:", brCode);
-});
+    console.log("BR Code gerado:", brCode);
+  });
 });
 
 // 🔴 Excluir cobrança
@@ -350,26 +351,28 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
     }
 
     // 2) Atualizar o boleto para pago
-   const { data, error } = await supabase
-  .from('cobrancas')
-  .update({ campo: 'valor' })
-  .eq('id', id)
-  .select();
+    const { data, error } = await supabase
+      .from('cobrancas')
+      .update({ campo: 'valor' })
+      .eq('id', id)
+      .select();
 
-if (error) {
-  console.error('Erro ao atualizar cobrança:', error);
-  return res.status(500).json({ erro: 'Não foi possível atualizar a cobrança' });
-}
+    if (error) {
+      console.error('Erro ao atualizar cobrança:', error);
+      return res.status(500).json({ erro: 'Não foi possível atualizar a cobrança' });
+    }
 
-if (!data || data.length === 0) {
-  console.error('Nenhuma cobrança encontrada para atualizar');
-  return res.status(404).json({ erro: 'Cobrança não encontrada' });
-}
+    if (!data || data.length === 0) {
+      console.error('Nenhuma cobrança encontrada para atualizar');
+      return res.status(404).json({ erro: 'Cobrança não encontrada' });
+    }
 
-res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0]});
-} catch (e) {
+    res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
+  } catch (e) {
     console.error("Erro inesperado:", e);
-    return res.status(500).json({ erro: 'Erro inesperado.' })};}
+    return res.status(500).json({ erro: 'Erro inesperado.' })
+  };
+}
 );
 
 //ACABOU ARÉA DAS COBRANÇAS
