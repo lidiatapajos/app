@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
 const { cpf: cpfValidator } = require('cpf-cnpj-validator');
-const PixQRCode = require('pix-qrcode');
+
 
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yaXlja3FnYWNhaW5yYW9nZWlmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzkxNDM4NCwiZXhwIjoyMDY5NDkwMzg0fQ.aP5bLKZYLMBec-rRaNYPfcJkLw1NhibgznhBduRP9DU';
 const supabase = createClient(supabaseUrl, supabaseKey);
-// Middlewares
+
 
 
 const corsOptions = {
@@ -267,26 +267,26 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
 
+const { Pix } = require('pix-qrcode');
+
 app.get('/pix', (req, res) => {
   const { valor, nome, cidade } = req.query;
-  const chave = process.env.CHAVE_PIX || '79683428215'; // sensível, tirada do código
-  
+  const chave = process.env.CHAVE_PIX || '79683428215';
+
   if (!chave || !valor || !nome || !cidade) {
     return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valor, nome, cidade' });
   }
 
   try {
-    const payload = {
+    const pix = Pix({
       version: '01',
       key: chave,
       name: nome,
       city: cidade,
       amount: valor
-    };
- 
+    });
 
-    const codigoPix = PixQRCode(payload);
-    const brcode = codigoPix.payload();
+    const brcode = pix.payload();
 
     res.json({
       brcode,
@@ -298,6 +298,7 @@ app.get('/pix', (req, res) => {
     res.status(500).json({ erro: 'Erro ao gerar código Pix' });
   }
 });
+
 
 
 // 🔴 Excluir cobrança

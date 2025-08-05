@@ -75,18 +75,19 @@ function abrirPagamento(index, boleto) {
   }
 
   const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
-  
+
   fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`)
     .then(res => res.json())
     .then(dados => {
       box.innerHTML = `
         <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(
-          boleto
-        ).replace(/"/g, "&quot;")})">✖</button>
+        boleto
+      ).replace(/"/g, "&quot;")})">✖</button>
         <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
         <div class="pix-section">
           <img src="${dados.qr}" alt="QR Code Pix">
-          <p><strong>Copia e cola:</strong> ${dados.brcode}</p>
+          <p><strong>Copia e cola:</strong> <span id="pixcode-${index}">${dados.brcode}</span></p>
+          <button onclick="copiarPix(${index})">Copiar</button>
         </div>
       `;
       box.classList.add("active");
@@ -96,4 +97,14 @@ function abrirPagamento(index, boleto) {
       console.error("Erro ao gerar Pix:", err);
       alert("Erro ao gerar QR Code Pix");
     });
+}
+
+function copiarPix(index) {
+  const el = document.getElementById(`pixcode-${index}`);
+  if (!el) return alert("Código não encontrado");
+  
+  const text = el.innerText;
+  navigator.clipboard.writeText(text)
+    .then(() => alert("Código Pix copiado!"))
+    .catch(() => alert("Erro ao copiar código Pix"));
 }
