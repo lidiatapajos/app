@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const cpf = localStorage.getItem("cpf");
+  const API_URL = 'https://primeiros-passos-digital.onrender.com';
 
   if (!cpf) {
     alert("CPF não encontrado. Redirecionando para login.");
