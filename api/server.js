@@ -267,33 +267,39 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 });
 
 app.post('/pix', (req, res) => {
-  const { valor, nome, cidade } = req.query;
- const chavePix = '79683428215'; 
-  if (!chavePix || !valor || !nome || !cidade) {
+  const { valor, nome, cidade } = req.body;
+
+  const chave = '79683428215'; // chave Pix segura, mantida no backend
+
+  if (!chave || !valor || !nome || !cidade) {
     return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valor, nome, cidade' });
   }
 
   try {
     const payload = {
       version: '01',
-      key: chavePix,
+      key: chave,
       name: nome,
       city: cidade,
       amount: valor
     };
 
-    const codigoPix = PixQRCode(payload);
+    const codigoPix = new PixQRCode(payload);
 
     res.json({
       brcode: codigoPix.payload(),
       qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codigoPix.payload())}`
     });
-
+    
   } catch (err) {
     console.error('Erro ao gerar QRCode:', err);
     res.status(500).json({ erro: 'Erro ao gerar código Pix' });
   }
+  PixQRCode(payload).then(brCode => {
+  console.log("BR Code gerado:", brCode);
 });
+});
+
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
   const { cpf, id } = req.params;
