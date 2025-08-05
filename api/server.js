@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { cpf: cpfValidator } = require('cpf-cnpj-validator');
 const PixQRCode = require('pix-qrcode');
-const { Pix } = require('pix-node');
+
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const PORT = process.env.PORT || 3000;
