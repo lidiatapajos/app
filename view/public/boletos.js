@@ -1,7 +1,7 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
+
 document.addEventListener("DOMContentLoaded", () => {
   const cpf = localStorage.getItem("cpf");
-  
 
   if (!cpf) {
     alert("CPF não encontrado. Redirecionando para login.");
@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const lista = document.getElementById("lista-boletos");
       const msg = document.getElementById("mensagem-boletos");
 
+      lista.innerHTML = "";   // limpa lista ao iniciar
+      msg.style.display = "none"; // esconde mensagem inicialmente
+
       if (!Array.isArray(boletos) || boletos.length === 0) {
         msg.style.display = "block";
         return;
@@ -27,10 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const info = document.createElement("div");
         info.classList.add("info");
         info.innerHTML = `
-                <p><strong>${boleto.descricao}</strong></p>
-                <p>Vencimento: ${boleto.vencimento}</p>
-                <p>Valor: R$ ${boleto.valor}</p>
-              `;
+          <p><strong>${boleto.descricao}</strong></p>
+          <p>Vencimento: ${boleto.vencimento}</p>
+          <p>Valor: R$ ${boleto.valor}</p>
+        `;
 
         const actions = document.createElement("div");
         actions.classList.add("actions");
@@ -51,40 +54,46 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     })
     .catch((err) => {
-      console.error("Erro ao carregar cobranças:", err)
-      document.getElementById("mensagem-boletos").textContent =
-        "Parece que você ainda não possui cobranças pendentes.";
-      document.getElementById("mensagem-boletos").style.display = "block";
+      console.error("Erro ao carregar cobranças:", err);
+      const msg = document.getElementById("mensagem-boletos");
+      msg.textContent = "Parece que você ainda não possui cobranças pendentes.";
+      msg.style.display = "block";
     });
 });
 
 
-
 function abrirPagamento(index, boleto) {
   const box = document.getElementById(`pagamento-${index}`);
+
   if (box.innerHTML.trim() !== "") {
-    box.classList.toggle("active");
+    if (box.classList.contains("active")) {
+      box.classList.remove("active"); // fechar
+    } else {
+      box.classList.add("active"); // abrir
+    }
     return;
   }
-const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
 
-fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`)
-  .then(res => res.json())
-  .then(dados => {
-    const box = document.getElementById(`pagamento-${index}`);
-  box.innerHTML = `
-  <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(
-    boleto
-  ).replace(/"/g, "&quot;")})">✖</button>
-  <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
-  <div class="pix-section">
-    <img src="${dados.qr}" alt="QR Code Pix">
-    <p><strong>Copia e cola:</strong> ${dados.brcode}</p>
-  </div>`;
-  })
-  .catch(err => {
-    console.error("Erro ao gerar Pix:", err);
-    alert("Erro ao gerar QR Code Pix");
-  });
-
+  const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
+  
+  fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`)
+    .then(res => res.json())
+    .then(dados => {
+      box.innerHTML = `
+        <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(
+          boleto
+        ).replace(/"/g, "&quot;")})">✖</button>
+        <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
+        <div class="pix-section">
+          <img src="${dados.qr}" alt="QR Code Pix">
+          <p><strong>Copia e cola:</strong> ${dados.brcode}</p>
+        </div>
+      `;
+      box.classList.add("active");
+      box.scrollIntoView({ behavior: "smooth", block: "start" }); // rola para a caixa, útil em telas pequenas
+    })
+    .catch(err => {
+      console.error("Erro ao gerar Pix:", err);
+      alert("Erro ao gerar QR Code Pix");
+    });
 }

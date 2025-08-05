@@ -142,16 +142,26 @@ body {
   font-size: 1rem;
   color: #555;
 }
-.pix-section {
+.payment-box {
+  display: none;
   margin-top: 10px;
-  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #fafafa;
 }
 
-.pix-section img {
-  margin: 10px 0;
-  width: 200px;
-  height: 200px;
+.payment-box.active {
+  display: block;
 }
+
+.btn-close {
+  float: right;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
 
 
 
@@ -225,6 +235,33 @@ body {
     opacity: 0.7;
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
   }
+  .payment-box {
+    width: 50%;       /* ocupar 100% da largura da tela */
+    box-sizing: border-box;       /* para padding não aumentar além da tela */
+    font-size: 16px;              /* texto um pouco maior para legibilidade */
+    padding: 15px;
+    border-radius: 0;
+    position: relative;
+  }
+
+  .pix-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pix-section img {
+    max-width: 90vw;              /* ocupar até 90% da largura da viewport */
+    height: auto;
+  }
+
+  .btn-close {
+    font-size: 24px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+
 }
 
 @media screen and (max-width: 480px) {
@@ -297,6 +334,25 @@ body {
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
   } 
 
+  .pix-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pix-section img {
+  max-width: 100%;
+  height: auto;
+}
+
+.btn-close {
+  float: right;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
 }
 
 
