@@ -125,8 +125,46 @@ body {
   margin-top: 8px;
 }
 
+.btn {
+  padding: 8px 12px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.btn i {
+  margin-right: 4px;
+}
+
+/* Estilo por tipo */
+.copiar {
+  background-color: #4caf50; /* verde */
+}
+
+.editar {
+  background-color: #2196f3; /* azul */
+}
+
+.pagar {
+  background-color: #ff9800; /* laranja */
+}
+
+.excluir {
+  background-color: #f44336; /* vermelho */
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+
 /* BOTÕES */
-button {
+/* BOTÕES PADRÃO (sem classe .btn) */
+button:not(.btn) {
   padding: 8px 14px;
   border: none;
   border-radius: 6px;
@@ -137,15 +175,10 @@ button {
   transition: background 0.3s ease;
 }
 
-button:hover,
-button:focus {
+button:not(.btn):hover,
+button:not(.btn):focus {
   background: #b71c1c;
   outline: none;
-}
-
-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
 }
 
 /* RESPONSIVO */
@@ -189,10 +222,6 @@ button:disabled {
   .usuario {
     border-left-width: 4px;
   }
-  .usuario:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  }
   .boleto {
     padding: 12px;
     border-left-width: 3px;
@@ -220,6 +249,24 @@ button:disabled {
   }
   .usuarios-lista {
     gap: 10px;
+  }
+  .btn,
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95rem;
+    margin: 4px 0;
+  }
+
+  .btn i {
+    margin-right: 6px;
+  }
+
+  /* CPF e ações */
+  .usuario p {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
 }
@@ -289,6 +336,28 @@ button:disabled {
   .boleto-info {
     font-size: 0.8rem;
   }
+   .btn,
+  button {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 10px;
+    margin: 3px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn i,
+  button i {
+    margin-right: 6px;
+  }
+
+  /* Ícones que somem se a tela for MUITO pequena */
+  .btn i,
+  button i {
+    font-size: 1rem;
+  }
+
   
 }
 @media screen and (max-width: 360px) {
@@ -380,7 +449,20 @@ button:disabled {
     padding: 6px;
     border-left-width: 1px;
   }
-  
+  .btn,
+  button {
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    width: 100%;
+    margin: 2px 0;
+  }
+
+  .btn i,
+  button i {
+    font-size: 0.9rem;
+    margin-right: 4px;
+  }
+
 }
 @media screen and (max-width: 320px) {
   body {
@@ -446,6 +528,20 @@ button:disabled {
   .usuarios-lista {
     gap: 2px;
   }
-  
-  
+   
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 15px;
+  }
+
+  .usuario {
+    padding: 20px;
+  }
+
+  .btn,
+  button {
+    font-size: 0.95rem;
+  }
 }

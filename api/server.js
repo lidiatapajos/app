@@ -265,6 +265,7 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
+
 app.get('/pix', (req, res) => {
   const { chave, valor, nome, cidade } = req.query;
 
@@ -293,7 +294,6 @@ app.get('/pix', (req, res) => {
     res.status(500).json({ erro: 'Erro ao gerar código Pix' });
   }
 });
-
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
   const { id } = req.params;
