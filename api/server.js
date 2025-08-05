@@ -351,11 +351,14 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   if (error) return res.status(500).json({ erro: error.message });
 
-  if (!data || data.length === 0) {
-    return res.status(404).json({ erro: 'Boleto não encontrado ou não pertence a esse responsável' });
-  }
+ if (!data || data.length === 0) {
+  return res.status(404).json({ erro: 'Cobrança não encontrada' });
+}
 
-  res.json({ sucesso: true, mensagem: 'Boleto marcado como pago', boleto: data[0] });
+const boletoAtualizado = data[0]; // pegando o primeiro registro, que é o atualizado
+
+res.json({ sucesso: true, mensagem: 'Boleto marcado como pago', boleto: boletoAtualizado });
+
 });
 
 //ACABOU ARÉA DAS COBRANÇAS
