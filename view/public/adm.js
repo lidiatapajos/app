@@ -277,7 +277,7 @@ async function iniciarTutorialAdm() {
 //não tem como testar
 async function marcarComoPago(cpf, id) {
  try {
-    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
+    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pago: true })
@@ -296,7 +296,7 @@ async function excluirBoleto(cpf, id) {
   try {
     if (!confirm("Excluir boleto?")) return;
 
-    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
+    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
       method: "DELETE"
     });
 
