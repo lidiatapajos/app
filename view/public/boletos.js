@@ -58,38 +58,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+
+
 function abrirPagamento(index, boleto) {
   const box = document.getElementById(`pagamento-${index}`);
   if (box.innerHTML.trim() !== "") {
     box.classList.toggle("active");
     return;
   }
+const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
 
-  const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
-
- fetch(`${API_URL}/pix`, {
-  method: 'GET',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    valor: valor,
-    nome: "Cliente",
-    cidade: "Soure"
+fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`)
+  .then(res => res.json())
+  .then(dados => {
+    const box = document.getElementById(`pagamento-${index}`);
+    box.innerHTML = `
+      <p>Chave Pix: <strong>79683428215</strong></p>
+      <img src="${dados.qr}" alt="QR Code Pix">
+      <p><strong>Copia e cola:</strong> ${dados.brcode}</p>
+    `;
+    box.classList.add("active");
   })
-})
+  .catch(err => {
+    console.error("Erro ao gerar Pix:", err);
+    alert("Erro ao gerar QR Code Pix");
+  });
 
-    .then((res) => res.json())
-    .then((data) => {
-      box.innerHTML = `
-              <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(
-        boleto
-      ).replace(/"/g, "&quot;")})">✖</button>
-              <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
-              <div class="pix-section">
-                <img src="${data.qr}" alt="QR Code PIX" />
-                <p class="pix-key">Chave PIX: </p>
-                <p class="pix-key"><strong>BR Code:</strong> <small>${data.brcode}</small></p>
-              </div>
-            `;
-      box.classList.add("active");
-    });
 }
