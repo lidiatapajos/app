@@ -285,7 +285,7 @@ app.get('/pix', (req, res) => {
     };
  
 
-    const codigoPix = new PixQRCode(payload);
+    const codigoPix = PixQRCode(payload);
     const brcode = codigoPix.payload();
 
     res.json({
