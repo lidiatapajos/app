@@ -297,8 +297,8 @@ app.get('/pix', (req, res) => {
 // 🔴 Excluir cobrança
 app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
   const { cpf, id } = req.params;
+  console.log(`Recebido DELETE para boleto id=${id} e cpf=${cpf}`);
 
-  // Busca o responsável pelo CPF
   const { data: responsavel, error: responsavelError } = await supabase
     .from('responsaveis')
     .select('id')
@@ -306,10 +306,12 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
     .single();
 
   if (responsavelError || !responsavel) {
+    console.log('Responsável não encontrado:', responsavelError);
     return res.status(404).json({ erro: 'Responsável não encontrado' });
   }
 
-  // Agora sim delete o boleto se pertencer a esse responsável
+  console.log(`Responsável encontrado com id: ${responsavel.id}`);
+
   const { error } = await supabase
     .from('boletos')
     .delete()
@@ -317,12 +319,14 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
     .eq('responsavel_id', responsavel.id);
 
   if (error) {
-    console.error("Erro ao deletar cobrança:", error);
+    console.log("Erro ao deletar boleto:", error);
     return res.status(500).json({ erro: error.message });
   }
 
+  console.log('Boleto deletado com sucesso');
   res.json({ sucesso: true, mensagem: 'Cobrança removida' });
 });
+
 
 //ACABOU ARÉA DAS COBRANÇAS
 // ARÉA DE DELETAR
