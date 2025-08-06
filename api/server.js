@@ -319,37 +319,8 @@ app.patch('/usuarios/boletos/:cpf/:id/pagar', async (req, res) => {
 
 
 
-const { Pix } = require('pix-qrcode');
 
-app.get('/pix', (req, res) => {
-  const { valorPadrao, nome, cidade } = req.query;
-  const chave = process.env.CHAVE_PIX || '79683428215';
-
-  if (!chave || !valorPadrao || !nome || !cidade) {
-    return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valorPadrao, nome, cidade' });
-  }
-
-  try {
-    const pix = Pix({
-      version: '01',
-      key: chave,
-      name: nome,
-      city: cidade,
-      amount: valorPadrao
-    });
-
-    const brcode = pix.payload();
-
-    res.json({
-      brcode,
-      qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brcode)}`
-    });
-
-  } catch (err) {
-    console.error('Erro ao gerar QRCode:', err);
-    res.status(500).json({ erro: 'Erro ao gerar código Pix' });
-  }
-});
+ 
 
 
 
@@ -601,6 +572,38 @@ app.patch('/usuarios/:cpf', async (req, res) => {
   res.status(200).json({ sucesso: "Contato editado con sucesso", data });
 });
 
+const { Pix } = require('pix-qrcode');
+
+app.get('/pix', (req, res) => {
+  const { valor, nome, cidade } = req.query;
+  const chave = process.env.CHAVE_PIX || '79683428215';
+
+  // Validação apenas dos parâmetros obrigatórios que vêm da query
+  if (!valor || !nome || !cidade) {
+    return res.status(400).json({ erro: 'Parâmetros obrigatórios: valor, nome, cidade' });
+  }
+
+  try {
+    const pix = Pix({
+      version: '01',
+      key: chave,
+      name: nome,
+      city: cidade,
+      amount: valorPadrao
+    });
+
+    const brcode = pix.payload();
+
+    res.json({
+      brcode,
+      qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brcode)}`
+    });
+
+  } catch (err) {
+    console.error('Erro ao gerar QRCode:', err);
+    res.status(500).json({ erro: 'Erro ao gerar código Pix' });
+  }
+});
 
 
 // 🔁 Iniciar servidor
