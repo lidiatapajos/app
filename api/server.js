@@ -490,13 +490,13 @@ app.post('/configuracao-boletos', async (req, res) => {
         return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
       }
       console.log(diaLiberacao, diaVencimento, valorPadrao, "----------------------- valores recebidos dentro do else");
-      if (
-        !Number.isInteger(diaLiberacao) ||
-        !Number.isInteger(diaVencimento) ||
-        typeof valor !== 'number'
-      ) {
-        return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
-      }
+      // if (
+      //   !Number.isInteger(diaLiberacao) ||
+      //   !Number.isInteger(diaVencimento) ||
+      //   typeof valor !== 'number'
+      // ) {
+      //   return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
+      // }
 
       configData = { diaLiberacao, diaVencimento, valorPadrao
        };
