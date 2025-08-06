@@ -1,9 +1,11 @@
-const API_URL = 'https://primeiros-passos-digital.onrender.com';
+// const API_URL = 'https://primeiros-passos-digital.onrender.com';
+const API_URL = 'http://localhost:3000'
+
 const cpfAdm = localStorage.getItem('cpfAdm');
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('config-form');
-
+  
   // Preencher o formulário com o que já estiver salvo (localStorage)
   const configSalva = JSON.parse(localStorage.getItem('configBoletos'));
   if (configSalva) {
@@ -11,37 +13,38 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('diaVencimento').value = configSalva.diaVencimento || '';
     document.getElementById('valorPadrao').value = configSalva.valorPadrao || '';
   }
-
+  
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const config = {
       diaLiberacao: parseInt(document.getElementById('diaLiberacao').value),
       diaVencimento: parseInt(document.getElementById('diaVencimento').value),
-      valorPadrao: document.getElementById('valorPadrao').value,
+      valorPadrao:parseInt(document.getElementById('valorPadrao').value),
     };
-
+    
     // Validação simples
     if (
       !config.diaLiberacao || !config.diaVencimento ||
       !config.valorPadrao ) 
-    {
-      alert('Preencha todos os campos.');
-      return;
-    }
-
-    // Salvar localmente
-    localStorage.setItem('configBoletos', JSON.stringify(config));
-
-    // Opcional: salvar no backend
-    try {
-      await fetch(`${API_URL}/usuarios/${cpfAdm}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configBoletos: config })
-      });
-
-      alert('Configurações salvas com sucesso!');
+      {
+        alert('Preencha todos os campos.');
+        return;
+      }
+      
+      // Salvar localmente
+      localStorage.setItem('configBoletos', JSON.stringify(config));
+      
+      // Opcional: salvar no backend
+      try {
+        await fetch(`/configuracao-boletos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify( config)
+        });
+        
+        alert('Configurações salvas com sucesso!');
+        console.log("pipipip")
       window.location.href = 'adm.html'; // ou página principal do admin
     } catch (err) {
       console.error('Erro ao salvar no backend:', err);
