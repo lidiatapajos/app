@@ -229,7 +229,7 @@ app.post('/usuarios/boletos', async (req, res) => {
 
 
 // 🟡 Atualizar cobrança
-app.patch('/usuarios/boletos/:usuarios/:cpf/:id', async (req, res) => {
+app.patch('/usuarios/boletos/:cpf/:id', async (req, res) => {
   const { cpf, id } = req.params;
   const updates = "pago"
 
