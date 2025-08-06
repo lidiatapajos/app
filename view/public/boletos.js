@@ -77,7 +77,7 @@ async function abrirPagamento(index, boleto) {
   const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
 
   try {
-    const res = await fetch(`${API_URL}/pix`);
+    const res = await fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`);
     const dados = await res.json();
 
     box.innerHTML = `
