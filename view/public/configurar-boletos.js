@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Opcional: salvar no backend
       try {
-        await fetch(`/configuracao-boletos`, {
+        await fetch(`${API_URL}/configuracao-boletos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify( config)
