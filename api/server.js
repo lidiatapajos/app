@@ -148,19 +148,25 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/boletos', async (req, res) => {
-const { descricao, vencimento, valor, chavePix } = req.body;
+  const { descricao, vencimento, valor, chavePix } = req.body;
   const cpf = req.query.cpf;
-  console.log("entrou aqui-----------------------------------------------------------------------------------fds");
+
+  console.log("POST /usuarios/boletos chamado");
+  console.log("Body recebido:", req.body);
+  console.log("CPF recebido:", cpf);
 
   try {
     // 1. Buscar responsável pelo CPF
+    console.log("Buscando responsável pelo CPF...");
     const { data: responsaveis, error: respError } = await supabase
       .from('responsaveis')
       .select('id, cpf')
       .eq('cpf', cpf)
       .single();
+    console.log("Busca responsável finalizada");
 
     if (respError || !responsaveis) {
+      console.log("Responsável não encontrado ou erro:", respError);
       return res.status(400).json({ erro: 'Responsável não encontrado' });
     }
 
@@ -168,23 +174,25 @@ const { descricao, vencimento, valor, chavePix } = req.body;
     const cedente_id = 2;
 
     // 2. Buscar conta bancária do admin
+    console.log("Buscando conta bancária do admin...");
     const { data: conta, error: contaError } = await supabase
       .from('contabancos')
       .select('conta, banco, agencia')
       .eq('adminid', cedente_id)
       .single();
+    console.log("Busca conta bancária finalizada");
 
     if (contaError || !conta) {
+      console.log("Conta bancária do admin não encontrada ou erro:", contaError);
       return res.status(400).json({ erro: 'Conta bancária do admin não encontrada' });
     }
 
-    const contaBancariaId = conta.conta;
-    console.log("rodando", contaBancariaId);
     const agencia_id = 3;
-    // 3. Inserir o boleto com todos os dados
-    const dataLiberacao = new Date().toISOString().split('T')[0]; // hoje
-    const vencimentoFormatado = vencimento.split('/').reverse().join('-'); // de DD/MM/YYYY pra YYYY-MM-DD
+    const dataLiberacao = new Date().toISOString().split('T')[0];
+    const vencimentoFormatado = vencimento.split('/').reverse().join('-');
 
+    // 3. Inserir o boleto
+    console.log("Inserindo boleto...");
     const { error: boletoError } = await supabase
       .from('boletos')
       .insert([
@@ -200,33 +208,22 @@ const { descricao, vencimento, valor, chavePix } = req.body;
           chave_pix: chavePix,
         },
       ]);
+    console.log("Tentou inserir boleto");
 
     if (boletoError) {
+      console.log("Erro ao criar boleto:", boletoError);
       return res.status(500).json({ erro: 'Erro ao criar boleto', detalhes: boletoError });
     }
 
-    res.status(200).json({ sucesso: 'Boleto criado com sucesso' });
+    console.log("Boleto criado com sucesso");
+    return res.status(200).json({ sucesso: 'Boleto criado com sucesso' });
 
   } catch (e) {
-    res.status(500).json({ erro: 'Erro inesperado', detalhes: e.message });
+    console.error("Erro inesperado:", e);
+    return res.status(500).json({ erro: 'Erro inesperado', detalhes: e.message });
   }
-
-  const { data, error } = await supabase
-    .from('config_boletos')
-    .select('*')
-    .eq('id')
-    .single()
-
-  if (error) {
-    if (error.code === 'PGRST116') { // registro não encontrado
-      return false
-    }
-    console.error('Erro ao verificar config:', error)
-    return false
-  }
-
-  return !!data
 });
+
 
 
 // 🟡 Atualizar cobrança
