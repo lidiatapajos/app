@@ -84,8 +84,8 @@ async function abrirPagamento(index, boleto) {
       <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(boleto).replace(/"/g, '&quot;')})">✖</button>
       <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
       <div class="pix-section">
-        <img src="${dados.qr}" alt="QR Code Pix">
-        <p><strong>Copia e cola:</strong> <span id="pixcode-${index}">${dados.brcode}</span></p>
+        <img src="${dados.qrCodeBase64}" alt="QR Code Pix" />
+        <p><strong>Copia e cola:</strong> <span id="pixcode-${index}">${dados.payload}</span></p>
         <button onclick="copiarPix(${index})">Copiar</button>
       </div>
     `;

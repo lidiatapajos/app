@@ -572,45 +572,38 @@ app.patch('/usuarios/:cpf', async (req, res) => {
   res.status(200).json({ sucesso: "Contato editado con sucesso", data });
 });
 
-
-const { Pix } = require('qrcode-pix');
+const pixPayload = require('pix-payload');
+const QRCode = require('qrcode');
 app.get('/pix', async (req, res) => {
   const { valor, nome, cidade } = req.query;
   const chave = process.env.CHAVE_PIX || '79683428215';
 
-  // Verificação de campos obrigatórios
   if (!valor || !nome || !cidade) {
     return res.status(400).json({ erro: 'Parâmetros obrigatórios: valor, nome, cidade' });
   }
 
   try {
-    // Criando a cobrança Pix
-    const pix = Pix({
-      version: '01',            // versão do payload
-      key: chave,               // chave Pix (telefone, aleatória, etc.)
-      name: nome,               // nome do recebedor
-      city: cidade.toUpperCase(), // cidade obrigatoriamente em maiúsculas
-      value: parseFloat(valor),   // valor convertido para número
-      transactionId: `txid-${Date.now()}` // opcional
+    const payload = pixPayload({
+      pixKey: chave,
+      merchantName: nome,
+      merchantCity: cidade.toUpperCase(),
+      amount: parseFloat(valor),
+      transactionId: `txid-${Date.now()}`
     });
-    console.log(typeof Pix); // ← deve imprimir 'function'
 
-    // Gerar payload e imagem base64
-    const payload = await pix.payload(); // código "copia e cola"
-    const base64 = await pix.base64();   // QR code em base64
+    const qrCodeBase64 = await QRCode.toDataURL(payload);
 
     res.status(200).json({
       payload,
-      qrCodeBase64: base64,
+      qrCodeBase64,
       qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(payload)}`
     });
 
-  } catch (error) {
-    console.error('Erro ao gerar QR Code Pix:', error);
+  } catch (err) {
+    console.error('Erro ao gerar Pix:', err);
     res.status(500).json({ erro: 'Erro interno ao gerar Pix' });
   }
 });
-
 
 // 🔁 Iniciar servidor
 app.listen(PORT, () => {
