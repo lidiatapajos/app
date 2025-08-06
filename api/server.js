@@ -262,7 +262,7 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   if (error) return res.status(500).json({ erro: error.message });
 
-  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
+  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[] });
 });
 
 const { Pix } = require('pix-qrcode');
