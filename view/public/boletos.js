@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   carregarBoletos(cpf);
 });
 
+
 async function carregarBoletos(cpf) {
   try {
     const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}`);
@@ -65,26 +66,47 @@ async function carregarBoletos(cpf) {
     msg.style.display = "block";
   }
 }
+async function abrirPagamento(index, boleto) {
+  const box = document.getElementById(`pagamento-${index}`);
 
- const codigoPix = document.getElementById("pix-code").value;
+  if (box.innerHTML.trim() !== "") {
+    box.classList.toggle("active"); // abre ou fecha
+    return;
+  }
 
-    new QRCode(document.getElementById("qrcode"), {
-      text: codigoPix,
-      width: 200,
-      height: 200,
-      colorDark: "#000",
-      colorLight: "#fff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
+  const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
 
-    function copiarCodigo() {
-      const input = document.getElementById("pix-code");
-      input.select();
-      input.setSelectionRange(0, 99999); // pra mobile
-      document.execCommand("copy");
+  try {
+    const res = await fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`);
+    const dados = await res.json();
 
-      alert("Código Pix copiado!");
-    }
+    box.innerHTML = `
+      <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(boleto).replace(/"/g, '&quot;')})">✖</button>
+      <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
+      <div class="pix-section">
+        <img src="${dados.qrCodeBase64}" alt="QR Code Pix" />
+        <p><strong>Copia e cola:</strong> <span id="pixcode-${index}">${dados.payload}</span></p>
+        <button onclick="copiarPix(${index})">Copiar</button>
+      </div>
+    `;
+
+    box.classList.add("active");
+    box.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    console.error("Erro ao gerar Pix:", err);
+    alert("Erro ao gerar QR Code Pix");
+  }
+}
+
+function copiarPix(index) {
+  const el = document.getElementById(`pixcode-${index}`);
+  if (!el) return alert("Código não encontrado");
+
+  const text = el.innerText;
+  navigator.clipboard.writeText(text)
+    .then(() => alert("Código Pix copiado!"))
+    .catch(() => alert("Erro ao copiar código Pix"));
+}
 function escapeHtml(str) {
   if (typeof str !== 'string') return str;
   return str.replace(/[&<>"']/g, function (m) {
