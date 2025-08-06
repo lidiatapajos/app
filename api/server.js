@@ -252,42 +252,49 @@ app.post('/usuarios/boletos', async (req, res) => {
 
 // 🟡 Atualizar cobrança
 app.patch('/usuarios/boletos/:cpf/:id', async (req, res) => {
-  const { cpf, id } = req.params;
-  const updates = "pago"
+  const cpf = req.params.cpf;
+  const boletoId = req.params.id;
+  const { descricao, vencimento, valor, status } = req.body; // status agora opcional
 
-  // Buscar ID do responsável pelo CPF
-  const { data: responsavel, error: responsavelError } = await supabase
-    .from('responsaveis')
-    .select('id')
-    .eq('cpf', cpf)
-    .single();
+  try {
+    // Buscar ID do responsável
+    const { data: responsavelData, error: responsavelError } = await supabase
+      .from('responsaveis')
+      .select('id')
+      .eq('cpf', cpf)
+      .single();
 
-  if (responsavelError || !responsavel) {
-    return res.status(404).json({ erro: 'Responsável não encontrado' });
+    if (responsavelError || !responsavelData) {
+      return res.status(404).json({ erro: 'Responsável não encontrado' });
+    }
+
+    // Montar objeto de atualização
+    const updates = {};
+    if (descricao) updates.descricao = descricao;
+    if (vencimento) updates.vencimento = vencimento;
+    if (valor) updates.valor = valor;
+    if (status) updates.status = status; // permite marcar como 'pago'
+
+    // Atualizar boleto
+    const { data, error } = await supabase
+      .from('boletos')
+      .update(updates)
+      .eq('id', boletoId)
+      .eq('responsavel_id', responsavelData.id)
+      .select();
+
+    if (error) {
+      console.error("Erro ao atualizar boleto:", error);
+      return res.status(500).json({ erro: 'Erro ao atualizar boleto.' });
+    }
+
+    res.json({ mensagem: "Boleto atualizado com sucesso", boleto: data[0] });
+  } catch (err) {
+    console.error("Erro inesperado:", err);
+    res.status(500).json({ erro: 'Erro inesperado ao atualizar boleto.' });
   }
-
-  // Verificar se a cobrança existe para este sacado
-  const { data: boleto, error: findError } = await supabase
-    .from('boletos')
-    .select('*')
-    .eq('id', id)
-    .eq('responsavel_id', responsavel.id)
-    .single();
-
-  if (findError || !boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
-  const { data, error } = await supabase
-    .from('boletos')
-    .update({ status: 'pago' })
-    .eq('id', id)           // <== Falta isso no seu código!
-    .eq('responsavel_id', responsavel.id)
-    .select();
-
-  if (error) return res.status(500).json({ erro: error.message });
-
-  console.log(data)
-
-  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
+
 
 const { Pix } = require('pix-qrcode');
 
