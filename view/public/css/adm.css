@@ -380,6 +380,40 @@ button:not(.btn):focus {
   }
   
 }
+
+@media screen and (max-width: 400px) {
+  body {
+    padding-top: 70px;
+  }
+  .navbar {
+    padding: 14px 20px;
+    height: 70px;
+
+  }
+  .logo {
+    font-size: 1.1rem;
+  }
+  .logout-btn {
+    width: 20%;
+    text-align: center;
+    margin-top: -10%;
+    margin-left: auto;
+    
+    padding: 8px;
+    font-size: 0.75rem;
+  }
+
+  .usuario h3 {
+    font-size: 0.9rem;
+  }
+  .usuario {
+    padding: 10px;
+  }
+  .btn-adicionar {
+    width: 30%;
+  }
+  
+}
 @media screen and (max-width: 360px) {
   body {
     padding-top: 50px;
@@ -483,9 +517,37 @@ button:not(.btn):focus {
     margin-right: 4px;
   }
   .btn-adicionar {
-    width: 40%;
+    width: 20%;
   }
 
+}
+@media screen and (max-width: 340px) {
+  body {
+    padding-top: 40px;
+  }
+  .navbar {
+    padding: 8px 10px;
+    height: 40px;
+  }
+  .logo {
+    font-size: 0.9rem;
+  }
+  .logout-btn {
+    padding: 4px;
+    font-size: 0.6rem;
+    width: 25%;
+    text-align: center;
+    margin-top: -5%;
+    margin-left: auto;
+
+  }
+  .usuario h3 {
+    font-size: 0.8rem;
+  }
+  .btn-adicionar {
+    width: 30%;
+  }
+  
 }
 @media screen and (max-width: 320px) {
   body {
