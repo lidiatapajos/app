@@ -591,14 +591,12 @@ app.get('/pix', (req, res) => {
       city: cidade,
       amount: valor
     });
+ const payload = pix.payload;
 
-    const brcode = pix.payload();
-
-    res.json({
-      brcode,
-      qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brcode)}`
+ res.json({
+      payload,
+      qr: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(payload)}`
     });
-
   } catch (err) {
     console.error('Erro ao gerar QRCode:', err);
     res.status(500).json({ erro: 'Erro ao gerar código Pix' });
