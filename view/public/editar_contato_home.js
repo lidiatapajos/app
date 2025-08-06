@@ -1,10 +1,12 @@
  const API_URL = 'https://primeiros-passos-digital.onrender.com';
- document.addEventListener("DOMContentLoaded", () => {
-    EditarContato()
+document.addEventListener("DOMContentLoaded", async () => {
+  await EditarContato();
 });
+
 
 async function EditarContato(){
     const form = document.getElementById("form-contato");
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         console.log('Submit do form acionado');
