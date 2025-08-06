@@ -60,8 +60,6 @@ app.use(express.static(path.join(__dirname, '../view')));
     console.error('Erro inesperado:', e);
     res.status(500).json({ erro: 'Erro inesperado' });
   }
-  
-  res.json(data);
 });
 
 
