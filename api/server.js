@@ -420,6 +420,29 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 });
 // ACABOU ARÉA DE DELETAR
 // CONFIGURAÇÃO DE BOLETOS E ETC
+app.get('/configuracao-boletos', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('config_boletos')
+      .select('id')
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Erro ao buscar configuração:", error);
+      return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
+    }
+    console.log(data, "----------------------- resposta do bd confing");
+
+
+    const configExists = !!data;
+    return res.status(200).json({ configExists });
+  } catch (e) {
+    console.error("Erro inesperado:", e);
+    return res.status(500).json({ erro: 'Erro inesperado.' });
+  }
+});
+
 app.post('/configuracao-boletos', async (req, res) => {
   const { diaLiberacao, diaVencimento, valorPadrao} = req.body;
   console.log(diaLiberacao, diaVencimento, valorPadrao)
