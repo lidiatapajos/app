@@ -593,6 +593,7 @@ app.get('/pix', async (req, res) => {
       value: parseFloat(valor),   // valor convertido para número
       transactionId: `txid-${Date.now()}` // opcional
     });
+    console.log(typeof Pix); // ← deve imprimir 'function'
 
     // Gerar payload e imagem base64
     const payload = await pix.payload(); // código "copia e cola"
