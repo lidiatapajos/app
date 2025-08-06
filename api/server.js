@@ -229,9 +229,9 @@ app.post('/usuarios/boletos', async (req, res) => {
 
 
 // 🟡 Atualizar cobrança
-app.patch('/usuarios/boletos/:usuarios/:id', async (req, res) => {
+app.patch('/usuarios/boletos/:usuarios/:cpf/:id', async (req, res) => {
   const { cpf, id } = req.params;
-  const updates = req.body;
+  const updates = "pago"
 
   // Buscar ID do responsável pelo CPF
   const { data: responsavel, error: responsavelError } = await supabase
@@ -256,11 +256,12 @@ app.patch('/usuarios/boletos/:usuarios/:id', async (req, res) => {
 
   const { data, error } = await supabase
     .from('boletos')
-    .update(updates)
-    .eq('id', id)
+    .update({ status: updates })
     .eq('responsavel_id', responsavel.id);
-
-  if (error) return res.status(500).json({ erro: error.message });
+    
+    if (error) return res.status(500).json({ erro: error.message });
+    
+    console.log(data)
 
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
