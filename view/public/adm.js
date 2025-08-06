@@ -1,5 +1,4 @@
-// const API_URL = 'https://primeiros-passos-digital.onrender.com';
-const API_URL = 'http://localhost:3000'
+const API_URL = 'https://primeiros-passos-digital.onrender.com';
 
 window.addEventListener("load", async () => {
   const cpf = localStorage.getItem('cpf')?.replace(/\D/g, "");
