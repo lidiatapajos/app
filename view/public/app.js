@@ -1,10 +1,12 @@
 const API_URL = 'https://primeiros-passos-digital.onrender.com';
-const { createClient } = supabase;
 const supabaseUrl = 'https://mriyckqgacainraogeif.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yaXlja3FnYWNhaW5yYW9nZWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5MTQzODQsImV4cCI6MjA2OTQ5MDM4NH0.vFwF-gtvH_LTMrN5DJUPYNjxn_EvO7LgDBZwogoRqgI'
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// AQUI você chama direto do objeto global `supabase`
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+// E usa ele:
+const { data, error } = await supabaseClient.from('responsaveis').select();
 
 async function login() {
   const cpfInput = document.getElementById('cpf');
