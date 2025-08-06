@@ -109,7 +109,7 @@ window.addEventListener('load', () => {
 
 function atualizarTotalPagar(boletos) {
   const total = boletos.reduce((acc, c) => {
-    if (!c.pago) {
+    if (c.pago === false || c.pago === 'false' || c.pago === 0 || c.pago === '0') {
       const valor = parseFloat(c.valor.replace(',', '.')) || 0;
       return acc + valor;
     }

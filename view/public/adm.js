@@ -230,7 +230,7 @@ async function editarBoletoPrompt(cpf, id) {
   if (!descricao || !vencimento || !valor) return;
 
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}/editar`, {
+    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}/editar`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
 body: JSON.stringify({
@@ -245,7 +245,7 @@ body: JSON.stringify({
     await carregarUsuarios();
   } catch (error) {
     console.error("Erro ao editar boleto:", error);
-    alert("Erro ao editar boleto. Verifique os dados ou tente novamente.");
+    alert("Erro ao editar boleto. Fale com o técnico.");
   }
 }
 
