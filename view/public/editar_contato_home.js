@@ -1,4 +1,5 @@
-document.addEventListener("DOMContentLoaded", () => {
+ const API_URL = 'https://primeiros-passos-digital.onrender.com';
+ document.addEventListener("DOMContentLoaded", () => {
     EditarContato()
 });
 
@@ -10,7 +11,7 @@ async function EditarContato(){
         const email = document.getElementById("email").value.trim();
         const telefone = document.getElementById("telefone").value.trim();
         const msg = document.getElementById("mensagem")
-        const API_URL = 'https://primeiros-passos-digital.onrender.com';
+       
         const cpf = localStorage.getItem("cpf")
         
         
