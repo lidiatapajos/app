@@ -458,22 +458,23 @@ app.post('/configuracao-boletos', async (req, res) => {
     } else {
       // Validação para configuração manual
       if (
-        dia_liberacao == null ||
-        dia_vencimento == null ||
-        valor == null
+        diaLiberacao == null ||
+        diaVencimento == null ||
+        valorPadrao == null
       ) {
         return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
       }
 
       if (
-        !Number.isInteger(dia_liberacao) ||
-        !Number.isInteger(dia_vencimento) ||
+        !Number.isInteger(diaLiberacao) ||
+        !Number.isInteger(diaVencimento) ||
         typeof valor !== 'number'
       ) {
         return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
       }
 
-      configData = { dia_liberacao, dia_vencimento, valor };
+      configData = { diaLiberacao, diaVencimento, valorPadrao
+       };
     }
 
     const { data, error } = await supabase

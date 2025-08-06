@@ -52,7 +52,7 @@ window.addEventListener("load", async () => {
 async function verificarSeConfigExisteNoBackend() {
   try {
     const res = await fetch(`${API_URL}/configuracao-boletos`, {
-      method: 'POST'
+      method: 'GET'
     });
     const json = await res.json();
     console.log(json,'----------------- json')
