@@ -253,7 +253,7 @@ async function iniciarTutorialAdm() {
 
 async function marcarComoPago(cpf, id) {
   try {
-    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
+    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}/pagar`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" }
     });
@@ -304,7 +304,7 @@ async function editarBoletoPrompt(cpf, id) {
   if (!descricao || !vencimento || !valor) return;
 
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
+    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}/editar`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ descricao, vencimento, valor })

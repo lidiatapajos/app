@@ -251,49 +251,72 @@ app.post('/usuarios/boletos', async (req, res) => {
 
 
 // 🟡 Atualizar cobrança
-app.patch('/usuarios/boletos/:cpf/:id', async (req, res) => {
+app.patch('/usuarios/:cpf/boletos/:id/editar', async (req, res) => {
   const cpf = req.params.cpf;
   const boletoId = req.params.id;
-  const { descricao, vencimento, valor, status } = req.body; // status agora opcional
+  const { descricao, vencimento, valor } = req.body;
 
   try {
-    // Buscar ID do responsável
-    const { data: responsavelData, error: responsavelError } = await supabase
+    const { data: responsavel, error: erroResp } = await supabase
       .from('responsaveis')
       .select('id')
       .eq('cpf', cpf)
       .single();
 
-    if (responsavelError || !responsavelData) {
+    if (erroResp || !responsavel)
       return res.status(404).json({ erro: 'Responsável não encontrado' });
-    }
 
-    // Montar objeto de atualização
     const updates = {};
     if (descricao) updates.descricao = descricao;
     if (vencimento) updates.vencimento = vencimento;
     if (valor) updates.valor = valor;
-    if (status) updates.status = status; // permite marcar como 'pago'
 
-    // Atualizar boleto
     const { data, error } = await supabase
       .from('boletos')
       .update(updates)
       .eq('id', boletoId)
-      .eq('responsavel_id', responsavelData.id)
+      .eq('responsavel_id', responsavel.id)
       .select();
 
-    if (error) {
-      console.error("Erro ao atualizar boleto:", error);
-      return res.status(500).json({ erro: 'Erro ao atualizar boleto.' });
-    }
+    if (error) return res.status(500).json({ erro: 'Erro ao editar boleto.' });
 
-    res.json({ mensagem: "Boleto atualizado com sucesso", boleto: data[0] });
+    res.json({ sucesso: true, mensagem: 'Boleto editado com sucesso', boleto: data[0] });
   } catch (err) {
-    console.error("Erro inesperado:", err);
-    res.status(500).json({ erro: 'Erro inesperado ao atualizar boleto.' });
+    console.error("Erro:", err);
+    res.status(500).json({ erro: 'Erro inesperado ao editar boleto.' });
   }
 });
+
+app.patch('/usuarios/boletos/:cpf/:id/pagar', async (req, res) => {
+  const cpf = req.params.cpf;
+  const boletoId = req.params.id;
+
+  try {
+    const { data: responsavel, error: erroResp } = await supabase
+      .from('responsaveis')
+      .select('id')
+      .eq('cpf', cpf)
+      .single();
+
+    if (erroResp || !responsavel)
+      return res.status(404).json({ erro: 'Responsável não encontrado' });
+
+    const { data, error } = await supabase
+      .from('boletos')
+      .update({ status: 'pago' })
+      .eq('id', boletoId)
+      .eq('responsavel_id', responsavel.id)
+      .select();
+
+    if (error) return res.status(500).json({ erro: 'Erro ao marcar boleto como pago.' });
+
+    res.json({ sucesso: true, mensagem: 'Boleto marcado como pago', boleto: data[0] });
+  } catch (err) {
+    console.error("Erro:", err);
+    res.status(500).json({ erro: 'Erro inesperado ao marcar boleto como pago.' });
+  }
+});
+
 
 
 const { Pix } = require('pix-qrcode');
