@@ -13,9 +13,12 @@ async function EditarContato(){
         const email = document.getElementById("email").value.trim();
         const telefone = document.getElementById("telefone").value.trim();
         const msg = document.getElementById("mensagem")
-       
         const cpf = localStorage.getItem("cpf")
-        
+        if (!cpf) {
+            msg.textContent = "CPF não encontrado. Faça login novamente.";
+            msg.style.color = "red";
+            return;
+        }
         
         try {
       const resposta = await fetch(`${API_URL}/usuarios/${cpf}`, {
