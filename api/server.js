@@ -574,7 +574,7 @@ app.patch('/usuarios/:cpf', async (req, res) => {
 
 
 app.get('/pix', async (req, res) => {
-const pixPayload = require('pix-payload-generator');
+const pixPayload = require('pix-payload');
 const QRCode = require('qrcode');
   const { valor, nome, cidade } = req.query;
   const chave = process.env.CHAVE_PIX || '79683428215';
@@ -604,6 +604,51 @@ const QRCode = require('qrcode');
     console.error('Erro ao gerar Pix:', err);
     res.status(500).json({ erro: 'Erro interno ao gerar Pix' });
   }
+});
+app.get('/comprovantes', async (req, res) => {
+  const { cpf } = req.query;
+
+  if (!cpf) {
+    return res.status(400).json({ erro: "CPF é obrigatório." });
+  }
+
+  try {
+    // Primeiro busca o responsável com esse CPF
+    const { data: responsavel, error: erroResp } = await supabase
+      .from('responsaveis')
+      .select('id')
+      .eq('cpf', cpf)
+      .single();
+
+    if (erroResp || !responsavel) {
+      return res.status(404).json({ erro: "Responsável não encontrado." });
+    }
+
+    // Agora busca os boletos pagos desse responsável
+    const { data: comprovantes, error } = await supabase
+      .from('boletos')
+      .select('descricao, valor, data_liberacao')
+      .eq('responsavel_id', responsavel.id)
+      .eq('status', 'pago');
+
+    if (error) throw error;
+
+    // Renomear `data_liberacao` pra `data_pagamento`
+    const resultado = comprovantes.map(c => ({
+      ...c,
+      data_pagamento: c.data_liberacao
+    }));
+
+    res.json(resultado);
+  } catch (err) {
+    console.error("Erro ao buscar comprovantes:", err);
+    res.status(500).json({ erro: "Erro interno ao buscar comprovantes." });
+  }
+});
+
+app.get('/chave-pix', (req, res) => {
+  const chavePix = process.env.CHAVE_PIX || '79683428215';
+  res.json({ chave: chavePix });
 });
 
 // 🔁 Iniciar servidor
