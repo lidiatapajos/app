@@ -49,8 +49,7 @@ function copiarPix(chave) {
     alert("Erro ao copiar chave Pix.");
   });
 }
-
-indow.addEventListener('load', () => {
+window.addEventListener('load', () => {
   const section = document.querySelector('.boletos');
   const cpf = localStorage.getItem('cpf');
 
