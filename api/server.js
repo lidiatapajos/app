@@ -16,17 +16,18 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 
 
-const corsOptions = {
-  origin: 'https://primeirospassosdigital.netlify.app',
-  methods: 'GET,POST,PATCH,DELETE,OPTIONS',
-  allowedHeaders: 'Content-Type,Authorization'
-};
+// const corsOptions = {
+//   origin: 'https://primeirospassosdigital.netlify.app',
+//   methods: 'GET,POST,PATCH,DELETE,OPTIONS',
+//   allowedHeaders: 'Content-Type,Authorization'
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 app.use(express.json());
 
 // USUARIOS E ADM
 app.use(express.static(path.join(__dirname, '../view')));
+
 app.get('/usuarios', async (_req, res) => {
   console.log("🔄 Rota /usuarios acessada");
   const { data, error } = await supabase
@@ -149,7 +150,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/boletos', async (req, res) => {
-  const { descricao, vencimento, valor, chavePix } = req.body;
+  const { descricao, vencimento, valorPadrao, chavePix } = req.body;
   const cpf = req.query.cpf;
   console.log("entrou aqui-----------------------------------------------------------------------------------fds");
 
@@ -190,7 +191,7 @@ app.post('/usuarios/boletos', async (req, res) => {
       .from('boletos')
       .insert([
         {
-          valor: parseFloat(valor),
+          valorPadrao: parseFloat(valorPadrao),
           data_liberacao: dataLiberacao,
           vencimento: vencimentoFormatado,
           status: 'gerado',
@@ -270,11 +271,11 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 const { Pix } = require('pix-qrcode');
 
 app.get('/pix', (req, res) => {
-  const { valor, nome, cidade } = req.query;
+  const { valorPadrao, nome, cidade } = req.query;
   const chave = process.env.CHAVE_PIX || '79683428215';
 
-  if (!chave || !valor || !nome || !cidade) {
-    return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valor, nome, cidade' });
+  if (!chave || !valorPadrao || !nome || !cidade) {
+    return res.status(400).json({ erro: 'Parâmetros obrigatórios: chave, valorPadrao, nome, cidade' });
   }
 
   try {
@@ -283,7 +284,7 @@ app.get('/pix', (req, res) => {
       key: chave,
       name: nome,
       city: cidade,
-      amount: valor
+      amount: valorPadrao
     });
 
     const brcode = pix.payload();
@@ -353,7 +354,7 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
     // 2) Atualizar o boleto para pago
     const { data, error } = await supabase
       .from('cobrancas')
-      .update({ campo: 'valor' })
+      .update({ campo: 'valorPadrao' })
       .eq('id', id)
       .select();
 
@@ -444,22 +445,24 @@ app.get('/configuracao-boletos', async (req, res) => {
 });
 
 app.post('/configuracao-boletos', async (req, res) => {
-  const { dia_liberacao, dia_vencimento, valor } = req.body;
+  const { diaLiberacao, diaVencimento, valorPadrao} = req.body;
+  console.log(diaLiberacao, diaVencimento, valorPadrao)
 
   if (
-    dia_liberacao == null ||
-    dia_vencimento == null ||
-    valor == null
+    diaLiberacao == null ||
+    diaVencimento == null ||
+    valorPadrao == null
   ) {
     return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
   }
 
   // Validação simples (opcional)
   if (
-    !Number.isInteger(dia_liberacao) ||
-    !Number.isInteger(dia_vencimento) ||
-    typeof valor !== 'number'
+    !Number.isInteger(diaLiberacao) ||
+    !Number.isInteger(diaVencimento) ||
+    typeof valorPadrao !== 'number'
   ) {
+    console.log("aqui")
     return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
   }
 
@@ -469,7 +472,10 @@ app.post('/configuracao-boletos', async (req, res) => {
 
     const { data, error } = await supabase
       .from('config_boletos')
-      .insert([{ dia_liberacao, dia_vencimento, valor }]);
+      .insert([{
+        dia_liberacao:diaLiberacao,
+        dia_vencimento:diaVencimento,
+        valor:valorPadrao }]);
 
     if (error) {
       console.error("Erro ao salvar configuração:", error);
@@ -499,7 +505,7 @@ app.patch('/usuarios/:cpf', async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 
-  res.status(200).json({ sucesso: true, data });
+  res.status(200).json({ sucesso: "Contato editado con sucesso", data });
 });
 
 
