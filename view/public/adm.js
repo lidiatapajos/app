@@ -19,10 +19,10 @@ window.addEventListener("load", async () => {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
     if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
     const { data } = await res.json();
-    const config = data?.configBoletos || null;
-    console.log("Configuração atual de boletos:", config);
+    //const config = data?.configBoletos || null;
+    //console.log("Configuração atual de boletos:", config);
 
-    await configurarBoletos();
+
      await iniciarTutorialAdm();
     await carregarUsuarios();
    
@@ -32,43 +32,6 @@ window.addEventListener("load", async () => {
   }
 });
 
-//configuração dos boletos
-async function verificarSeConfigExisteNoBackend() {
-  try {
-    const res = await fetch(`${API_URL}/configuracao-boletos`, {
-      method: 'GET'
-    });
-    const json = await res.json();
-    console.log(json,'----------------- json')
-    return json?.configExists || false;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
-
-async function salvarConfiguracaoNoBackend(config) {
-  try {
-    const res = await fetch(`${API_URL}/configuracao-boletos`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    });
-    return res.ok;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
-
-async function configurarBoletos() {
-  const config = localStorage.getItem('configBoletos');
-
-  if (!config) {
-    alert("Você precisa configurar os boletos antes de continuar.");
-    window.location.href = 'configurar-boletos.html';
-  }
-}
 
 
 async function carregarUsuarios() {
@@ -181,24 +144,24 @@ async function excluirUsuario(cpf) {
 
 
 // funciona mas não tá enviando pro banco de dados
-async function salvarConfiguracaoNoBackend(config) {
- const res = await fetch(`${API_URL}/configuracao-boletos `)
+// async function salvarConfiguracaoNoBackend(config) {
+//  const res = await fetch(`${API_URL}/configuracao-boletos `)
 
-    .from('configuracao_boletos')
-    .upsert({
-      id: 1, // fixa um ID só pra garantir que tem só UMA config (tipo singleton)
-      diaLiberacao: config.dia_liberacao,
-      diaVencimento: config.dia_vencimento,
-      valor: config.valor
-    }, { onConflict: 'id' })
+//     .from('configuracao_boletos')
+//     .upsert({
+//       id: 1, // fixa um ID só pra garantir que tem só UMA config (tipo singleton)
+//       diaLiberacao: config.dia_liberacao,
+//       diaVencimento: config.dia_vencimento,
+//       valor: config.valor
+//     }, { onConflict: 'id' })
 
-  if (error) {
-    console.error('Erro ao salvar config no Supabase:', error)
-    return false
-  }
+//   if (error) {
+//     console.error('Erro ao salvar config no Supabase:', error)
+//     return false
+//   }
 
-  return true
-}
+//   return true
+// }
  
 
 

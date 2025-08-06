@@ -479,110 +479,110 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 });
 // ACABOU ARÉA DE DELETAR
 // CONFIGURAÇÃO DE BOLETOS E ETC
-app.get('/configuracao-boletos', async (_req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('config_boletos')
-      .select('id')
-      .limit(1)
-      .maybeSingle();
+// app.get('/configuracao-boletos', async (_req, res) => {
+//   try {
+//     const { data, error } = await supabase
+//       .from('config_boletos')
+//       .select('id')
+//       .limit(1)
+//       .maybeSingle();
 
-    if (error) {
-      console.error("Erro ao buscar configuração:", error);
-      return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
-    }
-    console.log(data, "----------------------- resposta do bd confing");
+//     if (error) {
+//       console.error("Erro ao buscar configuração:", error);
+//       return res.status(500).json({ erro: 'Erro ao buscar configuração.' });
+//     }
+//     console.log(data, "----------------------- resposta do bd confing");
 
 
-    const configExists = !!data;
-    return res.status(200).json({ configExists });
-  } catch (e) {
-    console.error("Erro inesperado:", e);
-    return res.status(500).json({ erro: 'Erro inesperado.' });
-  }
-});
+//     const configExists = !!data;
+//     return res.status(200).json({ configExists });
+//   } catch (e) {
+//     console.error("Erro inesperado:", e);
+//     return res.status(500).json({ erro: 'Erro inesperado.' });
+//   }
+// });
 
-app.post('/configuracao-boletos', async (req, res) => {
-  const { diaLiberacao, diaVencimento, valor } = req.body;
-  const usarConfiguracaoPadrao = req.body.usarConfiguracaoPadrao || false;
+// app.post('/configuracao-boletos', async (req, res) => {
+//   const { diaLiberacao, diaVencimento, valor } = req.body;
+//   const usarConfiguracaoPadrao = req.body.usarConfiguracaoPadrao || false;
 
-  if (
-    diaLiberacao == null ||
-    diaVencimento == null ||
-    valorPadrao == null
-  ) {
-    return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
-  }
+//   if (
+//     diaLiberacao == null ||
+//     diaVencimento == null ||
+//     valorPadrao == null
+//   ) {
+//     return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+//   }
 
-  // Validação simples (opcional)
-  console.log(diaLiberacao, diaVencimento, valor, "----------------------- valores recebidos");
-  if (
+//   // Validação simples (opcional)
+//   console.log(diaLiberacao, diaVencimento, valor, "----------------------- valores recebidos");
+//   if (
 
-    !Number.isInteger(diaLiberacao) ||
-    !Number.isInteger(diaVencimento) ||
-    typeof valor !== 'number'
-  ) {
-    console.log("aqui")
-    return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
-  }
-  console.log("la fora")
-  try {
-    // Remove qualquer configuração existente
-    await supabase.from('config_boletos').delete();
+//     !Number.isInteger(diaLiberacao) ||
+//     !Number.isInteger(diaVencimento) ||
+//     typeof valor !== 'number'
+//   ) {
+//     console.log("aqui")
+//     return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
+//   }
+//   console.log("la fora")
+//   try {
+//     // Remove qualquer configuração existente
+//     await supabase.from('config_boletos').delete();
 
-    let configData;
-    console.log(usarConfiguracaoPadrao, "----------------------- valor do usar config padrao");
-    if (usarConfiguracaoPadrao) {
-      // Caso o admin escolha a configuração padrão
-      configData = {
-        dia_liberacao: 4,
-        dia_vencimento: 28,
-        valor: 100,
-      };
-    } else {
-      // Validação para configuração manual
-      console.log("aqui dentro")
-      if (
-        diaLiberacao == null ||
-        diaVencimento == null ||
-        valor == null
-      ) {
-        return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
-      }
-      console.log(diaLiberacao, diaVencimento, valor, "----------------------- valores recebidos dentro do else");
-      // if (
-      //   !Number.isInteger(diaLiberacao) ||
-      //   !Number.isInteger(diaVencimento) ||
-      //   typeof valor !== 'number'
-      // ) {
-      //   return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
-      // }
+//     let configData;
+//     console.log(usarConfiguracaoPadrao, "----------------------- valor do usar config padrao");
+//     if (usarConfiguracaoPadrao) {
+//       // Caso o admin escolha a configuração padrão
+//       configData = {
+//         dia_liberacao: 4,
+//         dia_vencimento: 28,
+//         valor: 100,
+//       };
+//     } else {
+//       // Validação para configuração manual
+//       console.log("aqui dentro")
+//       if (
+//         diaLiberacao == null ||
+//         diaVencimento == null ||
+//         valor == null
+//       ) {
+//         return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+//       }
+//       console.log(diaLiberacao, diaVencimento, valor, "----------------------- valores recebidos dentro do else");
+//       // if (
+//       //   !Number.isInteger(diaLiberacao) ||
+//       //   !Number.isInteger(diaVencimento) ||
+//       //   typeof valor !== 'number'
+//       // ) {
+//       //   return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
+//       // }
 
-      configData = {
-        diaLiberacao, diaVencimento, valor
-      };
-    }
-    console.log(configData, "----------------------- dados para inserir no bd");
+//       configData = {
+//         diaLiberacao, diaVencimento, valor
+//       };
+//     }
+//     console.log(configData, "----------------------- dados para inserir no bd");
 
-    const { data, error } = await supabase
-      .from('config_boletos')
-      .insert([{
-        dia_liberacao: diaLiberacao,
-        dia_vencimento: diaVencimento,
-        valor: valor
-      }]);
+//     const { data, error } = await supabase
+//       .from('config_boletos')
+//       .insert([{
+//         dia_liberacao: diaLiberacao,
+//         dia_vencimento: diaVencimento,
+//         valor: valor
+//       }]);
 
-    if (error) {
-      console.error("Erro ao salvar configuração:", error);
-      return res.status(500).json({ erro: 'Erro ao salvar configuração.' });
-    }
+//     if (error) {
+//       console.error("Erro ao salvar configuração:", error);
+//       return res.status(500).json({ erro: 'Erro ao salvar configuração.' });
+//     }
 
-    return res.status(201).json({ sucesso: true, data });
-  } catch (e) {
-    console.error("Erro inesperado:", e);
-    return res.status(500).json({ erro: 'Erro inesperado.' });
-  }
-});
+//     return res.status(201).json({ sucesso: true, data });
+//   } catch (e) {
+//     console.error("Erro inesperado:", e);
+//     return res.status(500).json({ erro: 'Erro inesperado.' });
+//   }
+// });
 
 
 
