@@ -455,7 +455,9 @@ app.post('/configuracao-boletos', async (req, res) => {
   }
 
   // Validação simples (opcional)
+  console.log(diaLiberacao, diaVencimento, valorPadrao, "----------------------- valores recebidos");
   if (
+    
     !Number.isInteger(diaLiberacao) ||
     !Number.isInteger(diaVencimento) ||
     typeof valorPadrao !== 'number'
@@ -463,13 +465,13 @@ app.post('/configuracao-boletos', async (req, res) => {
     console.log("aqui")
     return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
   }
-
+  console.log("la fora")
   try {
     // Remove qualquer configuração existente
     await supabase.from('config_boletos').delete();
 
     let configData;
-
+    console.log(usarConfiguracaoPadrao, "----------------------- valor do usar config padrao");
     if (usarConfiguracaoPadrao) {
       // Caso o admin escolha a configuração padrão
       configData = {
@@ -479,6 +481,7 @@ app.post('/configuracao-boletos', async (req, res) => {
       };
     } else {
       // Validação para configuração manual
+      console.log("aqui dentro")
       if (
         diaLiberacao == null ||
         diaVencimento == null ||
@@ -486,7 +489,7 @@ app.post('/configuracao-boletos', async (req, res) => {
       ) {
         return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
       }
-
+      console.log(diaLiberacao, diaVencimento, valorPadrao, "----------------------- valores recebidos dentro do else");
       if (
         !Number.isInteger(diaLiberacao) ||
         !Number.isInteger(diaVencimento) ||
@@ -498,6 +501,7 @@ app.post('/configuracao-boletos', async (req, res) => {
       configData = { diaLiberacao, diaVencimento, valorPadrao
        };
     }
+    console.log(configData, "----------------------- dados para inserir no bd");
 
     const { data, error } = await supabase
       .from('config_boletos')
