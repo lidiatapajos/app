@@ -18,6 +18,8 @@ const urlsToCache = [
   'public/adm.js',
   'public/boletos.js',
   'public/editar_contato_home.js',
+  'public/comprovantes.js',
+  'public/home.js',
   'public/img/icon-192.png',
   'public/img/icon-512.png',
   'public/screenshots/home.png',
