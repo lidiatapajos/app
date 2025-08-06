@@ -116,6 +116,8 @@ body {
   flex: 1;
   min-width: 220px;
   font-size: 0.95rem;
+  list-style: none;
+
 }
 
 .boleto-acoes button {

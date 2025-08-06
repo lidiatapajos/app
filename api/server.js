@@ -251,7 +251,7 @@ app.post('/usuarios/boletos', async (req, res) => {
 
 
 // 🟡 Atualizar cobrança
-app.patch('/usuarios/:cpf/boletos/:id/editar', async (req, res) => {
+app.patch('/usuarios/boletos/:cpf/:id/editar', async (req, res) => {
   const cpf = req.params.cpf;
   const boletoId = req.params.id;
   const { descricao, vencimento, valor } = req.body;
