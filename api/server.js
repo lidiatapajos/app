@@ -572,9 +572,10 @@ app.patch('/usuarios/:cpf', async (req, res) => {
   res.status(200).json({ sucesso: "Contato editado con sucesso", data });
 });
 
-const pixPayload = require('pix-payload');
-const QRCode = require('qrcode');
+
 app.get('/pix', async (req, res) => {
+const pixPayload = require('pix-payload-generator');
+const QRCode = require('qrcode');
   const { valor, nome, cidade } = req.query;
   const chave = process.env.CHAVE_PIX || '79683428215';
 
