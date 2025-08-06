@@ -233,7 +233,11 @@ async function editarBoletoPrompt(cpf, id) {
     const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}/editar`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ descricao, vencimento, valor })
+body: JSON.stringify({
+  descricao,
+  vencimento,
+  valor: parseFloat(valor.replace(',', '.')) // <-- 👈 aqui!
+})
     });
 
     if (!res.ok) throw new Error("Erro ao editar boleto.");
