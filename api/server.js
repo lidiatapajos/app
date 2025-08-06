@@ -26,19 +26,45 @@ app.use(express.json());
 // USUARIOS E ADM
 app.use(express.static(path.join(__dirname, '../view')));
 
-app.get('/usuarios', async (_req, res) => {
-  console.log("🔄 Rota /usuarios acessada");
-  const { data, error } = await supabase
-    .from('responsaveis')
-    .select('*, boletos(*)');
 
-  if (error) {
-    console.error("Erro ao buscar usuários:", error.message);
-    return res.status(500).json({ erro: true, mensagem: 'Erro ao buscar usuários.' });
+  app.get('/usuarios', async (req, res) => {
+  try {
+    // Pega todos os usuários
+    const { data: usuarios, error: usuariosError } = await supabase
+      .from('responsaveis')
+      .select('id, cpf');
+
+    if (usuariosError) {
+      return res.status(500).json({ erro: 'Erro ao buscar usuários' });
+    }
+
+    // Para cada usuário, buscar boletos não pagos
+    const usuariosComBoletos = await Promise.all(
+      usuarios.map(async (usuario) => {
+        const { data: boletos, error: boletosError } = await supabase
+          .from('boletos')
+          .select('*')
+          .eq('responsavel_id', usuario.id)
+          .neq('status', 'pago')
+          .order('vencimento', { ascending: true });
+
+        return {
+          cpf: usuario.cpf,
+          boletos: boletosError ? [] : boletos,
+        };
+      })
+    );
+
+    res.json(usuariosComBoletos);
+  } catch (e) {
+    console.error('Erro inesperado:', e);
+    res.status(500).json({ erro: 'Erro inesperado' });
   }
-
+  
   res.json(data);
 });
+
+
 
 app.get('/usuarios/:cpf', async (req, res) => {
   const cpf = req.params.cpf.replace(/\D/g, '');

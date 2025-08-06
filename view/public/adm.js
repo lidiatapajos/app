@@ -132,6 +132,7 @@ async function carregarUsuarios() {
   } catch (err) {
     console.error("Erro ao carregar usuários:", err);
   }
+  
 }
 // não tá funcionando
 async function adicionarCobrancaPix(cpf) {
