@@ -287,6 +287,41 @@ app.patch('/usuarios/:cpf/boletos/:id/editar', async (req, res) => {
   }
 });
 
+app.get('/usuarios/:cpf/boletos', async (req, res) => {
+  const cpf = req.params.cpf;
+
+  try {
+    // 1. Buscar responsável
+    const { data: responsavel, error: respError } = await supabase
+      .from('responsaveis')
+      .select('id')
+      .eq('cpf', cpf)
+      .single();
+
+    if (respError || !responsavel) {
+      return res.status(404).json({ erro: 'Responsável não encontrado' });
+    }
+
+    // 2. Buscar boletos PENDENTES (status = 'gerado')
+    const { data: boletos, error } = await supabase
+      .from('boletos')
+      .select('descricao, valor, vencimento')
+      .eq('responsavel_id', responsavel.id)
+      .eq('status', 'gerado');
+
+    if (error) {
+      console.error('Erro ao buscar boletos:', error);
+      return res.status(500).json({ erro: 'Erro ao buscar boletos' });
+    }
+
+    res.json(boletos);
+  } catch (err) {
+    console.error('Erro inesperado:', err);
+    res.status(500).json({ erro: 'Erro interno ao buscar boletos' });
+  }
+});
+
+
 app.patch('/usuarios/boletos/:cpf/:id/pagar', async (req, res) => {
   const cpf = req.params.cpf;
   const boletoId = req.params.id;
