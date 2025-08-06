@@ -1,4 +1,6 @@
-const API_URL = 'https://primeiros-passos-digital.onrender.com';
+// const API_URL = 'https://primeiros-passos-digital.onrender.com';
+const API_URL = 'http://localhost:3000'
+
 
 
 document.addEventListener("DOMContentLoaded", () => {

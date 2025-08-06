@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const totalSpan = document.getElementById("total");
   const totalContainer = document.querySelector(".total-container");
   const form = document.getElementById("form-contato");
-
+  const email = document.getElementById("email").value.trim();
+  const telefone = document.getElementById("telefone").value.trim();
   const msg = document.getElementById("mensagem");
 
   if (!cpf) {
@@ -39,41 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     totalContainer.innerHTML = `<p style="color: red;">Erro ao carregar boletos.</p>`;
   }
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    console.log('Submit do form acionado');
-
-    const email = document.getElementById("email").value.trim();
-    const telefone = document.getElementById("telefone").value.trim();
-
-    try {
-      const resposta = await fetch(`${API_URL}/usuarios/${cpf}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, telefone })
-      });
-      console.log('Status da resposta:', resposta.status);
-      const textoResposta = await resposta.text();
-      console.log('Resposta raw:', textoResposta);
-
-      const data = await resposta.json();
-
-      if (resposta.ok) {
-        msg.textContent = "Informações salvas com sucesso!";
-      } else {
-        msg.textContent = "Erro ao salvar: " + (data.error || "Erro desconhecido");
-      }
-    } catch (err) {
-      msg.textContent = "Erro de conexão com o servidor.";
-      console.error(err);
-    }
   })
-})
-
-
-
 
 function copiarPix(chave) {
   navigator.clipboard.writeText(chave).then(() => {
