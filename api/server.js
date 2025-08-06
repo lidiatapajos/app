@@ -148,7 +148,7 @@ app.get('/usuarios/:cpf/boletos', async (req, res) => {
 
 // 🟢 Criar cobrança Pix
 app.post('/usuarios/boletos', async (req, res) => {
-  const { descricao, vencimento, valorPadrao, chavePix } = req.body;
+const { descricao, vencimento, valor, chavePix } = req.body;
   const cpf = req.query.cpf;
   console.log("entrou aqui-----------------------------------------------------------------------------------fds");
 
@@ -189,7 +189,7 @@ app.post('/usuarios/boletos', async (req, res) => {
       .from('boletos')
       .insert([
         {
-          valorPadrao: parseFloat(valorPadrao),
+          valorPadrao: parseFloat(valor.replace(',', '.')),
           data_liberacao: dataLiberacao,
           vencimento: vencimentoFormatado,
           status: 'gerado',
@@ -352,8 +352,8 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
     // 2) Atualizar o boleto para pago
     const { data, error } = await supabase
-      .from('cobrancas')
-      .update({ campo: 'valorPadrao' })
+      .from('boletos')
+      .update({ status: 'pago' })
       .eq('id', id)
       .select();
 

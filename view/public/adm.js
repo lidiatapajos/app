@@ -10,27 +10,10 @@ window.addEventListener("load", async () => {
     return;
   }
 
-  const jaConfigurou = await verificarSeConfigExisteNoBackend();
-  if (!jaConfigurou) {
-    const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
-    if (desejaConfigurar) {
-      window.location.href = '/configurar-boletos.html';
-    } else {
-      const configPadrao = {
-        dia_liberacao: 3,
-        dia_vencimento: 28,
-        valor: 100
-      };
-      const sucesso = await salvarConfiguracaoNoBackend(configPadrao);
-      if (!sucesso) {
-        alert("Erro ao salvar configuração padrão. Contate o suporte.");
-      } else {
-        alert("Configuração padrão aplicada com sucesso!");
-        // RELOAD pra atualizar o estado e evitar loop
-        window.location.reload();
-      }
-    }
-  }
+  if (!cpf) {
+    alert('CPF não encontrado. Faça login novamente.');
+    window.location.href = '/index.html';
+  return;}
 
   try {
     const res = await fetch(`${API_URL}/usuarios/${cpf}`);
@@ -79,17 +62,10 @@ async function salvarConfiguracaoNoBackend(config) {
 
 async function configurarBoletos() {
   const config = localStorage.getItem('configBoletos');
-  console.log(config,'valor')
-  console.log(!config,'valor booleano')
 
   if (!config) {
-    const desejaConfigurar = confirm("Deseja configurar manualmente os boletos?");
-    if (desejaConfigurar) {
-      window.location.href = 'configurar-boletos.html';
-    } else {
-      const padrao = { diaLiberacao: 4, diaVencimento: 28 };
-      localStorage.setItem('configBoletos', JSON.stringify(padrao));
-    }
+    alert("Você precisa configurar os boletos antes de continuar.");
+    window.location.href = 'configurar-boletos.html';
   }
 }
 
@@ -204,12 +180,13 @@ async function excluirUsuario(cpf) {
 
 // funciona mas não tá enviando pro banco de dados
 async function salvarConfiguracaoNoBackend(config) {
-  const { data, error } = await supabase
+ const res = await fetch(`${API_URL}/configuracao-boletos `)
+
     .from('configuracao_boletos')
     .upsert({
       id: 1, // fixa um ID só pra garantir que tem só UMA config (tipo singleton)
-      dia_liberacao: config.dia_liberacao,
-      dia_vencimento: config.dia_vencimento,
+      diaLiberacao: config.dia_liberacao,
+      diaVencimento: config.dia_vencimento,
       valor: config.valor
     }, { onConflict: 'id' })
 
@@ -273,7 +250,6 @@ async function iniciarTutorialAdm() {
 }
 
 
-
 async function marcarComoPago(cpf, id) {
   try {
     const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
@@ -286,11 +262,11 @@ async function marcarComoPago(cpf, id) {
       throw new Error(erroRes.erro || "Erro ao marcar como pago!");
     }
 
+    const json = await res.json(); // <-- Faltava isso
+
     console.log("Boleto atualizado:", json.boleto);
-
-    await carregarUsuarios();
-
     alert(json.mensagem);
+    await carregarUsuarios();
 
   } catch (error) {
     console.error(error);
@@ -298,36 +274,49 @@ async function marcarComoPago(cpf, id) {
   }
 }
 
-async function excluirBoleto(cpf, id) {
-  try{
-  if (!confirm("Excluir boleto?")) return;
-  await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
-    method: "DELETE"
-  });
-  if(!res.ok) throw new Error("Erro ao excluir!");
 
-  await carregarUsuarios();}
-  catch (error){
+async function excluirBoleto(cpf, id) {
+  try {
+    if (!confirm("Excluir boleto?")) return;
+
+ const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
+  method: "DELETE"
+});
+
+
+    if (!res.ok) throw new Error("Erro ao excluir!");
+
+    await carregarUsuarios();
+  } catch (error) {
     console.error(error);
-    alert("Não foi possível excluir esse boleto. Entre em contanto com o técnico para mais informações!");
+    alert("Não foi possível excluir esse boleto. Entre em contato com o técnico para mais informações!");
   }
 }
+
 
 // não funciona
 async function editarBoletoPrompt(cpf, id) {
   const descricao = prompt("Nova descrição:");
   const vencimento = prompt("Novo vencimento (dd/mm/aaaa):");
   const valor = prompt("Novo valor:");
+
   if (!descricao || !vencimento || !valor) return;
 
-  await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ descricao, vencimento, valor })
-  });
-  await carregarUsuarios();
-}
+  try {
+    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ descricao, vencimento, valor })
+    });
 
+    if (!res.ok) throw new Error("Erro ao editar boleto.");
+
+    await carregarUsuarios();
+  } catch (error) {
+    console.error("Erro ao editar boleto:", error);
+    alert("Erro ao editar boleto. Verifique os dados ou tente novamente.");
+  }
+}
 
 window.addEventListener('load', () => {
   console.log('Página carregada. Verificando query string...');
