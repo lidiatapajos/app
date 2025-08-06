@@ -224,6 +224,11 @@ async function iniciarTutorialAdm() {
       observer.disconnect();
       introJs().setOptions({
         steps: [
+          {element: logoutButton, 
+            intro: "Clique aqui para sair do painel de administração."},
+            {element: adicionar,
+              intro: "Aqui você pode adicionar um novo usuário."
+            },
           {
             element: botaoCobranca,
             intro: "Aqui você pode gerar uma nova cobrança Pix para o usuário.",
@@ -239,7 +244,14 @@ async function iniciarTutorialAdm() {
           {
             element: botoesAcoes[2],
             intro: "E aqui você pode excluir a cobrança.",
-          }
+          },
+          {
+            element: document.querySelector('.usuario'),
+            intro: "Esta é a lista de usuários e suas cobranças.",
+          },
+          {element: h1,
+            intro: "Bem-vindo ao painel de administração! Aqui você pode gerenciar usuários e cobranças.",}
+
         ]
       }).start();
 
