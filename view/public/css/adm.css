@@ -146,6 +146,14 @@ body {
   margin-right: 4px;
 }
 
+.btn-adicionar {
+  width: 200px;
+  background-color: #b71c1c; /* vermelho do seu tema */
+}
+.btn-adicionar:hover {
+  background-color: #d32f2f; /* vermelho mais claro ao passar o mouse */
+}
+
 /* Estilo por tipo */
 .copiar {
   background-color: #4caf50; /* verde */
@@ -274,6 +282,10 @@ button:not(.btn):focus {
     flex-direction: column;
     gap: 8px;
   }
+  .btn-adicionar {
+    width: 50%;
+  }
+
 
 }
 
@@ -363,7 +375,9 @@ button:not(.btn):focus {
   button i {
     font-size: 1rem;
   }
-
+  .btn-adicionar {
+    width: 40%;
+  }
   
 }
 @media screen and (max-width: 360px) {
@@ -468,6 +482,9 @@ button:not(.btn):focus {
     font-size: 0.9rem;
     margin-right: 4px;
   }
+  .btn-adicionar {
+    width: 40%;
+  }
 
 }
 @media screen and (max-width: 320px) {
@@ -534,6 +551,8 @@ button:not(.btn):focus {
   .usuarios-lista {
     gap: 2px;
   }
+  .btn-adicionar {
+    width: 30%;}
    
 }
 
@@ -550,4 +569,6 @@ button:not(.btn):focus {
   button {
     font-size: 0.95rem;
   }
+  .btn-adicionar {
+    width: 150px; }
 }
