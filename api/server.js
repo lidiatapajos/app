@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -262,7 +261,7 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 
   if (error) return res.status(500).json({ erro: error.message });
 
-  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[i] });
+  res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
 
 const { Pix } = require('pix-qrcode');
@@ -333,7 +332,7 @@ app.delete('/usuarios/:cpf/boletos/:id', async (req, res) => {
 });
 
 //Marcar como pago
-app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
+app.patch('/usuarios/:cpf/boletos/:id/pagar', async (req, res) => {
   const { cpf, id } = req.params;
 
   try {
@@ -344,34 +343,30 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
       .single();
 
     if (responsavelError || !responsavel) {
-      console.error("Erro ao buscar responsável:", responsavelError);
       return res.status(404).json({ erro: 'Responsável não encontrado' });
     }
 
-    // 2) Atualizar o boleto para pago
+    // Atualiza o status do boleto para 'pago'
     const { data, error } = await supabase
-      .from('cobrancas')
-      .update({ campo: 'valorPadrao' })
+      .from('boletos')
+      .update({ status: 'pago' })
       .eq('id', id)
+      .eq('responsavel_id', responsavel.id)
       .select();
 
     if (error) {
-      console.error('Erro ao atualizar cobrança:', error);
       return res.status(500).json({ erro: 'Não foi possível atualizar a cobrança' });
     }
 
     if (!data || data.length === 0) {
-      console.error('Nenhuma cobrança encontrada para atualizar');
       return res.status(404).json({ erro: 'Cobrança não encontrada' });
     }
 
-    res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
+    res.json({ sucesso: true, mensagem: 'Cobrança marcada como paga', cobranca: data[0] });
   } catch (e) {
-    console.error("Erro inesperado:", e);
-    return res.status(500).json({ erro: 'Erro inesperado.' })
-  };
-}
-);
+    return res.status(500).json({ erro: 'Erro inesperado.' });
+  }
+});
 
 //ACABOU ARÉA DAS COBRANÇAS
 // ARÉA DE DELETAR
