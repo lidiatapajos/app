@@ -5,8 +5,6 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 // AQUI você chama direto do objeto global `supabase`
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// E usa ele:
-const { data, error } = await supabaseClient.from('responsaveis').select();
 
 async function login() {
   const cpfInput = document.getElementById('cpf');
