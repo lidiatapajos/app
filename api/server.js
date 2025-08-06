@@ -572,11 +572,14 @@ app.patch('/usuarios/:cpf', async (req, res) => {
   res.status(200).json({ sucesso: "Contato editado con sucesso", data });
 });
 
-const { Pix } = require('pix-qrcode');
+
 
 app.get('/pix', (req, res) => {
   const { valor, nome, cidade } = req.query;
   const chave = process.env.CHAVE_PIX || '79683428215';
+  const { Pix } = require('pix-qrcode');
+
+  
 
   // Validação apenas dos parâmetros obrigatórios que vêm da query
   if (!valor || !nome || !cidade) {
