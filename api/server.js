@@ -197,7 +197,7 @@ app.post('/usuarios/boletos', async (req, res) => {
       .from('boletos')
       .insert([
         {
-          valorPadrao: parseFloat(valor.replace(',', '.')),
+          valor: parseFloat(valor.replace(',', '.')),
           data_liberacao: dataLiberacao,
           vencimento: vencimentoFormatado,
           status: 'gerado',

@@ -1,38 +1,61 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <title>Painel Admistrativo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="public/css/adm.css?v=2.0.1" />
-  <link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css" />
-<script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Painel Admistrativo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="public/css/adm.css?v=2.0.1" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/intro.js/minified/introjs.min.css"
+    />
+    <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="public/img/icon-512.png" type="image/png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="public/img/icon-512.png" type="image/png" />
+  </head>
 
-</head>
-
-<body>
-  <header class="navbar">
-    <div class="logo">
-      <img src="public/img/icon-192.png" alt="Logo da Escola" class="logo-img" />
-    </div>
-    <button class="logout-btn" onclick="logout()" data-intro="Clique aqui para voltar para tela de login.">Sair</button>
-  </header>
-
-  <main class="container">
-    <section class="acoes-gerais">
-  <button onclick="window.location.href='cadastro.html'" data-intro="Clique aqui para adicionar um novo contratante." class="btn btn-adicionar">
-
-        <i class="fas fa-user-plus"></i> Adicionar Usuário
+  <body>
+    <header class="navbar">
+      <div class="logo">
+        <img
+          src="public/img/icon-192.png"
+          alt="Logo da Escola"
+          class="logo-img"
+        />
+      </div>
+      <button
+        class="logout-btn"
+        onclick="logout()"
+        data-intro="Clique aqui para voltar para tela de login."
+      >
+        Sair
       </button>
-    </section>
+    </header>
 
-    <h1 data-intro="Aqui estão todos os seus clientes!Caso falte algum é só usar o botão acima.">Usuários e Boletos</h1>
-    <div id="usuarios-boletos" class="usuarios-lista"></div>
-  </main>
-</body>
-<script src="public/adm.js?v=2.0.2"></script>
+    <main class="container">
+      <section class="acoes-gerais">
+        <button
+          onclick="window.location.href='cadastro.html'"
+          data-intro="Clique aqui para adicionar um novo contratante."
+          class="btn btn-adicionar"
+        >
+          <i class="fas fa-user-plus"></i> Adicionar Usuário
+        </button>
+      </section>
 
+      <h1
+        data-intro="Aqui estão todos os seus clientes!Caso falte algum é só usar o botão acima."
+      >
+        Usuários e Boletos
+      </h1>
+      <div id="usuarios-boletos" class="usuarios-lista"></div>
+    </main>
+  </body>
+  <script src="public/adm.js?v=2.0.2"></script>
 </html>
