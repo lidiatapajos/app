@@ -443,6 +443,7 @@ app.get('/configuracao-boletos', async (req, res) => {
 
 app.post('/configuracao-boletos', async (req, res) => {
   const { diaLiberacao, diaVencimento, valorPadrao} = req.body;
+  const usarConfiguracaoPadrao = req.body.usarConfiguracaoPadrao || false;
   console.log(diaLiberacao, diaVencimento, valorPadrao)
 
   if (
