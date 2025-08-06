@@ -15,10 +15,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 
 const corsOptions = {
-   origin: 'https://primeirospassosdigital.netlify.app',
-   methods: 'GET,POST,PATCH,DELETE,OPTIONS',
-   allowedHeaders: 'Content-Type,Authorization'
- };
+  origin: 'https://primeirospassosdigital.netlify.app',
+  methods: 'GET,POST,PATCH,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type,Authorization'
+};
 app.use(cors(corsOptions));
 app.use(cors())
 app.use(express.json());
@@ -251,15 +251,16 @@ app.patch('/usuarios/boletos/:cpf/:id', async (req, res) => {
     .single();
 
   if (findError || !boleto) return res.status(404).json({ erro: 'Cobrança não encontrada' });
-
   const { data, error } = await supabase
     .from('boletos')
-    .update({ status: updates })
-    .eq('responsavel_id', responsavel.id);
-    
-    if (error) return res.status(500).json({ erro: error.message });
-    
-    console.log(data)
+    .update({ status: 'pago' })
+    .eq('id', id)           // <== Falta isso no seu código!
+    .eq('responsavel_id', responsavel.id)
+    .select();
+
+  if (error) return res.status(500).json({ erro: error.message });
+
+  console.log(data)
 
   res.json({ sucesso: true, mensagem: 'Cobrança atualizada', cobranca: data[0] });
 });
@@ -372,6 +373,53 @@ app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
 }
 );
 
+// editar boleto
+app.patch('/usuarios/:cpf/boletos/:id', async (req, res) => {
+  const { cpf, id } = req.params;
+  const { descricao, vencimento, valor } = req.body;
+
+  // Buscar o responsável pelo CPF
+  const { data: responsavel, error: responsavelError } = await supabase
+    .from('responsaveis')
+    .select('id')
+    .eq('cpf', cpf)
+    .single();
+
+  if (responsavelError || !responsavel) {
+    return res.status(404).json({ erro: 'Responsável não encontrado' });
+  }
+
+  // Validação simples (pode melhorar)
+  if (!descricao || !vencimento || !valor) {
+    return res.status(400).json({ erro: 'Campos inválidos ou faltando' });
+  }
+
+  // Formatando vencimento (se precisar)
+  const vencimentoFormatado = vencimento.split('/').reverse().join('-');
+
+  const { data, error } = await supabase
+    .from('boletos')
+    .update({
+      descricao,
+      vencimento: vencimentoFormatado,
+      valorPadrao: parseFloat(valor.replace(',', '.'))
+    })
+    .eq('id', id)
+    .eq('responsavel_id', responsavel.id)
+    .select();
+
+  if (error) {
+    return res.status(500).json({ erro: error.message });
+  }
+
+  if (!data || data.length === 0) {
+    return res.status(404).json({ erro: 'Boleto não encontrado' });
+  }
+
+  res.json({ sucesso: true, mensagem: 'Boleto atualizado', boleto: data[0] });
+});
+
+
 //ACABOU ARÉA DAS COBRANÇAS
 // ARÉA DE DELETAR
 
@@ -441,7 +489,7 @@ app.get('/configuracao-boletos', async (req, res) => {
 });
 
 app.post('/configuracao-boletos', async (req, res) => {
-  const { diaLiberacao, diaVencimento, valorPadrao} = req.body;
+  const { diaLiberacao, diaVencimento, valorPadrao } = req.body;
   const usarConfiguracaoPadrao = req.body.usarConfiguracaoPadrao || false;
   console.log(diaLiberacao, diaVencimento, valorPadrao)
 
@@ -456,7 +504,7 @@ app.post('/configuracao-boletos', async (req, res) => {
   // Validação simples (opcional)
   console.log(diaLiberacao, diaVencimento, valorPadrao, "----------------------- valores recebidos");
   if (
-    
+
     !Number.isInteger(diaLiberacao) ||
     !Number.isInteger(diaVencimento) ||
     typeof valorPadrao !== 'number'
@@ -497,17 +545,19 @@ app.post('/configuracao-boletos', async (req, res) => {
       //   return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
       // }
 
-      configData = { diaLiberacao, diaVencimento, valorPadrao
-       };
+      configData = {
+        diaLiberacao, diaVencimento, valorPadrao
+      };
     }
     console.log(configData, "----------------------- dados para inserir no bd");
 
     const { data, error } = await supabase
       .from('config_boletos')
       .insert([{
-        dia_liberacao:diaLiberacao,
-        dia_vencimento:diaVencimento,
-        valor:valorPadrao }]);
+        dia_liberacao: diaLiberacao,
+        dia_vencimento: diaVencimento,
+        valor: valorPadrao
+      }]);
 
     if (error) {
       console.error("Erro ao salvar configuração:", error);
