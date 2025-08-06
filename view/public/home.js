@@ -5,10 +5,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cpf = localStorage.getItem('cpf');
   const totalSpan = document.getElementById("total");
   const totalContainer = document.querySelector(".total-container");
-  const form = document.getElementById("form-contato");
-  const email = document.getElementById("email").value.trim();
-  const telefone = document.getElementById("telefone").value.trim();
-  const msg = document.getElementById("mensagem");
 
   if (!cpf) {
     totalContainer.innerHTML = `<p style="color: red;">CPF não encontrado. Faça login novamente.</p>`;
@@ -56,6 +52,7 @@ window.addEventListener('load', () => {
   if (section && cpf) {
     fetch(`${API_URL}/usuarios/${cpf}/boletos`) // <-- corrigido aqui
       .then(res => {
+        console.log("Boletos recebidos:", boletos); //
         if (!res.ok) throw new Error('Erro ao carregar cobranças');
         return res.json();
       })
