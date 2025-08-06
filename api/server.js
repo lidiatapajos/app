@@ -589,7 +589,7 @@ app.get('/pix', (req, res) => {
       key: chave,
       name: nome,
       city: cidade,
-      amount: valorPadrao
+      amount: valor
     });
 
     const brcode = pix.payload();
