@@ -276,7 +276,7 @@ async function iniciarTutorialAdm() {
 
 async function marcarComoPago(cpf, id) {
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos/${id}`, {
+    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" }
     });
