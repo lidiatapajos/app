@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarBoletos(cpf) {
   try {
-    const res = await fetch(`${API_URL}/usuarios/${cpf}/boletos`);
+    const res = await fetch(`${API_URL}/usuarios/boletos/${cpf}`);
     const boletos = await res.json();
 
     const lista = document.getElementById("lista-boletos");

@@ -287,7 +287,7 @@ app.patch('/usuarios/:cpf/boletos/:id/editar', async (req, res) => {
   }
 });
 
-app.get('/usuarios/:cpf/boletos', async (req, res) => {
+app.get('/usuarios/boletos/:cpf', async (req, res) => {
   const cpf = req.params.cpf;
 
   try {
