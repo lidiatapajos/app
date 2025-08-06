@@ -479,7 +479,7 @@ app.delete('/usuarios/:cpf', async (req, res) => {
 });
 // ACABOU ARÉA DE DELETAR
 // CONFIGURAÇÃO DE BOLETOS E ETC
-app.get('/configuracao-boletos', async (req, res) => {
+app.get('/configuracao-boletos', async (_req, res) => {
   try {
     const { data, error } = await supabase
       .from('config_boletos')
@@ -503,9 +503,8 @@ app.get('/configuracao-boletos', async (req, res) => {
 });
 
 app.post('/configuracao-boletos', async (req, res) => {
-  const { diaLiberacao, diaVencimento, valorPadrao } = req.body;
+  const { diaLiberacao, diaVencimento, valor } = req.body;
   const usarConfiguracaoPadrao = req.body.usarConfiguracaoPadrao || false;
-  console.log(diaLiberacao, diaVencimento, valorPadrao)
 
   if (
     diaLiberacao == null ||
@@ -516,12 +515,12 @@ app.post('/configuracao-boletos', async (req, res) => {
   }
 
   // Validação simples (opcional)
-  console.log(diaLiberacao, diaVencimento, valorPadrao, "----------------------- valores recebidos");
+  console.log(diaLiberacao, diaVencimento, valor, "----------------------- valores recebidos");
   if (
 
     !Number.isInteger(diaLiberacao) ||
     !Number.isInteger(diaVencimento) ||
-    typeof valorPadrao !== 'number'
+    typeof valor !== 'number'
   ) {
     console.log("aqui")
     return res.status(400).json({ erro: 'Campos com tipos inválidos.' });
@@ -546,11 +545,11 @@ app.post('/configuracao-boletos', async (req, res) => {
       if (
         diaLiberacao == null ||
         diaVencimento == null ||
-        valorPadrao == null
+        valor == null
       ) {
         return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
       }
-      console.log(diaLiberacao, diaVencimento, valorPadrao, "----------------------- valores recebidos dentro do else");
+      console.log(diaLiberacao, diaVencimento, valor, "----------------------- valores recebidos dentro do else");
       // if (
       //   !Number.isInteger(diaLiberacao) ||
       //   !Number.isInteger(diaVencimento) ||
@@ -560,7 +559,7 @@ app.post('/configuracao-boletos', async (req, res) => {
       // }
 
       configData = {
-        diaLiberacao, diaVencimento, valorPadrao
+        diaLiberacao, diaVencimento, valor
       };
     }
     console.log(configData, "----------------------- dados para inserir no bd");
@@ -570,7 +569,7 @@ app.post('/configuracao-boletos', async (req, res) => {
       .insert([{
         dia_liberacao: diaLiberacao,
         dia_vencimento: diaVencimento,
-        valor: valorPadrao
+        valor: valor
       }]);
 
     if (error) {

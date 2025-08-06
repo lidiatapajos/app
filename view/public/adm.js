@@ -23,8 +23,9 @@ window.addEventListener("load", async () => {
     console.log("Configuração atual de boletos:", config);
 
     await configurarBoletos();
+     await iniciarTutorialAdm();
     await carregarUsuarios();
-    await iniciarTutorialAdm();
+   
   } catch (err) {
     console.error("Erro ao buscar configurações do adm:", err);
     console.warn("Verifique se o servidor está rodando e a rota está correta.");
