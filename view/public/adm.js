@@ -65,8 +65,6 @@ async function carregarUsuarios() {
         const nomeFilho = usuario.filhos && usuario.filhos.length > 0
           ? usuario.filhos[0].nome // pega o primeiro filho, pode adaptar pra listar todos se quiser
           : null;
-        console.log('Usuário:', usuario);
-        console.log('Nome do responsável:', nomeResponsavel);
         div.innerHTML = `
           <h3>${escapeHtml(nomeResponsavel)}</h3>
           ${nomeFilho ? `<p style="font-size: 0.85em; color: #666; margin-top: -10px;">Filho: ${escapeHtml(nomeFilho)}</p>` : ''}
