@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname, '../view')));
     // Pega todos os usuários
     const { data: usuarios, error: usuariosError } = await supabase
       .from('responsaveis')
-      .select('id, cpf');
+      .select('id, cpf, nome');
 
     if (usuariosError) {
       return res.status(500).json({ erro: 'Erro ao buscar usuários' });
