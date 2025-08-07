@@ -280,7 +280,7 @@ async function cadastrarUsuario() {
 
   const form = document.getElementById('cadastroForm');
   if (!form) {
-    console.error(' Form não encontrado!');
+    console.error('Form não encontrado!');
     return;
   }
 
@@ -290,11 +290,11 @@ async function cadastrarUsuario() {
     cpf: formData.get('cpf')?.replace(/\D/g, ''),
     email: formData.get('email'),
     telefone: formData.get('telefone'),
+    nomeFilho: formData.get('nomeFilho') || null, // pega o novo campo, pode ser null se vazio
   };
 
   console.log('Dados do formulário:', dados);
 
-  // Validação rápida e direta
   if (!dados.nome || !dados.cpf || !dados.email) {
     alert('Preencha os campos obrigatórios: nome, cpf e email.');
     console.log('Campos obrigatórios faltando.');

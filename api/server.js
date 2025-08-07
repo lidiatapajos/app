@@ -101,17 +101,17 @@ app.post('/usuarios', async (req, res) => {
   console.log('POST /usuarios chamado');
   console.log('Corpo da requisição:', req.body);
 
-  const { cpf, nome, email, telefone } = req.body;
+  const { cpf, nome, email, telefone, nomeFilho } = req.body;
 
   try {
-    console.log(`Verificando se CPF ${cpf} já existe...`);
+    // Verifica se responsável já existe
     const { data: exists, error: existsError } = await supabase
       .from('responsaveis')
       .select('cpf')
       .eq('cpf', cpf)
       .single();
 
-    if (existsError && existsError.code !== 'PGRST116') { // 'PGRST116' = not found, normal se não existir
+    if (existsError && existsError.code !== 'PGRST116') {
       console.error('Erro ao buscar CPF:', existsError);
       return res.status(500).json({ erro: 'Erro ao consultar banco de dados' });
     }
@@ -121,24 +121,40 @@ app.post('/usuarios', async (req, res) => {
       return res.status(400).json({ erro: 'Usuário já existe' });
     }
 
-    console.log('Inserindo novo usuário:', { cpf, nome, email, telefone });
-    const { data, error } = await supabase
+    // Insere responsável
+    const { data: responsavelData, error: insertError } = await supabase
       .from('responsaveis')
-      .insert([{ cpf, nome, email, telefone }]);
+      .insert([{ cpf, nome, email, telefone }])
+      .select('id') // seleciona o id criado
+      .single();
 
-    if (error) {
-      console.error('Erro ao inserir usuário:', error);
-      return res.status(500).json({ erro: error.message });
+    if (insertError) {
+      console.error('Erro ao inserir usuário:', insertError);
+      return res.status(500).json({ erro: insertError.message });
     }
 
-    console.log('Usuário criado com sucesso:', data);
-    res.status(201).json({ mensagem: 'Responsável criado com sucesso', data });
+    console.log('Responsável criado com sucesso:', responsavelData);
+
+    // Se nomeFilho foi enviado, cadastra o filho linkando com responsavelid
+    if (nomeFilho) {
+      const { error: filhoError } = await supabase
+        .from('filhos')
+        .insert([{ nome: nomeFilho, responsavelid: responsavelData.id }]);
+      if (filhoError) {
+        console.error('Erro ao inserir filho:', filhoError);
+        return res.status(500).json({ erro: filhoError.message });
+      }
+      console.log('Filho cadastrado com sucesso para o responsável:', responsavelData.id);
+    }
+
+    res.status(201).json({ mensagem: 'Responsável e filho criados com sucesso', data: responsavelData });
 
   } catch (err) {
     console.error('Erro inesperado no POST /usuarios:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
   }
 });
+
 
 // ACABOU ARÉA DOS USUARIOS E ADMS
 // COBRANÇAS
