@@ -27,9 +27,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../view')));
 
 
-  app.get('/usuarios', async (req, res) => {
+app.get('/usuarios', async (req, res) => {
   try {
-    // Pega todos os usuários
+    // Pega todos os responsáveis
     const { data: usuarios, error: usuariosError } = await supabase
       .from('responsaveis')
       .select('id, cpf, nome');
@@ -38,8 +38,8 @@ app.use(express.static(path.join(__dirname, '../view')));
       return res.status(500).json({ erro: 'Erro ao buscar usuários' });
     }
 
-    // Para cada usuário, buscar boletos não pagos
-    const usuariosComBoletos = await Promise.all(
+    // Para cada usuário, buscar boletos e filhos
+    const usuariosComDados = await Promise.all(
       usuarios.map(async (usuario) => {
         const { data: boletos, error: boletosError } = await supabase
           .from('boletos')
@@ -48,20 +48,26 @@ app.use(express.static(path.join(__dirname, '../view')));
           .neq('status', 'pago')
           .order('vencimento', { ascending: true });
 
+        const { data: filhos, error: filhosError } = await supabase
+          .from('filhos')
+          .select('nome')
+          .eq('responsavel_id', usuario.id);
+
         return {
           cpf: usuario.cpf,
+          nome: usuario.nome,
           boletos: boletosError ? [] : boletos,
+          filhos: filhosError ? [] : filhos,
         };
       })
     );
 
-    res.json(usuariosComBoletos);
+    res.json(usuariosComDados);
   } catch (e) {
     console.error('Erro inesperado:', e);
     res.status(500).json({ erro: 'Erro inesperado' });
   }
 });
-
 
 
 app.get('/usuarios/:cpf', async (req, res) => {
