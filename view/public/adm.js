@@ -50,8 +50,16 @@ async function carregarUsuarios() {
       .forEach(usuario => {
         const div = document.createElement("div");
         div.className = "usuario";
+
+        // Pega o nome do responsável e nome do filho (assumindo array de filhos)
+        const nomeResponsavel = usuario.nome || "Nome não informado";
+        const nomeFilho = usuario.filhos && usuario.filhos.length > 0
+          ? usuario.filhos[0].nome // pega o primeiro filho, pode adaptar pra listar todos se quiser
+          : null;
+
         div.innerHTML = `
-          <h3>CPF: ${usuario.cpf}</h3>
+          <h3>${escapeHtml(nomeResponsavel)}</h3>
+          ${nomeFilho ? `<p style="font-size: 0.85em; color: #666; margin-top: -10px;">Filho: ${escapeHtml(nomeFilho)}</p>` : ''}
           <p>
             <button onclick="adicionarCobrancaPix('${usuario.cpf}')">
               <i class="fas fa-money-check-alt"></i> Cobr. Pix
@@ -68,9 +76,9 @@ async function carregarUsuarios() {
             c.className = "boleto";
             c.innerHTML = `
               <div class="boleto-info">
-                <strong>${boleto.descricao}</strong><br>
-                Vencimento: ${boleto.vencimento} | Valor: R$ ${boleto.valor}<br>
-                <span><strong>Pix:</strong> ${boleto.chavePix}</span><br>
+                <strong>${escapeHtml(boleto.descricao)}</strong><br>
+                Vencimento: ${escapeHtml(boleto.vencimento)} | Valor: R$ ${escapeHtml(boleto.valor)}<br>
+                <span><strong>Pix:</strong> ${escapeHtml(boleto.chavePix)}</span><br>
                 <button onclick="copiarPix('${boleto.chavePix}')">Copiar chave Pix</button>
               </div>
               <div class="boleto-acoes">
@@ -96,8 +104,8 @@ async function carregarUsuarios() {
   } catch (err) {
     console.error("Erro ao carregar usuários:", err);
   }
-  
 }
+
 // não tá funcionando
 async function adicionarCobrancaPix(cpf) {
   const descricao = prompt("Descrição da cobrança:");
