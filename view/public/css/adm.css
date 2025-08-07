@@ -14,7 +14,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: #f5f5f5;
   color: #212121;
-  line-height: 2;
+  line-height: 1.8;
   padding-top: 80px;
 }
 
@@ -69,19 +69,19 @@ body {
 .container {
   max-width: 960px;
   margin: auto;
-  padding: 30px 20px;
+  padding: 35px 20px;
 }
 
 /* USUÁRIOS */
 .usuarios-lista {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 33px;
 }
 
 .usuario {
   background: white;
-  padding: 32px;
+  padding: 30px;
   border-left: 6px solid #b71c1c;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -104,8 +104,8 @@ body {
   background: #fff3e0;
   border-left: 4px solid #ff7043;
   margin-top: 8px;
-  padding: 20px 18px; /* mais espaço interno */
-  gap: 12px; 
+  padding: 17px 16px; /* mais espaço interno */
+  gap: 10px; 
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
@@ -207,11 +207,11 @@ button:not(.btn):focus {
   }
 
   .container {
-    padding: 10px;
+    padding: 20px;
   }
 
   .usuario {
-    padding: 16px;
+    padding: 20px;
   }
 
   .boleto {
@@ -220,7 +220,7 @@ button:not(.btn):focus {
   }
 
   .boleto-info {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .boleto-acoes {
     justify-content: flex-start;
@@ -231,7 +231,7 @@ button:not(.btn):focus {
     margin-top: 10px;
   }
   .usuarios-lista {
-    gap: 15px;
+    gap: 20px;
   }
   .usuario h3 {
     font-size: 1.1rem;
@@ -247,30 +247,30 @@ button:not(.btn):focus {
     font-size: 0.9rem;
   }
   .boleto-acoes button {
-    padding: 6px 12px;
+    padding: 8px 12px;
     font-size: 0.85rem;
   }
   .boleto-acoes {
-    gap: 6px;
+    gap: 8px;
   }
   button {
-    padding: 6px 12px;
+    padding: 8px 12px;
     font-size: 0.85rem;
   }
   .logout-btn {
-    padding: 8px 12px;
+    padding: 12px;
     font-size: 0.85rem;
   }
   .logo {
     font-size: 1.3rem;
   }
   .usuarios-lista {
-    gap: 10px;
+    gap: 20px;
   }
   .btn,
   button {
     width: 100%;
-    padding: 10px;
+    padding: 10px 15px;
     font-size: 0.95rem;
     margin: 4px 0;
   }
@@ -297,7 +297,7 @@ button:not(.btn):focus {
     padding-top: 60px;
   }
   .navbar {
-    padding: 12px 20px;
+    padding: 16px 24px;
     height: 60px;
 
   }
@@ -310,7 +310,7 @@ button:not(.btn):focus {
     margin-top: -15%;
     margin-left: auto;
     
-    padding: 8px;
+    padding: 10px;
     font-size: 0.8rem;
   }
 
@@ -361,7 +361,7 @@ button:not(.btn):focus {
   button {
     width: 100%;
     font-size: 0.9rem;
-    padding: 10px;
+    padding: 10px 12px;
     margin: 3px 0;
     display: flex;
     align-items: center;
@@ -389,7 +389,7 @@ button:not(.btn):focus {
     padding-top: 70px;
   }
   .navbar {
-    padding: 14px 20px;
+    padding: 12px 20px;
     height: 70px;
 
   }
