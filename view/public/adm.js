@@ -33,6 +33,15 @@ window.addEventListener("load", async () => {
 });
 
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+    .replace(/\//g, '&#x2F;');
+}
 
 async function carregarUsuarios() {
   const container = document.getElementById("usuarios-boletos");
