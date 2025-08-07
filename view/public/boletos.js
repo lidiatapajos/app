@@ -74,29 +74,23 @@ async function abrirPagamento(index, boleto) {
     return;
   }
 
-  const valor = boleto.valor.toString().replace(/[^\d,\.]/g, "").replace(",", ".");
+  // Aqui usa o valor fixo que tu passou, sem mexer no boleto
+  const payloadPix = "00020126330014BR.GOV.BCB.PIX0111796834282155204000053039865802BR5924Reforco Primeiros Passos6005Soure62070503***6304BA3D";
 
-  try {
-    const res = await fetch(`${API_URL}/pix?valor=${valor}&nome=Cliente&cidade=Soure`);
-    const dados = await res.json();
+  box.innerHTML = `
+    <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(boleto).replace(/"/g, '&quot;')})">✖</button>
+    <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
+    <div class="pix-section">
+      <img src="./img/qrcode-pix.png" alt="QR Code Pix" style="width: 300px; display: block;" />
+      <p><strong>Copia e cola:</strong> <span id="pixcode-${index}">${payloadPix}</span></p>
+      <button onclick="copiarPix(${index})">Copiar</button>
+    </div>
+  `;
 
-    box.innerHTML = `
-      <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(boleto).replace(/"/g, '&quot;')})">✖</button>
-      <p><strong>Instruções de Pagamento:</strong> Use uma das opções abaixo para quitar sua cobrança.</p>
-      <div class="pix-section">
-        <img src="${dados.qrCodeBase64}" alt="QR Code Pix" />
-        <p><strong>Copia e cola:</strong> <span id="pixcode-${index}">${dados.payload}</span></p>
-        <button onclick="copiarPix(${index})">Copiar</button>
-      </div>
-    `;
-
-    box.classList.add("active");
-    box.scrollIntoView({ behavior: "smooth", block: "start" });
-  } catch (err) {
-    console.error("Erro ao gerar Pix:", err);
-    alert("Erro ao gerar QR Code Pix");
-  }
+  box.classList.add("active");
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
 
 function copiarPix(index) {
   const el = document.getElementById(`pixcode-${index}`);
