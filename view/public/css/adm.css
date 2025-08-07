@@ -160,18 +160,22 @@ body {
 /* Estilo por tipo */
 .copiar {
   background-color: #4caf50; /* verde */
+  text-align: right;
 }
 
 .editar {
   background-color: #2196f3; /* azul */
+  text-align: right;
 }
 
 .pagar {
   background-color: #ff9800; /* laranja */
+  text-align: right;
 }
 
 .excluir {
   background-color: #f44336; /* vermelho */
+  text-align: right;
 }
 
 .btn:hover {
@@ -286,7 +290,8 @@ button:not(.btn):focus {
     gap: 8px;
   }
   .btn-adicionar {
-    width: 50%;
+    width: 150px;
+    
   }
 
 
@@ -379,7 +384,7 @@ button:not(.btn):focus {
     font-size: 1rem;
   }
   .btn-adicionar {
-    width: 40%;
+    width: 30%;
   }
   
 }
