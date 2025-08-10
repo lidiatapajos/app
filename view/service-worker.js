@@ -22,7 +22,7 @@ const urlsToCache = [
   'public/home.js',
   'public/img/icon-192.png',
   'public/img/icon-512.png',
-  'public/img/qrcode-pix.png',
+  'public/img/qrcode-pix-itau.png',
   'public/screenshots/home.png',
   'public/screenshots/tela-login.png'
 ];
