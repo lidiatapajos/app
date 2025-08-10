@@ -119,7 +119,7 @@ async function adicionarCobrancaPix(cpf) {
   const descricao = prompt("Descrição da cobrança:");
   const vencimento = prompt("Vencimento (dd/mm/aaaa):");
   const valor = prompt("Valor:");
-  const chavePix = "79683428215";
+  const chavePix = "00020126580014BR.GOV.BCB.PIX01366cb97c48-955b-4101-a14b-25b573b3236e5204000053039865802BR5901N6001C62070503***63045AD1"; // valor fixo
   if (!descricao || !vencimento || !valor) return;
 
   try {

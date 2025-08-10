@@ -75,7 +75,7 @@ async function abrirPagamento(index, boleto) {
   }
 
   // Aqui usa o valor fixo que tu passou, sem mexer no boleto
-  const payloadPix = "00020126330014BR.GOV.BCB.PIX0111796834282155204000053039865802BR5924Reforco Primeiros Passos6005Soure62070503***6304BA3D";
+  const payloadPix = "00020126580014BR.GOV.BCB.PIX01366cb97c48-955b-4101-a14b-25b573b3236e5204000053039865802BR5901N6001C62070503***63045AD1";
 
   box.innerHTML = `
     <button class="btn-close" onclick="abrirPagamento(${index}, ${JSON.stringify(boleto).replace(/"/g, '&quot;')})">✖</button>
