@@ -34,12 +34,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function calcularTotalPagar(boletos) {
   return boletos.reduce((acc, boleto) => {
-    if (boleto.pago === false || boleto.pago === 'false' || boleto.pago === 0 || boleto.pago === '0') {
+    const pago = String(boleto.pago).trim().toLowerCase();
+    
+    if (pago === 'false' || pago === '0' || pago === 'null' || pago === 'undefined' || pago === '' ) {
       return acc + (parseFloat(String(boleto.valor).replace(',', '.')) || 0);
     }
     return acc;
   }, 0);
 }
+
 
 function escapeHtml(str) {
   return String(str)
