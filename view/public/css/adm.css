@@ -154,7 +154,6 @@ body {
   border-left: 4px solid #ff7043;
   margin-top: 8px;
   padding: 17px 16px; /* mais espaço interno */
-  gap: 10px; 
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
@@ -176,6 +175,11 @@ body {
   color: #333;
   padding: 6px;
   cursor: pointer;
+   display: flex;
+  flex-direction:column; 
+  align-items: flex-end;  
+  gap: 8px;    
+  
 }
 
 .boleto-acoes button:hover {
@@ -314,8 +318,8 @@ button:not(.btn):focus {
     padding: 8px 12px;
     font-size: 0.85rem;
      display: flex;
-  flex-direction: column; /* deixa vertical */
-  align-items: flex-end;   /* alinha tudo à direita */
+  flex-direction: row; 
+  align-items: center;  
   gap: 8px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
@@ -396,8 +400,8 @@ button:not(.btn):focus {
     padding: 4px 8px;
     font-size: 0.75rem;
     display: flex;
-    flex-direction: column; /* deixa vertical */
-    align-items: flex-end;   /* alinha tudo à direita */
+    flex-direction: row; 
+    align-items: center;  
     gap: 6px;                /* espaçamento entre os botões, pode ajustar */
 
   }
@@ -493,8 +497,8 @@ button:not(.btn):focus {
     padding: 4px 8px;
     font-size: 0.7rem;
     display: flex;
-    flex-direction: column; /* deixa vertical */
-    align-items: flex-end;   /* alinha tudo à direita */
+    flex-direction: row; 
+    align-items: center;  
     gap: 6px;                /* espaçamento entre os botões, pode ajustar */
 
   }
@@ -538,8 +542,8 @@ button:not(.btn):focus {
     padding: 2px 6px;
     font-size: 0.65rem;
     display: flex;
-    flex-direction: column; /* deixa vertical */
-    align-items: flex-end;   /* alinha tudo à direita */
+    flex-direction: row; 
+    align-items: center;  
     gap: 2px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
@@ -648,8 +652,8 @@ button:not(.btn):focus {
     padding: 2px 4px;
     font-size: 0.5rem;
     display: flex;
-    flex-direction: column; /* deixa vertical */
-    align-items: flex-end;   /* alinha tudo à direita */
+    flex-direction: row; 
+    align-items: center;   
     gap: 2px;                /* espaçamento entre os botões, pode ajustar */
   }
   
@@ -688,8 +692,8 @@ button:not(.btn):focus {
     padding: 2px 4px;
     font-size: 0.5rem;
     display: flex;
-    flex-direction: column; /* deixa vertical */
-    align-items: flex-end;   /* alinha tudo à direita */
+    flex-direction: row; 
+    align-items: center;   
     gap: 2px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
@@ -750,8 +754,8 @@ button:not(.btn):focus {
     padding: 8px 12px;
     font-size: 0.85rem;
     display: flex;
-    flex-direction: column; /* deixa vertical */
-    align-items: flex-end;   /* alinha tudo à direita */
-    gap: 8px;                /* espaçamento entre os botões, pode ajustar */
+    flex-direction: row;
+    align-items: center;   
+    gap: 8px;              
   }
 }
