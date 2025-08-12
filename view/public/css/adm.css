@@ -265,6 +265,17 @@ button:not(.btn):focus {
 
   .usuario {
     padding: 20px;
+    border-left-width: 4px;
+  }
+  .usuarios-lista {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .usuario h3 {
+    font-size: 1.2rem;
+  }
+  .usuario-card {
+    padding: 20px;
   }
 
   .boleto {
@@ -302,9 +313,10 @@ button:not(.btn):focus {
   .boleto-acoes button {
     padding: 8px 12px;
     font-size: 0.85rem;
-  }
-  .boleto-acoes {
-    gap: 8px;
+     display: flex;
+  flex-direction: column; /* deixa vertical */
+  align-items: flex-end;   /* alinha tudo à direita */
+  gap: 8px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
     padding: 8px 12px;
@@ -340,7 +352,6 @@ button:not(.btn):focus {
   }
   .btn-adicionar {
     width: 150px;
-    
   }
 
 
@@ -384,9 +395,11 @@ button:not(.btn):focus {
   .boleto-acoes button {
     padding: 4px 8px;
     font-size: 0.75rem;
-  }
-  .boleto-acoes {
-    gap: 4px;
+    display: flex;
+    flex-direction: column; /* deixa vertical */
+    align-items: flex-end;   /* alinha tudo à direita */
+    gap: 6px;                /* espaçamento entre os botões, pode ajustar */
+
   }
   button {
     padding: 4px 8px;
@@ -469,6 +482,22 @@ button:not(.btn):focus {
   .btn-adicionar {
     width: 30%;
   }
+  .boleto {
+    padding: 8px;
+    border-left-width: 1px;
+  }
+  .boleto-info {
+    font-size: 0.8rem;
+  }
+  .boleto-acoes button {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    display: flex;
+    flex-direction: column; /* deixa vertical */
+    align-items: flex-end;   /* alinha tudo à direita */
+    gap: 6px;                /* espaçamento entre os botões, pode ajustar */
+
+  }
   
 }
 @media screen and (max-width: 360px) {
@@ -508,9 +537,10 @@ button:not(.btn):focus {
   .boleto-acoes button {
     padding: 2px 6px;
     font-size: 0.65rem;
-  }
-  .boleto-acoes {
-    gap: 2px;
+    display: flex;
+    flex-direction: column; /* deixa vertical */
+    align-items: flex-end;   /* alinha tudo à direita */
+    gap: 2px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
     padding: 2px 6px;
@@ -604,6 +634,24 @@ button:not(.btn):focus {
   .btn-adicionar {
     width: 30%;
   }
+  .usuario {
+    padding: 6px;
+  }
+  .boleto {
+    padding: 6px;
+    border-left-width: 1px;
+  }
+  .boleto-info {
+    font-size: 0.7rem;
+  }
+  .boleto-acoes button {
+    padding: 2px 4px;
+    font-size: 0.5rem;
+    display: flex;
+    flex-direction: column; /* deixa vertical */
+    align-items: flex-end;   /* alinha tudo à direita */
+    gap: 2px;                /* espaçamento entre os botões, pode ajustar */
+  }
   
 }
 @media screen and (max-width: 320px) {
@@ -639,10 +687,10 @@ button:not(.btn):focus {
   .boleto-acoes button {
     padding: 2px 4px;
     font-size: 0.5rem;
-  }
-  .boleto-acoes {
-    gap: 1px;
-  
+    display: flex;
+    flex-direction: column; /* deixa vertical */
+    align-items: flex-end;   /* alinha tudo à direita */
+    gap: 2px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
     padding: 2px 4px;
@@ -690,4 +738,20 @@ button:not(.btn):focus {
   }
   .btn-adicionar {
     width: 150px; }
+  .boleto {
+    padding: 12px;
+    border-left-width: 3px;
+  
+  }
+  .boleto-info {
+    font-size: 0.9rem;
+  }
+  .boleto-acoes button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column; /* deixa vertical */
+    align-items: flex-end;   /* alinha tudo à direita */
+    gap: 8px;                /* espaçamento entre os botões, pode ajustar */
+  }
 }
