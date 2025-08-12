@@ -354,7 +354,7 @@ button:not(.btn):focus {
     gap: 8px;
   }
   .btn-adicionar {
-    width: 150px;
+    width: auto;
   }
 
 
@@ -447,7 +447,7 @@ button:not(.btn):focus {
     font-size: 1rem;
   }
   .btn-adicionar {
-    width: 30%;
+    width: auto;
   }
   
 }
@@ -481,7 +481,7 @@ button:not(.btn):focus {
     padding: 10px;
   }
   .btn-adicionar {
-    width: 30%;
+    width: auto;
   }
   .boleto {
     padding: 8px;
@@ -604,7 +604,7 @@ button:not(.btn):focus {
     margin-right: 4px;
   }
   .btn-adicionar {
-    width: 20%;
+    width: auto;
   }
 
 }
@@ -632,7 +632,7 @@ button:not(.btn):focus {
     font-size: 0.8rem;
   }
   .btn-adicionar {
-    width: 30%;
+    width: auto; 
   }
   .usuario {
     padding: 6px;
@@ -719,7 +719,8 @@ button:not(.btn):focus {
     gap: 2px;
   }
   .btn-adicionar {
-    width: 30%;}
+    width: auto;
+  }
    
 }
 
@@ -751,5 +752,8 @@ button:not(.btn):focus {
     flex-direction: row;
     align-items: end;   
     gap: 8px;              
+  }
+  .btn-adicionar {
+    width: auto; /* largura maior para telas maiores */
   }
 }
