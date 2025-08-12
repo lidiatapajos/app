@@ -55,7 +55,12 @@ async function carregarUsuarios() {
     const usuarios = await res.json();
 
     usuarios
-        .filter(u => u.cpf && u.cpf !== localStorage.getItem('cpf'))
+      .filter(u => u.cpf && u.cpf !== localStorage.getItem('cpf'))
+      .sort((a, b) => {
+        const nomeA = (a.nome || "").toLowerCase();
+        const nomeB = (b.nome || "").toLowerCase();
+        return nomeA.localeCompare(nomeB, 'pt-BR');
+      })
       .forEach(usuario => {
         const div = document.createElement("div");
         div.className = "usuario";
@@ -63,7 +68,6 @@ async function carregarUsuarios() {
         const nomeResponsavel = usuario.nome || "Nome não informado";
         const cpfResponsavel = usuario.cpf || "CPF não informado";
 
-        // Lista todos os filhos em formato de string
         const nomesFilhos = usuario.filhos && usuario.filhos.length > 0
           ? usuario.filhos.map(f => escapeHtml(f.nome)).join(", ")
           : "Filho(s) não informado(s)";
@@ -71,7 +75,7 @@ async function carregarUsuarios() {
         div.innerHTML = `
           <h3>${escapeHtml(nomeResponsavel)}</h3>
           ${nomesFilhos ? `<p style="font-size: 0.85em; color: #666; margin-top: -10px;">Filho: ${escapeHtml(nomesFilhos)}</p>` : ''}
-            CPF: ${escapeHtml(cpfResponsavel)}<br>
+          CPF: ${escapeHtml(cpfResponsavel)}<br>
           <p>
             <button onclick="adicionarCobrancaPix('${usuario.cpf}')">
               <i class="fas fa-money-check-alt"></i> Cobr. Pix
