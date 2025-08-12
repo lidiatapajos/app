@@ -98,6 +98,55 @@ body {
   color: #b71c1c;
   font-size: 1.2rem;
 }
+/* CARD PRINCIPAL (fechado/aberto) */
+.usuario-card {
+  background: white;
+  border-left: 6px solid #b71c1c;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: 0.3s ease all;
+}
+
+.usuario-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabeçalho fixo sempre visível */
+.usuario-header {
+  padding: 18px 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: #f7f7f7;
+  color: #b71c1c;
+  cursor: pointer;
+}
+
+/* Conteúdo expansível */
+.usuario-info {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+/* Texto interno */
+.usuario-info p {
+  margin: 10px 0;
+  font-size: 0.95rem;
+}
+
+/* Ajuste boletos dentro do accordion */
+.usuario-info .boleto {
+  margin-top: 10px;
+  padding: 14px;
+}
+
+/* Botões dentro do accordion */
+.usuario-info button {
+  margin-top: 8px;
+}
 
 /* BOLETOS */
 .boleto {

@@ -62,8 +62,14 @@ async function carregarUsuarios() {
         return nomeA.localeCompare(nomeB, 'pt-BR');
       })
       .forEach(usuario => {
-        const div = document.createElement("div");
-        div.className = "usuario";
+        const card = document.createElement("div");
+        card.className = "usuario-card";
+        card.onclick = function (e) {
+          // Evita que clique nos botões feche/abra o card
+          if (e.target.tagName.toLowerCase() !== "button" && !e.target.closest("button")) {
+            toggleInfo(card);
+          }
+        };
 
         const nomeResponsavel = usuario.nome || "Nome não informado";
         const cpfResponsavel = usuario.cpf || "CPF não informado";
@@ -72,10 +78,19 @@ async function carregarUsuarios() {
           ? usuario.filhos.map(f => escapeHtml(f.nome)).join(", ")
           : "Filho(s) não informado(s)";
 
-        div.innerHTML = `
-          <h3>${escapeHtml(nomeResponsavel)}</h3>
-          ${nomesFilhos ? `<p style="font-size: 0.85em; color: #666; margin-top: -10px;">Filho: ${escapeHtml(nomesFilhos)}</p>` : ''}
-          CPF: ${escapeHtml(cpfResponsavel)}<br>
+        // Cabeçalho visível sempre
+        card.innerHTML = `
+          <div class="usuario-header">
+            <strong>${escapeHtml(nomeResponsavel)}</strong>
+          </div>
+        `;
+
+        // Área expansível
+        const info = document.createElement("div");
+        info.className = "usuario-info";
+        info.innerHTML = `
+          ${nomesFilhos ? `<p>Filho: ${escapeHtml(nomesFilhos)}</p>` : ''}
+          <p>CPF: ${escapeHtml(cpfResponsavel)}</p>
           <p>
             <button onclick="adicionarCobrancaPix('${usuario.cpf}')">
               <i class="fas fa-money-check-alt"></i> Cobr. Pix
@@ -86,6 +101,7 @@ async function carregarUsuarios() {
           </p>
         `;
 
+        // Boletos
         if (usuario.boletos?.length) {
           usuario.boletos.forEach((boleto) => {
             const c = document.createElement("div");
@@ -109,16 +125,28 @@ async function carregarUsuarios() {
                 </button>
               </div>
             `;
-            div.appendChild(c);
+            info.appendChild(c);
           });
         } else {
-          div.innerHTML += `<p><em>Sem cobranças Pix.</em></p>`;
+          info.innerHTML += `<p><em>Sem cobranças Pix.</em></p>`;
         }
 
-        container.appendChild(div);
+        card.appendChild(info);
+        container.appendChild(card);
       });
   } catch (err) {
     console.error("Erro ao carregar usuários:", err);
+  }
+}
+
+function toggleInfo(card) {
+  const info = card.querySelector('.usuario-info');
+  if (info.style.maxHeight) {
+    info.style.maxHeight = null;
+    info.style.padding = "0 14px";
+  } else {
+    info.style.maxHeight = info.scrollHeight + "px";
+    info.style.padding = "14px";
   }
 }
 
