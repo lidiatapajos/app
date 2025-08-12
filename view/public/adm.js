@@ -70,7 +70,7 @@ async function carregarUsuarios() {
 
         div.innerHTML = `
           <h3>${escapeHtml(nomeResponsavel)}</h3>
-          ${nomesFilhos ? `<p style="font-size: 0.85em; color: #666; margin-top: -10px;">Filho: ${escapeHtml(nomeFilho)}</p>` : ''}
+          ${nomesFilhos ? `<p style="font-size: 0.85em; color: #666; margin-top: -10px;">Filho: ${escapeHtml(nomesFilhos)}</p>` : ''}
             CPF: ${escapeHtml(cpfResponsavel)}<br>
           <p>
             <button onclick="adicionarCobrancaPix('${usuario.cpf}')">
