@@ -314,18 +314,17 @@ button:not(.btn):focus {
   .boleto-info {
     font-size: 0.9rem;
   }
-  .boleto-acoes button {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-     display: flex;
-  flex-direction: row; 
-  align-items: center;  
-  gap: 8px;                /* espaçamento entre os botões, pode ajustar */
-  }
-  button {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
+.boleto-acoes {
+  display: flex;            /* faz os filhos ficarem lado a lado */
+  flex-direction: row;      /* horizontal */
+  justify-content: end; 
+  gap: 8px;                  /* espaçamento entre os botões */
+}
+
+.boleto-acoes button {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
   .logout-btn {
     padding: 12px;
     font-size: 0.85rem;
@@ -396,12 +395,10 @@ button:not(.btn):focus {
   .boleto-info {
     font-size: 0.85rem;
   }
-  .boleto-acoes button {
-    padding: 4px 8px;
-    font-size: 0.75rem;
+  .boleto-acoes{
     display: flex;
     flex-direction: row; 
-    align-items: center;  
+    align-items: end;  
     gap: 6px;                /* espaçamento entre os botões, pode ajustar */
 
   }
@@ -493,14 +490,15 @@ button:not(.btn):focus {
   .boleto-info {
     font-size: 0.8rem;
   }
-  .boleto-acoes button {
-    padding: 4px 8px;
-    font-size: 0.7rem;
+  .boleto-acoes{
     display: flex;
     flex-direction: row; 
-    align-items: center;  
+    align-items: end;  
     gap: 6px;                /* espaçamento entre os botões, pode ajustar */
-
+  }
+  button {
+    padding: 4px 8px;
+    font-size: 0.7rem;
   }
   
 }
@@ -538,12 +536,10 @@ button:not(.btn):focus {
   .boleto-info {
     font-size: 0.75rem;
   }
-  .boleto-acoes button {
-    padding: 2px 6px;
-    font-size: 0.65rem;
+  .boleto-acoes{
     display: flex;
     flex-direction: row; 
-    align-items: center;  
+    align-items: end;  
     gap: 2px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
@@ -648,13 +644,15 @@ button:not(.btn):focus {
   .boleto-info {
     font-size: 0.7rem;
   }
-  .boleto-acoes button {
-    padding: 2px 4px;
-    font-size: 0.5rem;
+  .boleto-acoes {
     display: flex;
     flex-direction: row; 
-    align-items: center;   
+    align-items: end;   
     gap: 2px;                /* espaçamento entre os botões, pode ajustar */
+  }
+  button {
+    padding: 2px 4px;
+    font-size: 0.5rem;
   }
   
 }
@@ -688,12 +686,10 @@ button:not(.btn):focus {
   .boleto-info {
     font-size: 0.7rem;
   }
-  .boleto-acoes button {
-    padding: 2px 4px;
-    font-size: 0.5rem;
+  .boleto-acoes{
     display: flex;
     flex-direction: row; 
-    align-items: center;   
+    align-items: end;   
     gap: 2px;                /* espaçamento entre os botões, pode ajustar */
   }
   button {
@@ -750,12 +746,10 @@ button:not(.btn):focus {
   .boleto-info {
     font-size: 0.9rem;
   }
-  .boleto-acoes button {
-    padding: 8px 12px;
-    font-size: 0.85rem;
+  .boleto-acoes {
     display: flex;
     flex-direction: row;
-    align-items: center;   
+    align-items: end;   
     gap: 8px;              
   }
 }
