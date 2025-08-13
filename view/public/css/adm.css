@@ -611,6 +611,7 @@ button:not(.btn):focus {
 @media screen and (max-width: 340px) {
   body {
     padding-top: 40px;
+    
   }
   .navbar {
     padding: 8px 10px;

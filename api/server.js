@@ -145,7 +145,7 @@ app.post('/usuarios', async (req, res) => {
     if (nomeFilho) {
       const { error: filhoError } = await supabase
         .from('filhos')
-        .insert([{ nome: nomeFilho, responsavelid: responsavelData.id }]);
+        .insert([{ nome: nomeFilho, responsavel_id: responsavelData.id }]);
       if (filhoError) {
         console.error('Erro ao inserir filho:', filhoError);
         return res.status(500).json({ erro: filhoError.message });
