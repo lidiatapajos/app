@@ -216,7 +216,7 @@ app.post('/usuarios/boletos', async (req, res) => {
       return res.status(400).json({ erro: 'Responsável não encontrado' });
     }
 
-    const responsavelId = responsaveis.id;
+    const responsavel_Id = responsaveis.id;
     const cedente_id = 2;
 
     // 2. Buscar conta bancária do admin
@@ -247,7 +247,7 @@ app.post('/usuarios/boletos', async (req, res) => {
           data_liberacao: dataLiberacao,
           vencimento: vencimentoFormatado,
           status: 'gerado',
-          responsavel_id: responsavelId,
+          responsavel_id: responsavel_Id,
           agencia_id: agencia_id,
           cedente_id: cedente_id,
           descricao,
